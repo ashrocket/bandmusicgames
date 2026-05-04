@@ -294,20 +294,9 @@ btnSkip.addEventListener('click', () => {
 // ─── Bootstrap ─────────────────────────────────────────────────────
 
 (async function bootstrap() {
-  const params = new URLSearchParams(window.location.search);
-
-  if (params.has('code')) {
-    const ok = await LobbyAuth.handleCallback(params.get('code'));
-    window.history.replaceState({}, '', window.location.pathname);
-    if (ok) { dismissOverlay(); }
-    else    { updateInfo(); }
-    return;
-  }
-
   if (LobbyAuth.isConnected()) {
     dismissOverlay();
   }
-  // else overlay stays visible
 
   updateInfo();
   requestAnimationFrame(drawFrame);

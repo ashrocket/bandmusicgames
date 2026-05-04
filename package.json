@@ -2,7 +2,7 @@
   "name": "bandmusicgames",
   "version": "1.0.0",
   "scripts": {
-    "dev":    "npx serve -p 8081 .",
+    "dev":    "npx --yes vite --port 8081 --https",
     "deploy": "npx wrangler pages deploy . --project-name bandmusicgames"
   }
 }

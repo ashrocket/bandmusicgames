@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BAND MUSIC GAMES</title>
+<style>
+  body {
+    background: #0a0800;
+    color: #ffaa00;
+    font-family: monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    letter-spacing: 0.3em;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+  <div>CONNECTING&hellip;</div>
+  <script src="../config.js"></script>
+  <script>
+    (async function () {
+      const code     = new URLSearchParams(window.location.search).get('code');
+      const verifier = sessionStorage.getItem('lobby_verifier');
+      if (code && verifier) {
+        const res = await fetch('https://accounts.spotify.com/api/token', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body:    new URLSearchParams({
+            client_id:     LOBBY_CONFIG.spotifyClientId,
+            grant_type:    'authorization_code',
+            code,
+            redirect_uri:  LOBBY_CONFIG.spotifyRedirectUri,
+            code_verifier: verifier,
+          }),
+        });
+        if (res.ok) {
+          const d = await res.json();
+          sessionStorage.setItem('lobby_token',   d.access_token);
+          sessionStorage.setItem('lobby_expires', Date.now() + d.expires_in * 1000);
+          if (d.refresh_token) sessionStorage.setItem('lobby_refresh', d.refresh_token);
+        }
+      }
+      window.location.replace('/');
+    })();
+  </script>
+</body>
+</html>
