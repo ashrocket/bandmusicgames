@@ -22,7 +22,7 @@ const SONGS = [
     artist:   'GROUCHO BARKS',
     gameName: 'FRATTY PIPELINE',
     gameUrl:  'https://frattypipeline.grouchobarks.bandmusicgames.party',
-    trackUri: null,
+    trackUri: 'spotify:track:33lVSu93J91BDmhfRT7iTA',
     color:    '#ff8c00',
     unlocked: true,
   },
