@@ -262,8 +262,10 @@ function drawSongs() {
       ctx.fill();
     }
 
-    // Short label nudged outward
+    // Label nudged outward — show song title, truncated for ring
     if (song.unlocked) {
+      const raw   = song.title.toUpperCase();
+      const label = raw.length > 12 ? raw.slice(0, 11) + '…' : raw;
       ctx.save();
       ctx.translate(x, y);
       const lx = Math.cos(angle) * (R_DOT + 21);
@@ -271,7 +273,7 @@ function drawSongs() {
       ctx.font      = `${isSelected ? '700' : '600'} ${isSelected ? 10 : 9}px Quicksand, sans-serif`;
       ctx.fillStyle = isSelected ? '#1e1b4b' : 'rgba(110, 100, 150, 0.55)';
       ctx.textAlign = 'center';
-      ctx.fillText(song.id.toUpperCase(), lx, ly + 4);
+      ctx.fillText(label, lx, ly + 4);
       ctx.restore();
     }
   }
@@ -302,12 +304,11 @@ function drawClickWheelLabels() {
 }
 
 function drawDisk() {
-  // Center SELECT button — white pearl with subtle 3D lift
+  // ── Background: white pearl button ────────────────────────────────
   ctx.save();
   ctx.shadowBlur    = 20;
   ctx.shadowColor   = 'rgba(130, 100, 210, 0.14)';
   ctx.shadowOffsetY = 4;
-
   const diskGrad = ctx.createRadialGradient(CX - 22, CY - 22, 8, CX, CY, R_DISK);
   diskGrad.addColorStop(0,    '#ffffff');
   diskGrad.addColorStop(0.5,  '#faf7ff');
@@ -325,33 +326,85 @@ function drawDisk() {
   ctx.lineWidth   = 1.5;
   ctx.stroke();
 
-  const song = SONGS[selectedIdx];
+  // ── Clip to disk for list rendering ──────────────────────────────
   ctx.save();
-  ctx.textAlign    = 'center';
-  ctx.textBaseline = 'alphabetic';
+  ctx.beginPath();
+  ctx.arc(CX, CY, R_DISK - 3, 0, Math.PI * 2);
+  ctx.clip();
+
+  const ROW_H = 22;
+  const trunc = (s, n) => s.length > n ? s.slice(0, n - 1) + '…' : s;
 
   if (!LobbyAuth.isConnected()) {
-    ctx.font      = '700 13px Quicksand, sans-serif';
-    ctx.fillStyle = '#a855f7';
-    ctx.fillText('CONNECT', CX, CY - 6);
-    ctx.font      = '500 10px Quicksand, sans-serif';
-    ctx.fillStyle = '#c4b5d8';
-    ctx.fillText('spotify', CX, CY + 12);
-  } else if (!song.unlocked) {
-    ctx.font      = '700 13px Quicksand, sans-serif';
-    ctx.fillStyle = '#c8c0d8';
-    ctx.fillText('LOCKED', CX, CY + 5);
-  } else {
-    const pulse     = 0.78 + 0.22 * Math.sin(Date.now() / 420);
-    ctx.globalAlpha = hovered ? pulse : 0.82;
-    ctx.font        = '800 17px Raleway, sans-serif';
-    ctx.fillStyle   = song.color;
-    ctx.fillText('PLAY', CX, CY - 4);
-    ctx.globalAlpha = 1;
-    ctx.font        = '500 9.5px Quicksand, sans-serif';
-    ctx.fillStyle   = '#c0b4d4';
-    ctx.fillText('push to enter', CX, CY + 14);
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = '700 12px Quicksand, sans-serif';
+    ctx.fillStyle    = '#a855f7';
+    ctx.fillText('CONNECT SPOTIFY', CX, CY - 9);
+    ctx.font         = '500 10px Quicksand, sans-serif';
+    ctx.fillStyle    = '#c4b5d8';
+    ctx.fillText('to play', CX, CY + 9);
+    ctx.restore();
+    return;
   }
+
+  // ── iPod selection highlight band ────────────────────────────────
+  const song = SONGS[selectedIdx];
+  if (song.unlocked) {
+    const { r, g, b } = hexToRgb(song.color);
+    const band = ctx.createLinearGradient(CX - R_DISK, 0, CX + R_DISK, 0);
+    band.addColorStop(0,    `rgba(${r},${g},${b},0)`);
+    band.addColorStop(0.15, `rgba(${r},${g},${b},0.18)`);
+    band.addColorStop(0.85, `rgba(${r},${g},${b},0.18)`);
+    band.addColorStop(1,    `rgba(${r},${g},${b},0)`);
+    ctx.fillStyle = band;
+    ctx.fillRect(CX - R_DISK, CY - ROW_H / 2, R_DISK * 2, ROW_H);
+  }
+
+  // ── Vertical song list — offsets -3 … +3 ─────────────────────────
+  for (let offset = -3; offset <= 3; offset++) {
+    const i  = ((selectedIdx + offset) % N + N) % N;
+    const s  = SONGS[i];
+    const y  = CY + offset * ROW_H;
+    const d  = Math.abs(offset);
+
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+
+    if (offset === 0) {
+      // Selected row: ▶ arrow + song title
+      const title = s.unlocked ? trunc(s.title.toUpperCase(), 16) : '???';
+      ctx.font      = '700 11px Quicksand, sans-serif';
+      ctx.fillStyle = s.unlocked ? s.color : '#c8c0d8';
+      ctx.textAlign = 'right';
+      ctx.fillText('▶', CX - 46, y);
+      ctx.textAlign = 'center';
+      ctx.fillText(title, CX + 8, y);
+    } else {
+      // Non-selected rows: dimmer, smaller
+      const alpha = d === 1 ? 0.42 : d === 2 ? 0.2 : 0.08;
+      const fs    = d === 1 ? 10 : 9;
+      const title = s.unlocked ? trunc(s.title.toUpperCase(), 14) : '???';
+      ctx.font      = `${d === 1 ? '600' : '500'} ${fs}px Quicksand, sans-serif`;
+      ctx.fillStyle = `rgba(70, 50, 110, ${alpha})`;
+      ctx.fillText(title, CX, y);
+    }
+  }
+
+  // ── Edge fade so list fades into disk ────────────────────────────
+  const FADE = 30;
+  const topFade = ctx.createLinearGradient(0, CY - R_DISK + 3, 0, CY - R_DISK + 3 + FADE);
+  topFade.addColorStop(0, '#f8f5ff');
+  topFade.addColorStop(1, 'rgba(248,245,255,0)');
+  ctx.fillStyle = topFade;
+  ctx.fillRect(CX - R_DISK, CY - R_DISK + 3, R_DISK * 2, FADE);
+
+  const botFade = ctx.createLinearGradient(0, CY + R_DISK - 3 - FADE, 0, CY + R_DISK - 3);
+  botFade.addColorStop(0, 'rgba(248,245,255,0)');
+  botFade.addColorStop(1, '#f8f5ff');
+  ctx.fillStyle = botFade;
+  ctx.fillRect(CX - R_DISK, CY + R_DISK - 3 - FADE, R_DISK * 2, FADE);
+
   ctx.restore();
 }
 
