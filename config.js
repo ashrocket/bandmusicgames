@@ -72,7 +72,7 @@ const SONGS = [
     artist:   '???',
     gameName: 'RUST CARDS',
     gameUrl:  'https://rust-cards.bandmusicgames.party',
-    trackUri: null,
+    trackUri: 'spotify:track:52y4KhkcAbYcogFg2u7UVP',
     color:    '#ce2f39',
     unlocked: true,
   },
