@@ -52,7 +52,7 @@ const SONGS = [
     artist:   'VARIOUS',
     gameName: 'THAI LUNCH',
     gameUrl:  'https://thai-lunch.bandmusicgames.party',
-    trackUri: null,
+    trackUri: 'spotify:track:5F6r2aDjKbkaz1sNFcql5c',
     color:    '#ff4e50',
     unlocked: true,
   },
