@@ -20,6 +20,7 @@
 <body>
   <div>CONNECTING&hellip;</div>
   <script src="../config.js"></script>
+  <script src="../js/spotify.js"></script>
   <script>
     (async function () {
       const code     = new URLSearchParams(window.location.search).get('code');
@@ -36,12 +37,7 @@
             code_verifier: verifier,
           }),
         });
-        if (res.ok) {
-          const d = await res.json();
-          sessionStorage.setItem('lobby_token',   d.access_token);
-          sessionStorage.setItem('lobby_expires', Date.now() + d.expires_in * 1000);
-          if (d.refresh_token) sessionStorage.setItem('lobby_refresh', d.refresh_token);
-        }
+        if (res.ok) window._saveSpotifyTokens(await res.json());
       }
       window.location.replace('/');
     })();

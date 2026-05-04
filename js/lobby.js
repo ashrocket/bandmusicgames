@@ -287,7 +287,7 @@ btnConnect.addEventListener('click', () => {
 });
 
 btnSkip.addEventListener('click', () => {
-  sessionStorage.setItem('lobby_skip', '1');
+  window._saveSpotifySkip();
   dismissOverlay();
 });
 

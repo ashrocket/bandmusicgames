@@ -1,9 +1,10 @@
-// Spotify PKCE auth — lobby only (no playback SDK)
+// Spotify PKCE auth — lobby only. Tokens stored as shared cookies
+// so all *.bandmusicgames.party subdomains can read them.
 
 const LobbyAuth = {
   async login() {
-    const verifier  = _lobbyPkceVerifier();
-    const challenge = await _lobbyPkceChallenge(verifier);
+    const verifier  = _pkceVerifier();
+    const challenge = await _pkceChallenge(verifier);
     sessionStorage.setItem('lobby_verifier', verifier);
 
     const p = new URLSearchParams({
@@ -17,67 +18,55 @@ const LobbyAuth = {
     window.location.href = `https://accounts.spotify.com/authorize?${p}`;
   },
 
-  async handleCallback(code) {
-    const verifier = sessionStorage.getItem('lobby_verifier');
-    const res = await fetch('https://accounts.spotify.com/api/token', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body:    new URLSearchParams({
-        client_id:     LOBBY_CONFIG.spotifyClientId,
-        grant_type:    'authorization_code',
-        code,
-        redirect_uri:  LOBBY_CONFIG.spotifyRedirectUri,
-        code_verifier: verifier,
-      }),
-    });
-    if (!res.ok) return false;
-    const d = await res.json();
-    _lobbySaveTokens(d);
-    return true;
-  },
-
-  hasToken() {
-    return !!(sessionStorage.getItem('lobby_token') &&
-              Date.now() < +sessionStorage.getItem('lobby_expires'));
-  },
-
-  getToken() { return sessionStorage.getItem('lobby_token'); },
-
-  async refresh() {
-    const rt = sessionStorage.getItem('lobby_refresh');
-    if (!rt) return null;
-    const res = await fetch('https://accounts.spotify.com/api/token', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body:    new URLSearchParams({
-        grant_type:    'refresh_token',
-        refresh_token: rt,
-        client_id:     LOBBY_CONFIG.spotifyClientId,
-      }),
-    });
-    if (!res.ok) return null;
-    const d = await res.json();
-    _lobbySaveTokens(d);
-    return d.access_token;
-  },
-
-  isConnected() { return this.hasToken() || sessionStorage.getItem('lobby_skip') === '1'; },
+  hasToken()    { return !!_readToken('sp_token'); },
+  getToken()    { return _readToken('sp_token'); },
+  isConnected() { return this.hasToken() || _readToken('sp_skip') === '1'; },
 };
 
-function _lobbySaveTokens(d) {
-  sessionStorage.setItem('lobby_token',   d.access_token);
-  sessionStorage.setItem('lobby_expires', Date.now() + d.expires_in * 1000);
-  if (d.refresh_token) sessionStorage.setItem('lobby_refresh', d.refresh_token);
+// ─── Storage helpers (cookies on prod, sessionStorage on localhost) ─
+
+function _readToken(name) {
+  if (location.hostname === 'localhost') return sessionStorage.getItem(name);
+  const m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'));
+  return m ? decodeURIComponent(m[1]) : null;
 }
 
-function _lobbyPkceVerifier() {
+function _writeToken(name, value, maxAge) {
+  if (location.hostname === 'localhost') {
+    sessionStorage.setItem(name, value);
+    return;
+  }
+  document.cookie = [
+    `${name}=${encodeURIComponent(value)}`,
+    `max-age=${maxAge}`,
+    `domain=.bandmusicgames.party`,
+    `path=/`,
+    `secure`,
+    `samesite=lax`,
+  ].join('; ');
+}
+
+// Called from callback/index.html after token exchange
+window._saveSpotifyTokens = function (d) {
+  _writeToken('sp_token',   d.access_token,  d.expires_in);
+  if (d.refresh_token) _writeToken('sp_refresh', d.refresh_token, 60 * 60 * 24 * 30);
+};
+
+// Called when user clicks "play without music"
+window._saveSpotifySkip = function () {
+  _writeToken('sp_skip', '1', 60 * 60 * 24);
+};
+
+// ─── PKCE helpers ──────────────────────────────────────────────────
+
+function _pkceVerifier() {
   const arr = new Uint8Array(32);
   crypto.getRandomValues(arr);
   return btoa(String.fromCharCode(...arr))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
-async function _lobbyPkceChallenge(v) {
+async function _pkceChallenge(v) {
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v));
   return btoa(String.fromCharCode(...new Uint8Array(hash)))
     .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
