@@ -1,0 +1,8 @@
+{
+  "name": "bandmusicgames",
+  "version": "1.0.0",
+  "scripts": {
+    "dev":    "npx serve -p 8081 .",
+    "deploy": "npx wrangler pages deploy . --project-name bandmusicgames"
+  }
+}
