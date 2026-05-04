@@ -1,5 +1,5 @@
 const LOBBY_CONFIG = {
-  spotifyClientId:   'YOUR_CLIENT_ID_HERE',
+  spotifyClientId:   'aa16f7f72c04485fb93d86d2f7ee33d1',
   spotifyRedirectUri: window.location.hostname === 'localhost'
     ? 'http://localhost:8081'
     : 'https://bandmusicgames.party',
