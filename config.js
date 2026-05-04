@@ -62,7 +62,7 @@ const SONGS = [
     artist:   '???',
     gameName: 'PALE',
     gameUrl:  'https://pale.bandmusicgames.party',
-    trackUri: null,
+    trackUri: 'spotify:track:6lrQWiXw2IMtxKJd53PhJV',
     color:    '#c9d6df',
     unlocked: true,
   },
