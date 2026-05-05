@@ -51,7 +51,7 @@ window.addEventListener('wheel', e => {
   updateInfo();
   Haptic.select();
   _scrollCooldown = true;
-  setTimeout(() => { _scrollCooldown = false; }, 220);
+  setTimeout(() => { _scrollCooldown = false; }, 420);
 }, { passive: false });
 
 canvas.addEventListener('click', () => {
