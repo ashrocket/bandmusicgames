@@ -373,19 +373,22 @@ function drawDisk() {
     ctx.textBaseline = 'middle';
 
     if (offset === 0) {
-      // Selected row: left-aligned "▶ FULL TITLE" so nothing gets clipped
+      // Selected row: full title, left-aligned with ▶
       const title = s.unlocked ? s.title.toUpperCase() : '???';
-      ctx.font      = '700 11px Quicksand, sans-serif';
+      ctx.font      = '700 12px Quicksand, sans-serif';
       ctx.fillStyle = s.unlocked ? s.color : '#c8c0d8';
       ctx.textAlign = 'left';
       ctx.fillText('▶  ' + title, CX - 72, y);
     } else {
-      // Non-selected rows: dimmer, smaller
-      const alpha = d === 1 ? 0.42 : d === 2 ? 0.2 : 0.08;
-      const fs    = d === 1 ? 10 : 9;
-      const title = s.unlocked ? trunc(s.title.toUpperCase(), 14) : '???';
-      ctx.font      = `${d === 1 ? '600' : '500'} ${fs}px Quicksand, sans-serif`;
-      ctx.fillStyle = `rgba(70, 50, 110, ${alpha})`;
+      // Non-selected: dark text, fade by distance — no truncation for ±1
+      const alpha = d === 1 ? 0.7 : d === 2 ? 0.45 : 0.22;
+      const fs    = d === 1 ? 11 : d === 2 ? 10 : 9;
+      const weight = d === 1 ? '600' : '500';
+      const title = s.unlocked
+        ? (d <= 1 ? s.title.toUpperCase() : trunc(s.title.toUpperCase(), 18))
+        : '???';
+      ctx.font      = `${weight} ${fs}px Quicksand, sans-serif`;
+      ctx.fillStyle = `rgba(30, 20, 70, ${alpha})`;
       ctx.fillText(title, CX, y);
     }
   }
