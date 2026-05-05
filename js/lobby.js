@@ -38,8 +38,10 @@ function angleToIdx(a) {
 
 // ─── Input ─────────────────────────────────────────────────────────
 
+let _scrollCooldown = false;
 window.addEventListener('wheel', e => {
   e.preventDefault();
+  if (_scrollCooldown) return;
   if (e.deltaY > 0) {
     selectedIdx = (selectedIdx + 1) % N;
   } else {
@@ -48,6 +50,8 @@ window.addEventListener('wheel', e => {
   targetAngle = idxToAngle(selectedIdx);
   updateInfo();
   Haptic.select();
+  _scrollCooldown = true;
+  setTimeout(() => { _scrollCooldown = false; }, 220);
 }, { passive: false });
 
 canvas.addEventListener('click', () => {
@@ -334,31 +338,32 @@ function drawDisk() {
     return;
   }
 
-  // ── iPod selection highlight band ────────────────────────────────
+  // ── iPod selection highlight: glowing purple ─────────────────────
   const song = SONGS[selectedIdx];
-  if (song.unlocked) {
-    const { r, g, b } = hexToRgb(song.color);
-    // Solid center fill
-    ctx.fillStyle = `rgba(${r},${g},${b},0.22)`;
-    ctx.fillRect(CX - R_DISK + 12, CY - ROW_H / 2, (R_DISK - 12) * 2, ROW_H);
-    // Fading edges
-    const band = ctx.createLinearGradient(CX - R_DISK, 0, CX + R_DISK, 0);
-    band.addColorStop(0,    `rgba(${r},${g},${b},0)`);
-    band.addColorStop(0.08, `rgba(${r},${g},${b},0.22)`);
-    band.addColorStop(0.92, `rgba(${r},${g},${b},0.22)`);
-    band.addColorStop(1,    `rgba(${r},${g},${b},0)`);
-    ctx.fillStyle = band;
-    ctx.fillRect(CX - R_DISK, CY - ROW_H / 2, R_DISK * 2, ROW_H);
-    // Top & bottom hairlines for definition
-    ctx.strokeStyle = `rgba(${r},${g},${b},0.4)`;
+  {
+    // Outer glow (wider, very soft)
+    const glow = ctx.createLinearGradient(CX - R_DISK, 0, CX + R_DISK, 0);
+    glow.addColorStop(0,    'rgba(168, 85, 247, 0)');
+    glow.addColorStop(0.1,  'rgba(168, 85, 247, 0.12)');
+    glow.addColorStop(0.9,  'rgba(168, 85, 247, 0.12)');
+    glow.addColorStop(1,    'rgba(168, 85, 247, 0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(CX - R_DISK, CY - ROW_H, R_DISK * 2, ROW_H * 2);
+
+    // Solid highlight band
+    ctx.fillStyle = 'rgba(168, 85, 247, 0.22)';
+    ctx.fillRect(CX - R_DISK + 10, CY - ROW_H / 2, (R_DISK - 10) * 2, ROW_H);
+
+    // Hairline borders
+    ctx.strokeStyle = 'rgba(192, 132, 252, 0.55)';
     ctx.lineWidth   = 1;
     ctx.beginPath();
-    ctx.moveTo(CX - R_DISK + 12, CY - ROW_H / 2);
-    ctx.lineTo(CX + R_DISK - 12, CY - ROW_H / 2);
+    ctx.moveTo(CX - R_DISK + 10, CY - ROW_H / 2);
+    ctx.lineTo(CX + R_DISK - 10, CY - ROW_H / 2);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(CX - R_DISK + 12, CY + ROW_H / 2);
-    ctx.lineTo(CX + R_DISK - 12, CY + ROW_H / 2);
+    ctx.moveTo(CX - R_DISK + 10, CY + ROW_H / 2);
+    ctx.lineTo(CX + R_DISK - 10, CY + ROW_H / 2);
     ctx.stroke();
   }
 
