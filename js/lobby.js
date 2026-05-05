@@ -262,20 +262,6 @@ function drawSongs() {
       ctx.fill();
     }
 
-    // Label nudged outward — show song title, truncated for ring
-    if (song.unlocked) {
-      const raw   = song.title.toUpperCase();
-      const label = raw.length > 12 ? raw.slice(0, 11) + '…' : raw;
-      ctx.save();
-      ctx.translate(x, y);
-      const lx = Math.cos(angle) * (R_DOT + 21);
-      const ly = Math.sin(angle) * (R_DOT + 21);
-      ctx.font      = `${isSelected ? '700' : '600'} ${isSelected ? 10 : 9}px Quicksand, sans-serif`;
-      ctx.fillStyle = isSelected ? '#1e1b4b' : 'rgba(110, 100, 150, 0.55)';
-      ctx.textAlign = 'center';
-      ctx.fillText(label, lx, ly + 4);
-      ctx.restore();
-    }
   }
 }
 
@@ -352,13 +338,28 @@ function drawDisk() {
   const song = SONGS[selectedIdx];
   if (song.unlocked) {
     const { r, g, b } = hexToRgb(song.color);
+    // Solid center fill
+    ctx.fillStyle = `rgba(${r},${g},${b},0.22)`;
+    ctx.fillRect(CX - R_DISK + 12, CY - ROW_H / 2, (R_DISK - 12) * 2, ROW_H);
+    // Fading edges
     const band = ctx.createLinearGradient(CX - R_DISK, 0, CX + R_DISK, 0);
     band.addColorStop(0,    `rgba(${r},${g},${b},0)`);
-    band.addColorStop(0.15, `rgba(${r},${g},${b},0.18)`);
-    band.addColorStop(0.85, `rgba(${r},${g},${b},0.18)`);
+    band.addColorStop(0.08, `rgba(${r},${g},${b},0.22)`);
+    band.addColorStop(0.92, `rgba(${r},${g},${b},0.22)`);
     band.addColorStop(1,    `rgba(${r},${g},${b},0)`);
     ctx.fillStyle = band;
     ctx.fillRect(CX - R_DISK, CY - ROW_H / 2, R_DISK * 2, ROW_H);
+    // Top & bottom hairlines for definition
+    ctx.strokeStyle = `rgba(${r},${g},${b},0.4)`;
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo(CX - R_DISK + 12, CY - ROW_H / 2);
+    ctx.lineTo(CX + R_DISK - 12, CY - ROW_H / 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(CX - R_DISK + 12, CY + ROW_H / 2);
+    ctx.lineTo(CX + R_DISK - 12, CY + ROW_H / 2);
+    ctx.stroke();
   }
 
   // ── Vertical song list — offsets -3 … +3 ─────────────────────────
@@ -372,14 +373,12 @@ function drawDisk() {
     ctx.textBaseline = 'middle';
 
     if (offset === 0) {
-      // Selected row: ▶ arrow + song title
-      const title = s.unlocked ? trunc(s.title.toUpperCase(), 16) : '???';
+      // Selected row: left-aligned "▶ FULL TITLE" so nothing gets clipped
+      const title = s.unlocked ? s.title.toUpperCase() : '???';
       ctx.font      = '700 11px Quicksand, sans-serif';
       ctx.fillStyle = s.unlocked ? s.color : '#c8c0d8';
-      ctx.textAlign = 'right';
-      ctx.fillText('▶', CX - 46, y);
-      ctx.textAlign = 'center';
-      ctx.fillText(title, CX + 8, y);
+      ctx.textAlign = 'left';
+      ctx.fillText('▶  ' + title, CX - 72, y);
     } else {
       // Non-selected rows: dimmer, smaller
       const alpha = d === 1 ? 0.42 : d === 2 ? 0.2 : 0.08;

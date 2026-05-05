@@ -8,7 +8,7 @@ const LOBBY_CONFIG = {
 const SONGS = [
   {
     id:       'goon',
-    title:    'THE GOON SONG',
+    title:    'FOR CUTTING GRASS',
     artist:   'GOON',
     gameName: 'GRASS CUTTER 2003',
     gameUrl:  'https://forcuttinggrass.goon.bandmusicgames.party',
@@ -74,6 +74,16 @@ const SONGS = [
     gameUrl:  'https://rust-cards.bandmusicgames.party',
     trackUri: 'spotify:track:52y4KhkcAbYcogFg2u7UVP',
     color:    '#ce2f39',
+    unlocked: true,
+  },
+  {
+    id:       'narasroom',
+    title:    'GLASSY STAR',
+    artist:   "NARA'S ROOM",
+    gameName: 'HALF COURT HERO',
+    gameUrl:  'https://halfcourthero.narasroom.bandmusicgames.party',
+    trackUri: 'spotify:track:0000000000000000000001',
+    color:    '#FF1493',
     unlocked: true,
   },
 ];
