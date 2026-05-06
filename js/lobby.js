@@ -109,6 +109,50 @@ function _dimColor(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
+function _rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return { h: 0, s: 0, l };
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h;
+  switch (max) {
+    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+    case g: h = ((b - r) / d + 2) / 6; break;
+    default: h = ((r - g) / d + 4) / 6;
+  }
+  return { h, s, l };
+}
+
+function _hslToHex(h, s, l) {
+  const hue2rgb = (p, q, t) => {
+    if (t < 0) t += 1; if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  };
+  let r, g, b;
+  if (s === 0) { r = g = b = l; }
+  else {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
+  }
+  const toHex = v => Math.round(v * 255).toString(16).padStart(2, '0');
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+
+// Darkens hex to HSL lightness 0.38 if the color is too light to read on light backgrounds
+function ensureReadable(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  const { h, s, l } = _rgbToHsl(r, g, b);
+  return l > 0.70 ? _hslToHex(h, s, 0.38) : hex;
+}
+
 // ─── Theme: page background shifts to selected song color ──────────
 
 function updateSongTheme(song) {
@@ -132,7 +176,7 @@ function updateInfo() {
     return;
   }
   infoTitle.textContent  = s.title;
-  infoTitle.style.color  = s.color;
+  infoTitle.style.color  = ensureReadable(s.color);
   infoArtist.textContent = s.artist;
   infoGame.textContent   = s.gameName;
   enterHint.textContent  = LobbyAuth.isConnected() ? 'PUSH TO ENTER' : 'CONNECT SPOTIFY FIRST';
@@ -381,12 +425,12 @@ function drawDisk() {
       // Selected row: full title, left-aligned with ▶
       const title = s.unlocked ? s.title.toUpperCase() : '???';
       ctx.font      = '700 12px Quicksand, sans-serif';
-      ctx.fillStyle = s.unlocked ? s.color : '#c8c0d8';
+      ctx.fillStyle = s.unlocked ? '#1e1450' : '#c8c0d8';
       ctx.textAlign = 'left';
       ctx.fillText('▶  ' + title, CX - 72, y);
     } else {
       // Non-selected: dark text, fade by distance — no truncation for ±1
-      const alpha = d === 1 ? 0.7 : d === 2 ? 0.45 : 0.22;
+      const alpha = d === 1 ? 0.85 : d === 2 ? 0.62 : 0.40;
       const fs    = d === 1 ? 11 : d === 2 ? 10 : 9;
       const weight = d === 1 ? '600' : '500';
       const title = s.unlocked
@@ -419,14 +463,16 @@ function drawActiveIndicator() {
   // Soft glowing dot at 12 o'clock — shows which slot is active
   const song        = SONGS[selectedIdx];
   const accentColor = song.unlocked ? song.color : '#a855f7';
-  const { r, g, b } = hexToRgb(accentColor);
+  const solidColor  = ensureReadable(accentColor);
+  const { r: gr, g: gg, b: gb } = hexToRgb(accentColor); // original for glow
+  const { r, g, b }              = hexToRgb(solidColor);  // darkened for solid elements
 
   const ix = CX;
   const iy = CY - R_RING;
 
   const grd = ctx.createRadialGradient(ix, iy, 0, ix, iy, 20);
-  grd.addColorStop(0,    `rgba(${r},${g},${b},0.9)`);
-  grd.addColorStop(0.45, `rgba(${r},${g},${b},0.4)`);
+  grd.addColorStop(0,    `rgba(${gr},${gg},${gb},0.9)`);
+  grd.addColorStop(0.45, `rgba(${gr},${gg},${gb},0.4)`);
   grd.addColorStop(1,    'transparent');
   ctx.beginPath();
   ctx.arc(ix, iy, 20, 0, Math.PI * 2);
@@ -435,7 +481,7 @@ function drawActiveIndicator() {
 
   ctx.beginPath();
   ctx.arc(ix, iy, 5, 0, Math.PI * 2);
-  ctx.fillStyle = accentColor;
+  ctx.fillStyle = solidColor;
   ctx.fill();
 
   // Short color arc on the outer rim at top

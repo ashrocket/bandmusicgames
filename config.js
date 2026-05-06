@@ -78,10 +78,10 @@ const SONGS = [
   },
   {
     id:       'narasroom',
-    title:    'GLASSY STAR',
+    title:    'LIZZY MCGUIRE',
     artist:   "NARA'S ROOM",
     gameName: 'HALF COURT HERO',
-    gameUrl:  'https://halfcourthero.narasroom.bandmusicgames.party',
+    gameUrl:  'https://lizzymcguire.narasroom.bandmusicgames.party',
     trackUri: 'spotify:track:0000000000000000000001',
     color:    '#FF1493',
     unlocked: true,
