@@ -56,7 +56,7 @@ window.addEventListener('wheel', e => {
 
 canvas.addEventListener('click', () => {
   if (!LobbyAuth.isConnected()) return;
-  const song = SONGS[selectedIdx];
+  const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
   if (!song.unlocked || !song.gameUrl) {
     Haptic.error();
     clickFlash = 12;
@@ -131,7 +131,7 @@ canvas.addEventListener('touchend', e => {
   _wheelActive = false;
   if (_tapMoved) return;
   if (!LobbyAuth.isConnected()) return;
-  const song = SONGS[selectedIdx];
+  const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
   if (!song.unlocked || !song.gameUrl) { Haptic.error(); clickFlash = 12; return; }
   Haptic.medium();
   clickFlash = 8;
@@ -222,7 +222,7 @@ function updateInfo() {
     enterHint.textContent  = '';
     return;
   }
-  infoTitle.textContent  = s.title;
+  if (!LobbyAuth.isConnected()) { infoTitle.textContent = '???'; infoArtist.textContent = ''; infoGame.textContent = ''; return; } infoTitle.textContent = s.title;
   infoTitle.style.color  = ensureReadable(s.color);
   infoArtist.textContent = s.artist;
   infoGame.textContent   = s.gameName;
@@ -242,8 +242,8 @@ function drawFrame() {
   ctx.fillStyle = '#f4f1fb';
   ctx.fillRect(0, 0, W, H);
 
-  const song = SONGS[selectedIdx];
-  if (song.unlocked) {
+  const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
+  if (isConnected && song.unlocked) {
     const { r, g, b } = hexToRgb(song.color);
     const songGlow = ctx.createRadialGradient(CX, CY, 0, CX, CY, 300);
     songGlow.addColorStop(0, `rgba(${r},${g},${b},0.09)`);
@@ -253,10 +253,10 @@ function drawFrame() {
   }
 
   drawWheelFace();
-  drawSongs();
+  if (LobbyAuth.isConnected()) drawSongs();
   drawClickWheelLabels();
   drawDisk();
-  drawActiveIndicator();
+  if (LobbyAuth.isConnected()) drawActiveIndicator();
 
   if (clickFlash > 0) {
     ctx.globalAlpha = (clickFlash / 12) * 0.35;
@@ -330,7 +330,7 @@ function drawSongs() {
 
     const dotR = isSelected ? R_DOT + 5 : R_DOT;
 
-    if (song.unlocked) {
+    if (isConnected && song.unlocked) {
       // Gem-style: bright highlight at top-left, deep color at bottom-right
       const { r, g, b } = hexToRgb(song.color);
       const dotGrad = ctx.createRadialGradient(x - 3, y - 4, 1, x, y, dotR);
@@ -430,7 +430,7 @@ function drawDisk() {
   }
 
   // ── iPod selection highlight: glowing purple ─────────────────────
-  const song = SONGS[selectedIdx];
+  const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
   {
     // Outer glow (wider, very soft)
     const glow = ctx.createLinearGradient(CX - R_DISK, 0, CX + R_DISK, 0);
