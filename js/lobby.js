@@ -71,8 +71,11 @@ canvas.addEventListener('click', () => {
 let _wheelLastAng = null;
 let _wheelAccum   = 0;
 let _tapStart     = { x: 0, y: 0 };
+let _tapStartCanvas = { x: 0, y: 0 };
 let _tapMoved     = false;
+let _inRing       = false; // true when touch started in the scroll ring, not center disk
 const STEP_ANGLE  = (Math.PI * 2) / N;
+const PLAY_R      = 90; // radius of the tappable play zone in canvas coords
 
 function touchToCanvas(touch) {
   const rect = canvas.getBoundingClientRect();
@@ -86,10 +89,14 @@ canvas.addEventListener('touchstart', e => {
   e.preventDefault();
   const touch = e.touches[0];
   const { x, y } = touchToCanvas(touch);
-  _tapStart     = { x: touch.clientX, y: touch.clientY };
-  _tapMoved     = false;
-  _wheelLastAng = Math.atan2(y - CY, x - CX);
-  _wheelAccum   = 0;
+  _tapStart       = { x: touch.clientX, y: touch.clientY };
+  _tapStartCanvas = { x, y };
+  _tapMoved       = false;
+  _wheelLastAng   = Math.atan2(y - CY, x - CX);
+  _wheelAccum     = 0;
+  // Only engage rotation when finger is in the outer ring area
+  const r = Math.hypot(x - CX, y - CY);
+  _inRing = r > R_DISK + 18 && r < R_RIM + 20;
 }, { passive: false });
 
 canvas.addEventListener('touchmove', e => {
@@ -98,7 +105,8 @@ canvas.addEventListener('touchmove', e => {
   const touch = e.touches[0];
   const ddx = touch.clientX - _tapStart.x;
   const ddy = touch.clientY - _tapStart.y;
-  if (ddx * ddx + ddy * ddy > 64) _tapMoved = true;
+  if (ddx * ddx + ddy * ddy > 400) _tapMoved = true; // 20px threshold
+  if (!_inRing) return; // centre-disk drags don't scroll
   const { x, y } = touchToCanvas(touch);
   const angle = Math.atan2(y - CY, x - CX);
   let delta = angle - _wheelLastAng;
@@ -106,14 +114,15 @@ canvas.addEventListener('touchmove', e => {
   if (delta < -Math.PI) delta += Math.PI * 2;
   _wheelAccum   += delta;
   _wheelLastAng  = angle;
-  while (_wheelAccum >= STEP_ANGLE) {
+  const threshold = STEP_ANGLE * 1.35; // require more deliberate rotation
+  while (_wheelAccum >= threshold) {
     _wheelAccum -= STEP_ANGLE;
     selectedIdx  = (selectedIdx + 1) % N;
     targetAngle  = idxToAngle(selectedIdx);
     updateInfo();
     Haptic.select();
   }
-  while (_wheelAccum <= -STEP_ANGLE) {
+  while (_wheelAccum <= -threshold) {
     _wheelAccum += STEP_ANGLE;
     selectedIdx  = (selectedIdx - 1 + N) % N;
     targetAngle  = idxToAngle(selectedIdx);
@@ -125,6 +134,12 @@ canvas.addEventListener('touchmove', e => {
 canvas.addEventListener('touchend', e => {
   _wheelLastAng = null;
   if (_tapMoved) return;
+  // Only fire play if the tap both started AND ended inside the center play zone
+  const touch = e.changedTouches[0];
+  const { x, y } = touchToCanvas(touch);
+  const endR   = Math.hypot(x - CX, y - CY);
+  const startR = Math.hypot(_tapStartCanvas.x - CX, _tapStartCanvas.y - CY);
+  if (endR > PLAY_R || startR > PLAY_R) return;
   if (!LobbyAuth.isConnected()) return;
   const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
   if (!song.unlocked || !song.gameUrl) { Haptic.error(); clickFlash = 12; return; }
@@ -401,6 +416,23 @@ function drawDisk() {
   ctx.strokeStyle = 'rgba(210, 200, 235, 0.55)';
   ctx.lineWidth   = 1.5;
   ctx.stroke();
+
+  // ── Prominent PLAY button ring inside disk ────────────────────────
+  const isConn = LobbyAuth.isConnected();
+  const playSong = isConn ? SONGS[selectedIdx] : null;
+  if (isConn && playSong && playSong.unlocked && playSong.gameUrl) {
+    const { r: pr, g: pg, b: pb } = hexToRgb(playSong.color);
+    // Soft glow behind button
+    const playGlow = ctx.createRadialGradient(CX, CY, 30, CX, CY, PLAY_R + 10);
+    playGlow.addColorStop(0,   `rgba(${pr},${pg},${pb},0.18)`);
+    playGlow.addColorStop(1,   'transparent');
+    ctx.beginPath(); ctx.arc(CX, CY, PLAY_R + 10, 0, Math.PI * 2);
+    ctx.fillStyle = playGlow; ctx.fill();
+    // Button ring
+    ctx.beginPath(); ctx.arc(CX, CY, PLAY_R, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(${pr},${pg},${pb},0.45)`;
+    ctx.lineWidth = 2.5; ctx.stroke();
+  }
 
   // ── Clip to disk for list rendering ──────────────────────────────
   ctx.save();
