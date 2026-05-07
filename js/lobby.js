@@ -68,42 +68,37 @@ canvas.addEventListener('click', () => {
 });
 
 // Circular click-wheel touch gesture
-let _wheelActive  = false;
-let _wheelLastAng = 0;
+let _wheelLastAng = null;
 let _wheelAccum   = 0;
 let _tapStart     = { x: 0, y: 0 };
 let _tapMoved     = false;
 const STEP_ANGLE  = (Math.PI * 2) / N;
 
 function touchToCanvas(touch) {
-  const rect  = canvas.getBoundingClientRect();
-  const scaleX = canvas.width  / rect.width;
-  const scaleY = canvas.height / rect.height;
+  const rect = canvas.getBoundingClientRect();
   return {
-    x: (touch.clientX - rect.left) * scaleX,
-    y: (touch.clientY - rect.top)  * scaleY,
+    x: (touch.clientX - rect.left) * (canvas.width  / rect.width),
+    y: (touch.clientY - rect.top)  * (canvas.height / rect.height),
   };
 }
 
 canvas.addEventListener('touchstart', e => {
-  const { x, y } = touchToCanvas(e.touches[0]);
-  _tapStart  = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  _tapMoved  = false;
-  const dist = Math.sqrt((x - CX) * (x - CX) + (y - CY) * (y - CY));
-  _wheelActive = dist > R_DISK - 30 && dist < R_RIM + 20;
-  if (_wheelActive) {
-    _wheelLastAng = Math.atan2(y - CY, x - CX);
-    _wheelAccum   = 0;
-  }
-}, { passive: true });
+  e.preventDefault();
+  const touch = e.touches[0];
+  const { x, y } = touchToCanvas(touch);
+  _tapStart     = { x: touch.clientX, y: touch.clientY };
+  _tapMoved     = false;
+  _wheelLastAng = Math.atan2(y - CY, x - CX);
+  _wheelAccum   = 0;
+}, { passive: false });
 
 canvas.addEventListener('touchmove', e => {
   e.preventDefault();
+  if (_wheelLastAng === null) return;
   const touch = e.touches[0];
   const ddx = touch.clientX - _tapStart.x;
   const ddy = touch.clientY - _tapStart.y;
   if (ddx * ddx + ddy * ddy > 64) _tapMoved = true;
-  if (!_wheelActive) return;
   const { x, y } = touchToCanvas(touch);
   const angle = Math.atan2(y - CY, x - CX);
   let delta = angle - _wheelLastAng;
@@ -128,7 +123,7 @@ canvas.addEventListener('touchmove', e => {
 }, { passive: false });
 
 canvas.addEventListener('touchend', e => {
-  _wheelActive = false;
+  _wheelLastAng = null;
   if (_tapMoved) return;
   if (!LobbyAuth.isConnected()) return;
   const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
