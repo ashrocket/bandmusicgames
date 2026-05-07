@@ -3,6 +3,10 @@ const LOBBY_CONFIG = {
   spotifyRedirectUri: window.location.hostname === 'localhost'
     ? 'https://localhost:8081/callback'
     : 'https://bandmusicgames.party/callback',
+
+  // Apple Music — generate at: developer.apple.com → Certificates, Identifiers & Profiles
+  // JWT signed with your .p8 private key, valid up to 6 months. Renew before expiry.
+  appleMusicDeveloperToken: 'REPLACE_WITH_DEVELOPER_TOKEN',
 };
 
 const SONGS = [
@@ -13,6 +17,7 @@ const SONGS = [
     gameName: 'GRASS CUTTER 2003',
     gameUrl:  'https://forcuttinggrass.goon.bandmusicgames.party',
     trackUri: 'spotify:track:6EJAb3oTjDFwrt1dpIJPbr',
+    appleMusicId: '1234567890',
     color:    '#39ff14',
     unlocked: true,
   },
@@ -23,6 +28,7 @@ const SONGS = [
     gameName: 'FRATTY PIPELINE',
     gameUrl:  'https://frattypipeline.grouchobarks.bandmusicgames.party',
     trackUri: 'spotify:track:33lVSu93J91BDmhfRT7iTA',
+    appleMusicId: null,
     color:    '#ff8c00',
     unlocked: true,
   },
@@ -33,6 +39,7 @@ const SONGS = [
     gameName: 'GARDEN',
     gameUrl:  'https://garden.grouchobarks.bandmusicgames.party',
     trackUri: 'spotify:track:5FjmryC7WxCnaeutu1XpRg',
+    appleMusicId: null,
     color:    '#a8e063',
     unlocked: true,
   },
@@ -43,6 +50,7 @@ const SONGS = [
     gameName: 'FRANCIS',
     gameUrl:  'https://francis.darger.bandmusicgames.party',
     trackUri: 'spotify:track:64h0585a6LWXOdsCD2pOiW',
+    appleMusicId: null,
     color:    '#7b68ee',
     unlocked: true,
   },
@@ -53,6 +61,7 @@ const SONGS = [
     gameName: 'THAI LUNCH',
     gameUrl:  'https://thai-lunch.bandmusicgames.party',
     trackUri: 'spotify:track:5F6r2aDjKbkaz1sNFcql5c',
+    appleMusicId: null,
     color:    '#ff4e50',
     unlocked: true,
   },
@@ -63,6 +72,7 @@ const SONGS = [
     gameName: 'PALE',
     gameUrl:  'https://pale.bandmusicgames.party',
     trackUri: 'spotify:track:6lrQWiXw2IMtxKJd53PhJV',
+    appleMusicId: null,
     color:    '#c9d6df',
     unlocked: true,
   },
@@ -73,6 +83,7 @@ const SONGS = [
     gameName: 'RUST CARDS',
     gameUrl:  'https://rust-cards.bandmusicgames.party',
     trackUri: 'spotify:track:52y4KhkcAbYcogFg2u7UVP',
+    appleMusicId: null,
     color:    '#ce2f39',
     unlocked: true,
   },
@@ -83,6 +94,7 @@ const SONGS = [
     gameName: 'HALF COURT HERO',
     gameUrl:  'https://lizzymcguire.narasroom.bandmusicgames.party',
     trackUri: 'spotify:track:7kNqAfUxLmrETcwvBTQCkg',
+    appleMusicId: null, // not on Apple Music yet — update when available
     color:    '#FF1493',
     unlocked: true,
   },

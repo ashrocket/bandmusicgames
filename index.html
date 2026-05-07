@@ -184,16 +184,29 @@ body::before {
 }
 
 #btn-connect {
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-  color: white;
+  background: #1DB954;
+  color: #000;
   border: none;
-  box-shadow: 0 8px 28px rgba(168, 85, 247, 0.35);
+  box-shadow: 0 8px 28px rgba(29, 185, 84, 0.35);
 }
 #btn-connect:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(168, 85, 247, 0.45);
+  box-shadow: 0 14px 36px rgba(29, 185, 84, 0.45);
 }
 #btn-connect:active { transform: translateY(0); }
+
+#btn-apple {
+  background: #000;
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+}
+#btn-apple:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+}
+#btn-apple:active { transform: translateY(0); }
+#btn-apple:disabled { opacity: 0.35; cursor: default; transform: none; }
 
 #btn-skip {
   background: transparent;
@@ -290,8 +303,9 @@ body::before {
     <div id="spotify-overlay">
       <div id="overlay-content">
         <div id="overlay-title">HEY THERE</div>
-        <div id="overlay-sub">CONNECT SPOTIFY TO PLAY WITH MUSIC</div>
+        <div id="overlay-sub">CONNECT YOUR MUSIC TO PLAY</div>
         <button id="btn-connect">&#9654; CONNECT SPOTIFY</button>
+        <button id="btn-apple">&#9835; CONNECT APPLE MUSIC</button>
         <button id="btn-skip">PLAY WITHOUT MUSIC</button>
       </div>
     </div>
@@ -307,10 +321,39 @@ body::before {
   <div id="controls-label">SCROLL · SWIPE · TILT &nbsp;·&nbsp; TAP TO ENTER</div>
 </div>
 
+<script src="https://js-cdn.music.apple.com/musickit/v3/musickit.js"></script>
 <script src="config.js"></script>
 <script src="js/spotify.js"></script>
+<script src="js/applemusic.js"></script>
 <script src="js/haptics.js"></script>
 <script src="js/lobby.js"></script>
+<script>
+  document.getElementById('btn-connect').addEventListener('click', () => LobbyAuth.login());
+  document.getElementById('btn-skip').addEventListener('click', () => {
+    window._saveSpotifySkip();
+    document.getElementById('spotify-overlay').classList.add('hidden');
+  });
+
+  const appleBtn = document.getElementById('btn-apple');
+  // Disable Apple Music button if developer token not configured
+  if (!LOBBY_CONFIG.appleMusicDeveloperToken ||
+      LOBBY_CONFIG.appleMusicDeveloperToken === 'REPLACE_WITH_DEVELOPER_TOKEN') {
+    appleBtn.disabled = true;
+    appleBtn.title = 'Apple Music not yet configured';
+  } else {
+    appleBtn.addEventListener('click', async () => {
+      appleBtn.textContent = 'CONNECTING…';
+      appleBtn.disabled = true;
+      const ok = await AppleMusicAuth.authorize();
+      if (ok) {
+        document.getElementById('spotify-overlay').classList.add('hidden');
+      } else {
+        appleBtn.textContent = '♩ CONNECT APPLE MUSIC';
+        appleBtn.disabled = false;
+      }
+    });
+  }
+</script>
 <button id="motion-btn" aria-label="Enable tilt controls" style="display:none;position:fixed;bottom:20px;right:20px;z-index:9999;background:rgba(255,255,255,0.9);color:#a855f7;border:1px solid rgba(168,85,247,0.3);border-radius:20px;padding:7px 14px;font-size:11px;font-family:'Quicksand',sans-serif;letter-spacing:.06em;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-weight:600;">↺ TILT</button>
 </body>
 </html>

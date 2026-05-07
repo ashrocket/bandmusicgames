@@ -20,7 +20,11 @@ const LobbyAuth = {
 
   hasToken()    { return !!_readToken('sp_token'); },
   getToken()    { return _readToken('sp_token'); },
-  isConnected() { return this.hasToken() || _readToken('sp_skip') === '1'; },
+  isConnected() {
+    return this.hasToken() ||
+           !!_readToken('am_token') ||
+           _readToken('sp_skip') === '1';
+  },
 };
 
 // ─── Storage helpers (cookies on prod, sessionStorage on localhost) ─
