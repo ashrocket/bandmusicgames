@@ -82,7 +82,7 @@ const SONGS = [
     artist:   "NARA'S ROOM",
     gameName: 'HALF COURT HERO',
     gameUrl:  'https://lizzymcguire.narasroom.bandmusicgames.party',
-    trackUri: 'spotify:track:0000000000000000000001',
+    trackUri: 'spotify:track:7kNqAfUxLmrETcwvBTQCkg',
     color:    '#FF1493',
     unlocked: true,
   },
