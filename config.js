@@ -19,7 +19,7 @@ const SONGS = [
   {
     id:       'fratty',
     title:    'FRATTY PIPELINE',
-    artist:   'DARGER',
+    artist:   'GROUCHO BARKS',
     gameName: 'FRATTY PIPELINE',
     gameUrl:  'https://frattypipeline.grouchobarks.bandmusicgames.party',
     trackUri: 'spotify:track:33lVSu93J91BDmhfRT7iTA',
@@ -29,7 +29,7 @@ const SONGS = [
   {
     id:       'garden',
     title:    'STAINED GRASS WINDOW',
-    artist:   'DARGER',
+    artist:   'GROUCHO BARKS',
     gameName: 'GARDEN',
     gameUrl:  'https://garden.grouchobarks.bandmusicgames.party',
     trackUri: 'spotify:track:5FjmryC7WxCnaeutu1XpRg',
