@@ -67,22 +67,69 @@ canvas.addEventListener('click', () => {
   setTimeout(() => { window.location.href = song.gameUrl; }, 280);
 });
 
-let _touchX = 0;
-canvas.addEventListener('touchstart', e => { _touchX = e.touches[0].clientX; }, { passive: true });
-canvas.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - _touchX;
-  if (Math.abs(dx) < 30) return;
-  selectedIdx = dx < 0
-    ? (selectedIdx + 1) % N
-    : (selectedIdx - 1 + N) % N;
-  targetAngle = idxToAngle(selectedIdx);
-  Haptic.select();
-  updateInfo();
+// Circular click-wheel touch gesture
+let _wheelActive  = false;
+let _wheelLastAng = 0;
+let _wheelAccum   = 0;
+let _tapStart     = { x: 0, y: 0 };
+let _tapMoved     = false;
+const STEP_ANGLE  = (Math.PI * 2) / N;
+
+function touchToCanvas(touch) {
+  const rect  = canvas.getBoundingClientRect();
+  const scaleX = canvas.width  / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return {
+    x: (touch.clientX - rect.left) * scaleX,
+    y: (touch.clientY - rect.top)  * scaleY,
+  };
+}
+
+canvas.addEventListener('touchstart', e => {
+  const { x, y } = touchToCanvas(e.touches[0]);
+  _tapStart  = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  _tapMoved  = false;
+  const dist = Math.sqrt((x - CX) * (x - CX) + (y - CY) * (y - CY));
+  _wheelActive = dist > R_DISK - 30 && dist < R_RIM + 20;
+  if (_wheelActive) {
+    _wheelLastAng = Math.atan2(y - CY, x - CX);
+    _wheelAccum   = 0;
+  }
 }, { passive: true });
 
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const ddx = touch.clientX - _tapStart.x;
+  const ddy = touch.clientY - _tapStart.y;
+  if (ddx * ddx + ddy * ddy > 64) _tapMoved = true;
+  if (!_wheelActive) return;
+  const { x, y } = touchToCanvas(touch);
+  const angle = Math.atan2(y - CY, x - CX);
+  let delta = angle - _wheelLastAng;
+  if (delta >  Math.PI) delta -= Math.PI * 2;
+  if (delta < -Math.PI) delta += Math.PI * 2;
+  _wheelAccum   += delta;
+  _wheelLastAng  = angle;
+  while (_wheelAccum >= STEP_ANGLE) {
+    _wheelAccum -= STEP_ANGLE;
+    selectedIdx  = (selectedIdx + 1) % N;
+    targetAngle  = idxToAngle(selectedIdx);
+    updateInfo();
+    Haptic.select();
+  }
+  while (_wheelAccum <= -STEP_ANGLE) {
+    _wheelAccum += STEP_ANGLE;
+    selectedIdx  = (selectedIdx - 1 + N) % N;
+    targetAngle  = idxToAngle(selectedIdx);
+    updateInfo();
+    Haptic.select();
+  }
+}, { passive: false });
+
 canvas.addEventListener('touchend', e => {
-  const dx = Math.abs(e.changedTouches[0].clientX - _touchX);
-  if (dx >= 30) return;
+  _wheelActive = false;
+  if (_tapMoved) return;
   if (!LobbyAuth.isConnected()) return;
   const song = SONGS[selectedIdx];
   if (!song.unlocked || !song.gameUrl) { Haptic.error(); clickFlash = 12; return; }

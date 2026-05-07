@@ -19,7 +19,7 @@ const SONGS = [
   {
     id:       'fratty',
     title:    'FRATTY PIPELINE',
-    artist:   'GROUCHO BARKS',
+    artist:   'DARGER',
     gameName: 'FRATTY PIPELINE',
     gameUrl:  'https://frattypipeline.grouchobarks.bandmusicgames.party',
     trackUri: 'spotify:track:33lVSu93J91BDmhfRT7iTA',
@@ -29,7 +29,7 @@ const SONGS = [
   {
     id:       'garden',
     title:    'STAINED GRASS WINDOW',
-    artist:   'GROUCHO BARKS',
+    artist:   'DARGER',
     gameName: 'GARDEN',
     gameUrl:  'https://garden.grouchobarks.bandmusicgames.party',
     trackUri: 'spotify:track:5FjmryC7WxCnaeutu1XpRg',
@@ -37,11 +37,11 @@ const SONGS = [
     unlocked: true,
   },
   {
-    id:       'constellation',
+    id:       'francis',
     title:    'FRANCIS',
-    artist:   'GROUCHO BARKS',
-    gameName: 'CONSTELLATION',
-    gameUrl:  'https://constellation.grouchobarks.bandmusicgames.party',
+    artist:   'DARGER',
+    gameName: 'FRANCIS',
+    gameUrl:  'https://francis.darger.bandmusicgames.party',
     trackUri: 'spotify:track:64h0585a6LWXOdsCD2pOiW',
     color:    '#7b68ee',
     unlocked: true,
