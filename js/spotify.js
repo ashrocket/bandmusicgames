@@ -18,8 +18,8 @@ const LobbyAuth = {
     window.location.href = `https://accounts.spotify.com/authorize?${p}`;
   },
 
-  hasToken()    { return !!_readToken('sp_token'); },
-  getToken()    { return _readToken('sp_token'); },
+  hasToken()    { return !!_readToken('sp_token_v2'); },
+  getToken()    { return _readToken('sp_token_v2'); },
   isConnected() {
     return this.hasToken() ||
            !!_readToken('am_token') ||
@@ -56,7 +56,7 @@ function _writeToken(name, value, maxAge) {
 
 // Called from callback/index.html after token exchange
 window._saveSpotifyTokens = function (d) {
-  _writeToken('sp_token',   d.access_token,  d.expires_in);
+  _writeToken('sp_token_v2',   d.access_token,  d.expires_in);
   if (d.refresh_token) _writeToken('sp_refresh', d.refresh_token, 60 * 60 * 24 * 30);
 };
 

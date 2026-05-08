@@ -13,6 +13,7 @@
 body {
   background: #faf6ff;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100svh;
@@ -20,6 +21,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+  padding: 18px 18px max(18px, env(safe-area-inset-bottom));
 }
 
 body::before {
@@ -231,9 +233,11 @@ body::before {
 
 /* ── Song info ── */
 #song-info {
-  margin-top: 20px;
+  margin-top: 16px;
   text-align: center;
   min-height: 72px;
+  width: 100%;
+  max-width: 600px;
 }
 
 #song-title {
@@ -284,7 +288,8 @@ body::before {
 
 /* ── Bottom label ── */
 #controls-label {
-  margin-top: 12px;
+  margin-top: 8px;
+  margin-bottom: 4px;
   font-family: 'Quicksand', sans-serif;
   font-size: 9px;
   font-weight: 500;
@@ -321,15 +326,16 @@ body::before {
     </div>
   </div>
 
-  <div id="song-info">
-    <div id="song-title">SELECT A GAME</div>
-    <div id="song-artist"></div>
-    <div id="game-name"></div>
-    <div id="enter-hint"></div>
-  </div>
-
-  <div id="controls-label">SCROLL · SWIPE · TILT &nbsp;·&nbsp; TAP TO ENTER</div>
 </div>
+
+<div id="song-info">
+  <div id="song-title">SELECT A GAME</div>
+  <div id="song-artist"></div>
+  <div id="game-name"></div>
+  <div id="enter-hint"></div>
+</div>
+
+<div id="controls-label">SCROLL · SWIPE · TILT &nbsp;·&nbsp; TAP TO ENTER</div>
 
 <script src="https://js-cdn.music.apple.com/musickit/v3/musickit.js"></script>
 <script src="config.js"></script>
