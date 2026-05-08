@@ -1,7 +1,7 @@
 const LOBBY_CONFIG = {
   spotifyClientId:   'aa16f7f72c04485fb93d86d2f7ee33d1',
-  spotifyRedirectUri: window.location.hostname === 'localhost'
-    ? 'https://localhost:8081/callback'
+  spotifyRedirectUri: ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
+    ? 'http://127.0.0.1:8081/callback'
     : 'https://bandmusicgames.party/callback',
 };
 
@@ -27,62 +27,12 @@ const SONGS = [
     unlocked: true,
   },
   {
-    id:       'garden',
-    title:    'STAINED GRASS WINDOW',
-    artist:   'GROUCHO BARKS',
-    gameName: 'GARDEN',
-    gameUrl:  'https://garden.grouchobarks.bandmusicgames.party',
-    trackUri: 'spotify:track:5FjmryC7WxCnaeutu1XpRg',
-    color:    '#a8e063',
-    unlocked: true,
-  },
-  {
-    id:       'constellation',
-    title:    'FRANCIS',
-    artist:   'GROUCHO BARKS',
-    gameName: 'CONSTELLATION',
-    gameUrl:  'https://constellation.grouchobarks.bandmusicgames.party',
-    trackUri: 'spotify:track:64h0585a6LWXOdsCD2pOiW',
-    color:    '#7b68ee',
-    unlocked: true,
-  },
-  {
-    id:       'thai-lunch',
-    title:    'THAI LUNCH',
-    artist:   'VARIOUS',
-    gameName: 'THAI LUNCH',
-    gameUrl:  'https://thai-lunch.bandmusicgames.party',
-    trackUri: 'spotify:track:5F6r2aDjKbkaz1sNFcql5c',
-    color:    '#ff4e50',
-    unlocked: true,
-  },
-  {
-    id:       'pale',
-    title:    'PALE',
-    artist:   '???',
-    gameName: 'PALE',
-    gameUrl:  'https://pale.bandmusicgames.party',
-    trackUri: 'spotify:track:6lrQWiXw2IMtxKJd53PhJV',
-    color:    '#c9d6df',
-    unlocked: true,
-  },
-  {
-    id:       'rust-cards',
-    title:    'RUST CARDS',
-    artist:   '???',
-    gameName: 'RUST CARDS',
-    gameUrl:  'https://rust-cards.bandmusicgames.party',
-    trackUri: 'spotify:track:52y4KhkcAbYcogFg2u7UVP',
-    color:    '#ce2f39',
-    unlocked: true,
-  },
-  {
     id:       'narasroom',
     title:    'LIZZY MCGUIRE',
     artist:   "NARA'S ROOM",
     gameName: 'HALF COURT HERO',
     gameUrl:  'https://lizzymcguire.narasroom.bandmusicgames.party',
-    trackUri: 'spotify:track:0000000000000000000001',
+    trackUri: 'spotify:track:7kNqAfUxLmrETcwvBTQCkg',
     color:    '#FF1493',
     unlocked: true,
   },
