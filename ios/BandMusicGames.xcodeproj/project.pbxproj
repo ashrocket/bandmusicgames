@@ -1,0 +1,406 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEED640487C99F9E09BEAE4 /* GameWebView.swift */; };
+		16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */; };
+		1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */; };
+		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
+		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
+		72D64E1818F031BF93F3AD9C /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = F282D587BD99FF41373791FB /* Song.swift */; };
+		78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D77DC43028C080E39E78EBBA /* Assets.xcassets */; };
+		78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AB66BC63FF553633DE7F80 /* ContentView.swift */; };
+		8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */; };
+		8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */; };
+		99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE185679CAD568601C864B6E /* ArchHeaderView.swift */; };
+		A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */; };
+		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
+		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
+		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1AEED640487C99F9E09BEAE4 /* GameWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWebView.swift; sourceTree = "<group>"; };
+		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
+		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
+		82AB66BC63FF553633DE7F80 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BandMusicGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		9D7C5C786747064F3815AA29 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
+		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
+		D77DC43028C080E39E78EBBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleTubeView.swift; sourceTree = "<group>"; };
+		EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromePlayButton.swift; sourceTree = "<group>"; };
+		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
+		F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
+		FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JukeboxView.swift; sourceTree = "<group>"; };
+		FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C3F8258721B9B69160F930CF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */,
+				16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		128AB88CDD9DDB290A232974 /* BandMusicGames */ = {
+			isa = PBXGroup;
+			children = (
+				D77DC43028C080E39E78EBBA /* Assets.xcassets */,
+				4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */,
+				43525B9D693EF310A0F4202C /* Managers */,
+				D8E608E4CDFF018030681AF9 /* Models */,
+				4EB8570FC283E5A5346975F0 /* Views */,
+			);
+			path = BandMusicGames;
+			sourceTree = "<group>";
+		};
+		43525B9D693EF310A0F4202C /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				9D7C5C786747064F3815AA29 /* HapticManager.swift */,
+				F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		4EB8570FC283E5A5346975F0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AE185679CAD568601C864B6E /* ArchHeaderView.swift */,
+				DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */,
+				EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */,
+				82AB66BC63FF553633DE7F80 /* ContentView.swift */,
+				1AEED640487C99F9E09BEAE4 /* GameWebView.swift */,
+				FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */,
+				CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */,
+				494493654D27227DBC1E24DB /* SpotifySheetView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		82DA9B57FC9D7047E19AC897 = {
+			isa = PBXGroup;
+			children = (
+				128AB88CDD9DDB290A232974 /* BandMusicGames */,
+				AED8F6CE3DF690382D21F806 /* Frameworks */,
+				FF6B55FAC4BD53FB04D8BC73 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AED8F6CE3DF690382D21F806 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */,
+				FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D8E608E4CDFF018030681AF9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F282D587BD99FF41373791FB /* Song.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		FF6B55FAC4BD53FB04D8BC73 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2D49D197F3FAA99C1DCB7626 /* BandMusicGames */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8E282F4B7F3B4E76A192797F /* Build configuration list for PBXNativeTarget "BandMusicGames" */;
+			buildPhases = (
+				FE3BC4012F7FF206E04A239F /* Sources */,
+				085B460EF6AF987D8AABCDD1 /* Resources */,
+				C3F8258721B9B69160F930CF /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BandMusicGames;
+			packageProductDependencies = (
+			);
+			productName = BandMusicGames;
+			productReference = 8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EBEB5370E94A17E28C6ED964 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					2D49D197F3FAA99C1DCB7626 = {
+						DevelopmentTeam = 6P24N3R4TP;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = DF03AA5F55E947AEDF2ECE1C /* Build configuration list for PBXProject "BandMusicGames" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 82DA9B57FC9D7047E19AC897;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = FF6B55FAC4BD53FB04D8BC73 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2D49D197F3FAA99C1DCB7626 /* BandMusicGames */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		085B460EF6AF987D8AABCDD1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FE3BC4012F7FF206E04A239F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */,
+				B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */,
+				8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */,
+				8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */,
+				78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */,
+				0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */,
+				CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */,
+				1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */,
+				72D64E1818F031BF93F3AD9C /* Song.swift in Sources */,
+				BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */,
+				48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */,
+				39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		45BE1D5DBAFA75F516F2360F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		90DBEC10CA8F7D41740B13D4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BC97A4042A3BEFD4EB4A3325 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6P24N3R4TP;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = party.bandmusicgames.app;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		E1EB5FD647455E5F53452E04 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6P24N3R4TP;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = party.bandmusicgames.app;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8E282F4B7F3B4E76A192797F /* Build configuration list for PBXNativeTarget "BandMusicGames" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E1EB5FD647455E5F53452E04 /* Debug */,
+				BC97A4042A3BEFD4EB4A3325 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DF03AA5F55E947AEDF2ECE1C /* Build configuration list for PBXProject "BandMusicGames" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90DBEC10CA8F7D41740B13D4 /* Debug */,
+				45BE1D5DBAFA75F516F2360F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EBEB5370E94A17E28C6ED964 /* Project object */;
+}

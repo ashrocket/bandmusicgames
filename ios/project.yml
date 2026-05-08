@@ -1,0 +1,30 @@
+name: BandMusicGames
+
+options:
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "16.0"
+  bundleIdPrefix: party.bandmusicgames
+
+targets:
+  BandMusicGames:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: BandMusicGames
+    info:
+      path: Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: party.bandmusicgames.app
+        SWIFT_VERSION: "5.10"
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 6P24N3R4TP
+        INFOPLIST_FILE: Info.plist
+        ENABLE_PREVIEWS: "YES"
+        SWIFT_EMIT_LOC_STRINGS: "YES"
+    dependencies:
+      - sdk: WebKit.framework
+      - sdk: AuthenticationServices.framework
