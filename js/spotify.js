@@ -23,16 +23,20 @@ const LobbyAuth = {
   isConnected() { return this.hasToken() || _readToken('sp_skip') === '1'; },
 };
 
-// ─── Storage helpers (cookies on prod, sessionStorage on localhost) ─
+// ─── Storage helpers (cookies on prod, sessionStorage on loopback) ─
+
+function _isLoopback() {
+  return ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
+}
 
 function _readToken(name) {
-  if (location.hostname === 'localhost') return sessionStorage.getItem(name);
+  if (_isLoopback()) return sessionStorage.getItem(name);
   const m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'));
   return m ? decodeURIComponent(m[1]) : null;
 }
 
 function _writeToken(name, value, maxAge) {
-  if (location.hostname === 'localhost') {
+  if (_isLoopback()) {
     sessionStorage.setItem(name, value);
     return;
   }

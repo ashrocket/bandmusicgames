@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=960">
 <title>BAND MUSIC GAMES</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,13 +16,9 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  min-height: 100svh;
   font-family: 'Quicksand', sans-serif;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
-  padding: 18px;
-  padding-bottom: max(18px, env(safe-area-inset-bottom));
 }
 
 body::before {
@@ -52,7 +48,7 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(960px, 100%, calc((100svh - 36px) * 1.18));
+  width: 960px;
   background: linear-gradient(155deg, #ffffff 0%, #faf8ff 55%, #fff5fc 100%);
   border: 1px solid rgba(220, 210, 245, 0.6);
   border-radius: 48px;
@@ -101,9 +97,8 @@ body::before {
 /* ── Screen ── */
 #screen-bezel {
   margin: 16px 30px 0;
-  width: calc(100% - 60px);
-  aspect-ratio: 900 / 520;
-  min-height: 0;
+  width: 900px;
+  height: 520px;
   background: #f4f1fb;
   border: 1px solid rgba(210, 200, 240, 0.4);
   border-radius: 20px;
@@ -117,8 +112,9 @@ body::before {
 
 #dial-canvas {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 900px;
+  height: 520px;
+  touch-action: none;
 }
 
 /* ── Overlay ── */
@@ -141,8 +137,7 @@ body::before {
   text-align: center;
   border: 1px solid rgba(210, 200, 240, 0.35);
   border-radius: 28px;
-  width: min(440px, calc(100% - 32px));
-  padding: clamp(28px, 5vw, 48px) clamp(24px, 6vw, 64px);
+  padding: 48px 64px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow:
     0 24px 64px rgba(130, 80, 220, 0.12),
@@ -151,7 +146,7 @@ body::before {
 
 #overlay-title {
   font-family: 'Raleway', sans-serif;
-  font-size: clamp(23px, 3.2vw, 30px);
+  font-size: 30px;
   font-weight: 800;
   background: linear-gradient(135deg, #f472b6, #a855f7);
   -webkit-background-clip: text;
@@ -168,14 +163,14 @@ body::before {
   font-weight: 600;
   color: #bbb0cc;
   letter-spacing: 0.22em;
-  margin-bottom: clamp(24px, 4vw, 40px);
+  margin-bottom: 40px;
   text-transform: uppercase;
 }
 
 #overlay-content button {
   display: block;
   width: 100%;
-  padding: clamp(12px, 2vw, 15px) 32px;
+  padding: 15px 32px;
   margin: 12px 0;
   border-radius: 16px;
   font-family: 'Quicksand', sans-serif;
@@ -189,24 +184,38 @@ body::before {
 }
 
 #btn-connect {
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-  color: white;
+  background: #1DB954;
+  color: #000;
   border: none;
-  box-shadow: 0 8px 28px rgba(168, 85, 247, 0.35);
+  box-shadow: 0 8px 28px rgba(29, 185, 84, 0.35);
 }
 #btn-connect:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(168, 85, 247, 0.45);
+  box-shadow: 0 14px 36px rgba(29, 185, 84, 0.45);
 }
 #btn-connect:active { transform: translateY(0); }
+
+#btn-apple {
+  background: #000;
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+}
+#btn-apple:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.28);
+}
+#btn-apple:active { transform: translateY(0); }
+#btn-apple:disabled { opacity: 0.35; cursor: default; transform: none; }
 
 #overlay-mobile-note {
   font-size: 11px;
   color: #b0a0c8;
-  margin: -4px 0 4px;
+  margin: -2px 0 6px;
   line-height: 1.5;
 }
 #overlay-mobile-note strong { color: #9080b8; }
+
 #btn-skip {
   background: transparent;
   color: #c4b5d8;
@@ -284,134 +293,6 @@ body::before {
 }
 
 #cabinet::before, #cabinet::after { content: none; }
-
-@media (max-height: 760px) and (min-width: 721px) {
-  body {
-    align-items: flex-start;
-    padding-top: 10px;
-  }
-
-  #marquee {
-    padding: 16px 34px 12px;
-  }
-
-  #marquee span:first-child {
-    font-size: 22px;
-  }
-
-  #screen-bezel {
-    margin-top: 10px;
-  }
-
-  #song-info {
-    margin-top: 13px;
-    min-height: 58px;
-  }
-
-  #song-title {
-    font-size: 18px;
-  }
-
-  #controls-label {
-    margin-top: 4px;
-  }
-}
-
-@media (max-height: 620px) {
-  #controls-label {
-    display: none;
-  }
-
-  #song-info {
-    min-height: 50px;
-  }
-}
-
-@media (max-width: 720px) {
-  body {
-    align-items: flex-start;
-    padding: 10px;
-  }
-
-  #cabinet {
-    border-radius: 28px;
-    padding-bottom: 18px;
-  }
-
-  #marquee {
-    border-radius: 28px 28px 0 0;
-    padding: 16px 18px 13px;
-  }
-
-  #marquee span:first-child {
-    font-size: 19px;
-    letter-spacing: 0.13em;
-  }
-
-  .marquee-sub {
-    font-size: 9px;
-    letter-spacing: 0.22em;
-  }
-
-  #screen-bezel {
-    width: calc(100% - 20px);
-    margin: 10px 10px 0;
-    border-radius: 16px;
-  }
-
-  #spotify-overlay {
-    border-radius: 16px;
-    padding: 14px;
-  }
-
-  #overlay-content {
-    width: min(100%, 320px);
-    padding: 30px 22px;
-    border-radius: 20px;
-  }
-
-  #overlay-title {
-    font-size: 23px;
-    letter-spacing: 0.11em;
-  }
-
-  #overlay-sub {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    margin-bottom: 28px;
-  }
-
-  #song-info {
-    margin-top: 15px;
-    min-height: 68px;
-    padding: 0 16px;
-  }
-
-  #song-title {
-    font-size: 17px;
-    letter-spacing: 0.1em;
-  }
-
-  #song-artist {
-    font-size: 11px;
-    letter-spacing: 0.16em;
-  }
-
-  #game-name {
-    letter-spacing: 0.14em;
-  }
-
-  #enter-hint {
-    letter-spacing: 0.16em;
-  }
-
-  #controls-label {
-    padding: 0 18px;
-    text-align: center;
-    line-height: 1.7;
-    letter-spacing: 0.16em;
-  }
-}
 </style>
 </head>
 <body>
@@ -430,8 +311,9 @@ body::before {
     <div id="spotify-overlay">
       <div id="overlay-content">
         <div id="overlay-title">HEY THERE</div>
-        <div id="overlay-sub">CONNECT SPOTIFY TO PLAY WITH MUSIC</div>
+        <div id="overlay-sub">CONNECT YOUR MUSIC TO PLAY</div>
         <button id="btn-connect">&#9654; CONNECT SPOTIFY</button>
+        <button id="btn-apple">&#9835; CONNECT APPLE MUSIC</button>
         <p id="overlay-mobile-note">On mobile: after connecting, open the <strong>Spotify app</strong> on your phone before entering a game — music plays through it.</p>
         <button id="btn-skip">PLAY WITHOUT MUSIC</button>
       </div>
@@ -448,10 +330,39 @@ body::before {
   <div id="controls-label">SCROLL · SWIPE · TILT &nbsp;·&nbsp; TAP TO ENTER</div>
 </div>
 
+<script src="https://js-cdn.music.apple.com/musickit/v3/musickit.js"></script>
 <script src="config.js"></script>
 <script src="js/spotify.js"></script>
+<script src="js/applemusic.js"></script>
 <script src="js/haptics.js"></script>
 <script src="js/lobby.js"></script>
+<script>
+  document.getElementById('btn-connect').addEventListener('click', () => LobbyAuth.login());
+  document.getElementById('btn-skip').addEventListener('click', () => {
+    window._saveSpotifySkip();
+    document.getElementById('spotify-overlay').classList.add('hidden');
+  });
+
+  const appleBtn = document.getElementById('btn-apple');
+  // Disable Apple Music button if developer token not configured
+  if (!LOBBY_CONFIG.appleMusicDeveloperToken ||
+      LOBBY_CONFIG.appleMusicDeveloperToken === 'REPLACE_WITH_DEVELOPER_TOKEN') {
+    appleBtn.disabled = true;
+    appleBtn.title = 'Apple Music not yet configured';
+  } else {
+    appleBtn.addEventListener('click', async () => {
+      appleBtn.textContent = 'CONNECTING…';
+      appleBtn.disabled = true;
+      const ok = await AppleMusicAuth.authorize();
+      if (ok) {
+        document.getElementById('spotify-overlay').classList.add('hidden');
+      } else {
+        appleBtn.textContent = '♩ CONNECT APPLE MUSIC';
+        appleBtn.disabled = false;
+      }
+    });
+  }
+</script>
 <button id="motion-btn" aria-label="Enable tilt controls" style="display:none;position:fixed;bottom:20px;right:20px;z-index:9999;background:rgba(255,255,255,0.9);color:#a855f7;border:1px solid rgba(168,85,247,0.3);border-radius:20px;padding:7px 14px;font-size:11px;font-family:'Quicksand',sans-serif;letter-spacing:.06em;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-weight:600;">↺ TILT</button>
 </body>
 </html>

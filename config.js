@@ -1,8 +1,12 @@
 const LOBBY_CONFIG = {
   spotifyClientId:   'aa16f7f72c04485fb93d86d2f7ee33d1',
-  spotifyRedirectUri: ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname)
-    ? 'http://127.0.0.1:8081/callback'
+  spotifyRedirectUri: window.location.hostname === 'localhost'
+    ? 'https://localhost:8081/callback'
     : 'https://bandmusicgames.party/callback',
+
+  // Apple Music — generate at: developer.apple.com → Certificates, Identifiers & Profiles
+  // JWT signed with your .p8 private key, valid up to 6 months. Renew before expiry.
+  appleMusicDeveloperToken: 'REPLACE_WITH_DEVELOPER_TOKEN',
 };
 
 const SONGS = [
@@ -13,17 +17,19 @@ const SONGS = [
     gameName: 'GRASS CUTTER 2003',
     gameUrl:  'https://forcuttinggrass.goon.bandmusicgames.party',
     trackUri: 'spotify:track:6EJAb3oTjDFwrt1dpIJPbr',
+    appleMusicId: null,
     color:    '#39ff14',
     unlocked: true,
   },
   {
-    id:       'fratty',
-    title:    'FRATTY PIPELINE',
-    artist:   'GROUCHO BARKS',
-    gameName: 'FRATTY PIPELINE',
-    gameUrl:  'https://frattypipeline.grouchobarks.bandmusicgames.party',
-    trackUri: 'spotify:track:33lVSu93J91BDmhfRT7iTA',
-    color:    '#ff8c00',
+    id:       'francis',
+    title:    'FRANCIS',
+    artist:   'DARGER',
+    gameName: 'FRANCIS',
+    gameUrl:  'https://francis.darger.bandmusicgames.party',
+    trackUri: 'spotify:track:64h0585a6LWXOdsCD2pOiW',
+    appleMusicId: null,
+    color:    '#7b68ee',
     unlocked: true,
   },
   {
@@ -33,6 +39,7 @@ const SONGS = [
     gameName: 'HALF COURT HERO',
     gameUrl:  'https://lizzymcguire.narasroom.bandmusicgames.party',
     trackUri: 'spotify:track:7kNqAfUxLmrETcwvBTQCkg',
+    appleMusicId: null,
     color:    '#FF1493',
     unlocked: true,
   },
