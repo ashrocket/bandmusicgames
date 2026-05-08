@@ -11,7 +11,7 @@ const LobbyAuth = {
       client_id:             LOBBY_CONFIG.spotifyClientId,
       response_type:         'code',
       redirect_uri:          LOBBY_CONFIG.spotifyRedirectUri,
-      scope:                 'streaming user-read-email user-read-private',
+      scope:                 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state',
       code_challenge_method: 'S256',
       code_challenge:        challenge,
     });
@@ -20,7 +20,11 @@ const LobbyAuth = {
 
   hasToken()    { return !!_readToken('sp_token'); },
   getToken()    { return _readToken('sp_token'); },
-  isConnected() { return this.hasToken() || _readToken('sp_skip') === '1'; },
+  isConnected() {
+    return this.hasToken() ||
+           !!_readToken('am_token') ||
+           _readToken('sp_skip') === '1';
+  },
 };
 
 // ─── Storage helpers (cookies on prod, sessionStorage on loopback) ─
