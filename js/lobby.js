@@ -10,8 +10,8 @@ const enterHint  = document.getElementById('enter-hint');
 const N = SONGS.length;
 
 // Layout constants
-const W  = canvas.width  = 900;
-const H  = canvas.height = 520;
+const W  = 900;
+const H  = 520;
 const CX = W / 2;
 const CY = H / 2 - 10;
 
@@ -26,6 +26,20 @@ let targetAngle  = 0;
 let currentAngle = 0;
 let hovered      = false;
 let clickFlash   = 0;
+let _animationId = null;
+
+function syncCanvasResolution() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const nextWidth = Math.round(W * dpr);
+  const nextHeight = Math.round(H * dpr);
+
+  if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+    canvas.width = nextWidth;
+    canvas.height = nextHeight;
+  }
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
 
 function idxToAngle(i) {
   return -(i / N) * Math.PI * 2;
@@ -223,6 +237,15 @@ function updateSongTheme(song) {
 // ─── Info panel ────────────────────────────────────────────────────
 
 function updateInfo() {
+  if (!LobbyAuth.isConnected()) {
+    infoTitle.textContent  = 'CONNECT SPOTIFY';
+    infoTitle.style.color  = '#1e1b4b';
+    infoArtist.textContent = '';
+    infoGame.textContent   = 'OR PLAY WITHOUT MUSIC';
+    enterHint.textContent  = '';
+    return;
+  }
+
   const s = SONGS[selectedIdx];
   if (!s.unlocked) {
     infoTitle.textContent  = '???';
@@ -243,6 +266,8 @@ function updateInfo() {
 // ─── Draw ──────────────────────────────────────────────────────────
 
 function drawFrame() {
+  syncCanvasResolution();
+
   let diff = targetAngle - currentAngle;
   while (diff >  Math.PI) diff -= Math.PI * 2;
   while (diff < -Math.PI) diff += Math.PI * 2;
@@ -276,7 +301,12 @@ function drawFrame() {
     clickFlash--;
   }
 
-  requestAnimationFrame(drawFrame);
+  _animationId = requestAnimationFrame(drawFrame);
+}
+
+function startAnimation() {
+  if (_animationId !== null) return;
+  _animationId = requestAnimationFrame(drawFrame);
 }
 
 function drawWheelFace() {
@@ -598,10 +628,8 @@ btnSkip.addEventListener('click', () => {
     dismissOverlay();
   }
   updateInfo();
-  requestAnimationFrame(drawFrame);
+  startAnimation();
 })();
-
-requestAnimationFrame(drawFrame);
 
 // ─── Tilt navigation ───────────────────────────────────────────────
 

@@ -18,8 +18,8 @@ const LobbyAuth = {
     window.location.href = `https://accounts.spotify.com/authorize?${p}`;
   },
 
-  hasToken()    { return !!_readToken('sp_token'); },
-  getToken()    { return _readToken('sp_token'); },
+  hasToken()    { return !!_readToken('sp_token_v2'); },
+  getToken()    { return _readToken('sp_token_v2'); },
   isConnected() {
     return this.hasToken() ||
            !!_readToken('am_token') ||
@@ -27,16 +27,20 @@ const LobbyAuth = {
   },
 };
 
-// ─── Storage helpers (cookies on prod, sessionStorage on localhost) ─
+// ─── Storage helpers (cookies on prod, sessionStorage on loopback) ─
+
+function _isLoopback() {
+  return ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
+}
 
 function _readToken(name) {
-  if (location.hostname === 'localhost') return sessionStorage.getItem(name);
+  if (_isLoopback()) return sessionStorage.getItem(name);
   const m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]+)'));
   return m ? decodeURIComponent(m[1]) : null;
 }
 
 function _writeToken(name, value, maxAge) {
-  if (location.hostname === 'localhost') {
+  if (_isLoopback()) {
     sessionStorage.setItem(name, value);
     return;
   }
@@ -52,7 +56,7 @@ function _writeToken(name, value, maxAge) {
 
 // Called from callback/index.html after token exchange
 window._saveSpotifyTokens = function (d) {
-  _writeToken('sp_token',   d.access_token,  d.expires_in);
+  _writeToken('sp_token_v2',   d.access_token,  d.expires_in);
   if (d.refresh_token) _writeToken('sp_refresh', d.refresh_token, 60 * 60 * 24 * 30);
 };
 
