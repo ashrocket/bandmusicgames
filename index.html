@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=960">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BAND MUSIC GAMES</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,9 +15,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 100svh;
   font-family: 'Quicksand', sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
 }
 
@@ -362,6 +363,17 @@ body::before {
       }
     });
   }
+</script>
+<script>
+(function () {
+  var cab = document.getElementById('cabinet');
+  function fit() {
+    var s = Math.min(1, window.innerWidth / 960);
+    cab.style.zoom = s < 1 ? String(s) : '';
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
 </script>
 <button id="motion-btn" aria-label="Enable tilt controls" style="display:none;position:fixed;bottom:20px;right:20px;z-index:9999;background:rgba(255,255,255,0.9);color:#a855f7;border:1px solid rgba(168,85,247,0.3);border-radius:20px;padding:7px 14px;font-size:11px;font-family:'Quicksand',sans-serif;letter-spacing:.06em;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font-weight:600;">↺ TILT</button>
 </body>
