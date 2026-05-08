@@ -11,7 +11,7 @@ const LobbyAuth = {
       client_id:             LOBBY_CONFIG.spotifyClientId,
       response_type:         'code',
       redirect_uri:          LOBBY_CONFIG.spotifyRedirectUri,
-      scope:                 'streaming user-read-email user-read-private',
+      scope:                 'streaming user-read-email user-read-private user-modify-playback-state user-read-playback-state',
       code_challenge_method: 'S256',
       code_challenge:        challenge,
     });
