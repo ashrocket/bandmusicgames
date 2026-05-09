@@ -348,6 +348,7 @@ function drawWheelFace() {
 }
 
 function drawSongs() {
+  const isConnected = LobbyAuth.isConnected();
   for (let i = 0; i < N; i++) {
     const song     = SONGS[i];
     const angle    = currentAngle + (i / N) * Math.PI * 2 - Math.PI / 2;
