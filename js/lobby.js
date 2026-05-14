@@ -9,16 +9,28 @@ const enterHint  = document.getElementById('enter-hint');
 
 const N = SONGS.length;
 
-// Layout constants
-const W  = 900;
-const H  = 520;
-const CX = W / 2;
-const CY = H / 2 - 10;
+// Layout — computed dynamically so the canvas scales with its CSS size
+const BASE_W = 900;
+const BASE_H = 520;
+let L = null; // set at start of each drawFrame
 
-const R_RIM  = 220;
-const R_RING = 182;
-const R_DISK = 118;
-const R_DOT  = 14;
+function getLayout() {
+  const W = canvas.clientWidth  || BASE_W;
+  const H = canvas.clientHeight || BASE_H;
+  const s = Math.min(W / BASE_W, H / BASE_H);
+  return {
+    W, H, s,
+    CX:      W / 2,
+    CY:      H / 2 - 10 * s,
+    R_RIM:   220 * s,
+    R_RING:  182 * s,
+    R_DISK:  118 * s,
+    R_DOT:    14 * s,
+    LABEL_R: 150 * s,
+    PLAY_R:   90 * s,
+    ROW_H:    22 * s,
+  };
+}
 
 // State
 let selectedIdx  = 0;
@@ -30,14 +42,13 @@ let _animationId = null;
 
 function syncCanvasResolution() {
   const dpr = Math.min(window.devicePixelRatio || 1, 3);
-  const nextWidth = Math.round(W * dpr);
+  const { W, H } = L;
+  const nextWidth  = Math.round(W * dpr);
   const nextHeight = Math.round(H * dpr);
-
   if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
-    canvas.width = nextWidth;
+    canvas.width  = nextWidth;
     canvas.height = nextHeight;
   }
-
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
@@ -93,24 +104,25 @@ const PLAY_R      = 90; // radius of the tappable play zone in canvas coords
 
 function touchToCanvas(touch) {
   const rect = canvas.getBoundingClientRect();
+  const { W, H } = L || getLayout();
   return {
-    x: (touch.clientX - rect.left) * (canvas.width  / rect.width),
-    y: (touch.clientY - rect.top)  * (canvas.height / rect.height),
+    x: (touch.clientX - rect.left) / rect.width  * W,
+    y: (touch.clientY - rect.top)  / rect.height * H,
   };
 }
 
 canvas.addEventListener('touchstart', e => {
   e.preventDefault();
+  if (!L) L = getLayout();
   const touch = e.touches[0];
   const { x, y } = touchToCanvas(touch);
   _tapStart       = { x: touch.clientX, y: touch.clientY };
   _tapStartCanvas = { x, y };
   _tapMoved       = false;
-  _wheelLastAng   = Math.atan2(y - CY, x - CX);
+  _wheelLastAng   = Math.atan2(y - L.CY, x - L.CX);
   _wheelAccum     = 0;
-  // Only engage rotation when finger is in the outer ring area
-  const r = Math.hypot(x - CX, y - CY);
-  _inRing = r > R_DISK + 18 && r < R_RIM + 20;
+  const r = Math.hypot(x - L.CX, y - L.CY);
+  _inRing = r > L.R_DISK + 18 * L.s && r < L.R_RIM + 20 * L.s;
 }, { passive: false });
 
 canvas.addEventListener('touchmove', e => {
@@ -119,9 +131,10 @@ canvas.addEventListener('touchmove', e => {
   const touch = e.touches[0];
   const ddx = touch.clientX - _tapStart.x;
   const ddy = touch.clientY - _tapStart.y;
-  if (ddx * ddx + ddy * ddy > 400) _tapMoved = true; // 20px threshold
-  if (!_inRing) return; // centre-disk drags don't scroll
+  if (ddx * ddx + ddy * ddy > 400) _tapMoved = true;
+  if (!_inRing) return;
   const { x, y } = touchToCanvas(touch);
+  const { CX, CY } = L || getLayout();
   const angle = Math.atan2(y - CY, x - CX);
   let delta = angle - _wheelLastAng;
   if (delta >  Math.PI) delta -= Math.PI * 2;
@@ -148,9 +161,9 @@ canvas.addEventListener('touchmove', e => {
 canvas.addEventListener('touchend', e => {
   _wheelLastAng = null;
   if (_tapMoved) return;
-  // Only fire play if the tap both started AND ended inside the center play zone
   const touch = e.changedTouches[0];
   const { x, y } = touchToCanvas(touch);
+  const { CX, CY, PLAY_R } = L || getLayout();
   const endR   = Math.hypot(x - CX, y - CY);
   const startR = Math.hypot(_tapStartCanvas.x - CX, _tapStartCanvas.y - CY);
   if (endR > PLAY_R || startR > PLAY_R) return;
@@ -266,6 +279,7 @@ function updateInfo() {
 // ─── Draw ──────────────────────────────────────────────────────────
 
 function drawFrame() {
+  L = getLayout();
   syncCanvasResolution();
 
   let diff = targetAngle - currentAngle;
@@ -273,14 +287,15 @@ function drawFrame() {
   while (diff < -Math.PI) diff += Math.PI * 2;
   currentAngle += diff * 0.14;
 
-  // Light base + song-colored ambient canvas glow
+  const { W, H, CX, CY } = L;
+
   ctx.fillStyle = '#f4f1fb';
   ctx.fillRect(0, 0, W, H);
 
   const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
   if (isConnected && song.unlocked) {
     const { r, g, b } = hexToRgb(song.color);
-    const songGlow = ctx.createRadialGradient(CX, CY, 0, CX, CY, 300);
+    const songGlow = ctx.createRadialGradient(CX, CY, 0, CX, CY, 300 * L.s);
     songGlow.addColorStop(0, `rgba(${r},${g},${b},0.09)`);
     songGlow.addColorStop(1, 'transparent');
     ctx.fillStyle = songGlow;
@@ -310,13 +325,13 @@ function startAnimation() {
 }
 
 function drawWheelFace() {
-  // Drop shadow beneath the entire wheel
+  const { CX, CY, R_RIM, R_RING, R_DOT, s } = L;
   ctx.save();
-  ctx.shadowBlur    = 50;
+  ctx.shadowBlur    = 50 * s;
   ctx.shadowColor   = 'rgba(120, 90, 200, 0.15)';
-  ctx.shadowOffsetY = 10;
+  ctx.shadowOffsetY = 10 * s;
 
-  const faceGrad = ctx.createRadialGradient(CX - 45, CY - 45, 15, CX, CY, R_RIM);
+  const faceGrad = ctx.createRadialGradient(CX - 45 * s, CY - 45 * s, 15 * s, CX, CY, R_RIM);
   faceGrad.addColorStop(0,    '#ffffff');
   faceGrad.addColorStop(0.55, '#faf7ff');
   faceGrad.addColorStop(1,    '#f0ecf8');
@@ -326,7 +341,6 @@ function drawWheelFace() {
   ctx.fill();
   ctx.restore();
 
-  // Pearl rim — silver gradient with diagonal sheen
   const rimGrad = ctx.createLinearGradient(CX - R_RIM, CY - R_RIM, CX + R_RIM, CY + R_RIM);
   rimGrad.addColorStop(0,    '#e0daf0');
   rimGrad.addColorStop(0.25, '#eee8f8');
@@ -336,18 +350,18 @@ function drawWheelFace() {
   ctx.beginPath();
   ctx.arc(CX, CY, R_RIM, 0, Math.PI * 2);
   ctx.strokeStyle = rimGrad;
-  ctx.lineWidth   = 14;
+  ctx.lineWidth   = 14 * s;
   ctx.stroke();
 
-  // Subtle separator between scroll ring and inner area
   ctx.beginPath();
-  ctx.arc(CX, CY, R_RING + R_DOT + 10, 0, Math.PI * 2);
+  ctx.arc(CX, CY, R_RING + R_DOT + 10 * s, 0, Math.PI * 2);
   ctx.strokeStyle = 'rgba(200, 190, 230, 0.2)';
   ctx.lineWidth   = 1;
   ctx.stroke();
 }
 
 function drawSongs() {
+  const { CX, CY, R_RING, R_DOT, s } = L;
   const isConnected = LobbyAuth.isConnected();
   for (let i = 0; i < N; i++) {
     const song     = SONGS[i];
@@ -356,7 +370,6 @@ function drawSongs() {
     const y        = CY + Math.sin(angle) * R_RING;
     const isSelected = (i === selectedIdx);
 
-    // Halo glow for selected gem
     if (isSelected && song.unlocked) {
       const { r, g, b } = hexToRgb(song.color);
       const grd = ctx.createRadialGradient(x, y, 0, x, y, R_DOT * 4.5);
@@ -369,12 +382,11 @@ function drawSongs() {
       ctx.fill();
     }
 
-    const dotR = isSelected ? R_DOT + 5 : R_DOT;
+    const dotR = isSelected ? R_DOT + 5 * s : R_DOT;
 
     if (isConnected && song.unlocked) {
-      // Gem-style: bright highlight at top-left, deep color at bottom-right
       const { r, g, b } = hexToRgb(song.color);
-      const dotGrad = ctx.createRadialGradient(x - 3, y - 4, 1, x, y, dotR);
+      const dotGrad = ctx.createRadialGradient(x - 3 * s, y - 4 * s, s, x, y, dotR);
       dotGrad.addColorStop(0,    'rgba(255,255,255,0.95)');
       dotGrad.addColorStop(0.25, song.color);
       dotGrad.addColorStop(1,    `rgba(${Math.max(0, r - 50)},${Math.max(0, g - 50)},${Math.max(0, b - 50)},1)`);
@@ -383,12 +395,11 @@ function drawSongs() {
       ctx.fillStyle = dotGrad;
       ctx.fill();
 
-      // Selection ring
       if (isSelected) {
         ctx.beginPath();
-        ctx.arc(x, y, dotR + 4, 0, Math.PI * 2);
+        ctx.arc(x, y, dotR + 4 * s, 0, Math.PI * 2);
         ctx.strokeStyle = `rgba(${r},${g},${b},0.35)`;
-        ctx.lineWidth   = 2.5;
+        ctx.lineWidth   = 2.5 * s;
         ctx.stroke();
       }
     } else {
@@ -397,13 +408,11 @@ function drawSongs() {
       ctx.fillStyle = '#dcd8ec';
       ctx.fill();
     }
-
   }
 }
 
 function drawClickWheelLabels() {
-  // Classic iPod click wheel labels at compass points
-  const LABEL_R = 150;
+  const { CX, CY, LABEL_R, s } = L;
   const labels = [
     { text: 'MENU', angle: -Math.PI / 2 },
     { text: '▶▶',   angle: 0 },
@@ -414,7 +423,7 @@ function drawClickWheelLabels() {
   ctx.save();
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font         = '600 9px Quicksand, sans-serif';
+  ctx.font         = `600 ${Math.round(9 * s)}px Quicksand, sans-serif`;
   ctx.fillStyle    = 'rgba(160, 148, 200, 0.55)';
 
   labels.forEach(({ text, angle }) => {
@@ -426,12 +435,12 @@ function drawClickWheelLabels() {
 }
 
 function drawDisk() {
-  // ── Background: white pearl button ────────────────────────────────
+  const { CX, CY, R_DISK, PLAY_R, ROW_H, s } = L;
   ctx.save();
-  ctx.shadowBlur    = 20;
+  ctx.shadowBlur    = 20 * s;
   ctx.shadowColor   = 'rgba(130, 100, 210, 0.14)';
-  ctx.shadowOffsetY = 4;
-  const diskGrad = ctx.createRadialGradient(CX - 22, CY - 22, 8, CX, CY, R_DISK);
+  ctx.shadowOffsetY = 4 * s;
+  const diskGrad = ctx.createRadialGradient(CX - 22 * s, CY - 22 * s, 8 * s, CX, CY, R_DISK);
   diskGrad.addColorStop(0,    '#ffffff');
   diskGrad.addColorStop(0.5,  '#faf7ff');
   diskGrad.addColorStop(0.85, '#f2eef8');
@@ -448,49 +457,42 @@ function drawDisk() {
   ctx.lineWidth   = 1.5;
   ctx.stroke();
 
-  // ── Prominent PLAY button ring inside disk ────────────────────────
   const isConn = LobbyAuth.isConnected();
   const playSong = isConn ? SONGS[selectedIdx] : null;
   if (isConn && playSong && playSong.unlocked && playSong.gameUrl) {
     const { r: pr, g: pg, b: pb } = hexToRgb(playSong.color);
-    // Soft glow behind button
-    const playGlow = ctx.createRadialGradient(CX, CY, 30, CX, CY, PLAY_R + 10);
+    const playGlow = ctx.createRadialGradient(CX, CY, 30 * s, CX, CY, PLAY_R + 10 * s);
     playGlow.addColorStop(0,   `rgba(${pr},${pg},${pb},0.18)`);
     playGlow.addColorStop(1,   'transparent');
-    ctx.beginPath(); ctx.arc(CX, CY, PLAY_R + 10, 0, Math.PI * 2);
+    ctx.beginPath(); ctx.arc(CX, CY, PLAY_R + 10 * s, 0, Math.PI * 2);
     ctx.fillStyle = playGlow; ctx.fill();
-    // Button ring
     ctx.beginPath(); ctx.arc(CX, CY, PLAY_R, 0, Math.PI * 2);
     ctx.strokeStyle = `rgba(${pr},${pg},${pb},0.45)`;
-    ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.lineWidth = 2.5 * s; ctx.stroke();
   }
 
-  // ── Clip to disk for list rendering ──────────────────────────────
   ctx.save();
   ctx.beginPath();
-  ctx.arc(CX, CY, R_DISK - 3, 0, Math.PI * 2);
+  ctx.arc(CX, CY, R_DISK - 3 * s, 0, Math.PI * 2);
   ctx.clip();
 
-  const ROW_H = 22;
-  const trunc = (s, n) => s.length > n ? s.slice(0, n - 1) + '…' : s;
+  const trunc = (str, n) => str.length > n ? str.slice(0, n - 1) + '…' : str;
 
   if (!LobbyAuth.isConnected()) {
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font         = '700 12px Quicksand, sans-serif';
+    ctx.font         = `700 ${Math.round(12 * s)}px Quicksand, sans-serif`;
     ctx.fillStyle    = '#a855f7';
-    ctx.fillText('CONNECT SPOTIFY', CX, CY - 9);
-    ctx.font         = '500 10px Quicksand, sans-serif';
+    ctx.fillText('CONNECT SPOTIFY', CX, CY - 9 * s);
+    ctx.font         = `500 ${Math.round(10 * s)}px Quicksand, sans-serif`;
     ctx.fillStyle    = '#c4b5d8';
-    ctx.fillText('to play', CX, CY + 9);
+    ctx.fillText('to play', CX, CY + 9 * s);
     ctx.restore();
     return;
   }
 
-  // ── iPod selection highlight: glowing purple ─────────────────────
   const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
   {
-    // Outer glow (wider, very soft)
     const glow = ctx.createLinearGradient(CX - R_DISK, 0, CX + R_DISK, 0);
     glow.addColorStop(0,    'rgba(168, 85, 247, 0)');
     glow.addColorStop(0.1,  'rgba(168, 85, 247, 0.12)');
@@ -499,56 +501,50 @@ function drawDisk() {
     ctx.fillStyle = glow;
     ctx.fillRect(CX - R_DISK, CY - ROW_H, R_DISK * 2, ROW_H * 2);
 
-    // Solid highlight band
     ctx.fillStyle = 'rgba(168, 85, 247, 0.22)';
-    ctx.fillRect(CX - R_DISK + 10, CY - ROW_H / 2, (R_DISK - 10) * 2, ROW_H);
+    ctx.fillRect(CX - R_DISK + 10 * s, CY - ROW_H / 2, (R_DISK - 10 * s) * 2, ROW_H);
 
-    // Hairline borders
     ctx.strokeStyle = 'rgba(192, 132, 252, 0.55)';
     ctx.lineWidth   = 1;
     ctx.beginPath();
-    ctx.moveTo(CX - R_DISK + 10, CY - ROW_H / 2);
-    ctx.lineTo(CX + R_DISK - 10, CY - ROW_H / 2);
+    ctx.moveTo(CX - R_DISK + 10 * s, CY - ROW_H / 2);
+    ctx.lineTo(CX + R_DISK - 10 * s, CY - ROW_H / 2);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(CX - R_DISK + 10, CY + ROW_H / 2);
-    ctx.lineTo(CX + R_DISK - 10, CY + ROW_H / 2);
+    ctx.moveTo(CX - R_DISK + 10 * s, CY + ROW_H / 2);
+    ctx.lineTo(CX + R_DISK - 10 * s, CY + ROW_H / 2);
     ctx.stroke();
   }
 
-  // ── Vertical song list — offsets -3 … +3 ─────────────────────────
   for (let offset = -3; offset <= 3; offset++) {
-    const i  = ((selectedIdx + offset) % N + N) % N;
-    const s  = SONGS[i];
-    const y  = CY + offset * ROW_H;
-    const d  = Math.abs(offset);
+    const i   = ((selectedIdx + offset) % N + N) % N;
+    const sg  = SONGS[i];
+    const y   = CY + offset * ROW_H;
+    const d   = Math.abs(offset);
 
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
 
     if (offset === 0) {
-      // Selected row: full title, left-aligned with ▶
-      const title = s.unlocked ? s.title.toUpperCase() : '???';
-      ctx.font      = '700 12px Quicksand, sans-serif';
-      ctx.fillStyle = s.unlocked ? '#1e1450' : '#c8c0d8';
+      const title = sg.unlocked ? sg.title.toUpperCase() : '???';
+      ctx.font      = `700 ${Math.round(12 * s)}px Quicksand, sans-serif`;
+      ctx.fillStyle = sg.unlocked ? '#1e1450' : '#c8c0d8';
       ctx.textAlign = 'left';
-      ctx.fillText('▶  ' + title, CX - 72, y);
+      ctx.fillText('▶  ' + title, CX - 72 * s, y);
     } else {
-      // Non-selected: dark text, fade by distance — no truncation for ±1
-      const alpha = d === 1 ? 0.85 : d === 2 ? 0.62 : 0.40;
-      const fs    = d === 1 ? 11 : d === 2 ? 10 : 9;
+      const alpha  = d === 1 ? 0.85 : d === 2 ? 0.62 : 0.40;
+      const fs     = d === 1 ? 11 : d === 2 ? 10 : 9;
       const weight = d === 1 ? '600' : '500';
-      const title = s.unlocked
-        ? (d <= 1 ? s.title.toUpperCase() : trunc(s.title.toUpperCase(), 18))
+      const title  = sg.unlocked
+        ? (d <= 1 ? sg.title.toUpperCase() : trunc(sg.title.toUpperCase(), 18))
         : '???';
-      ctx.font      = `${weight} ${fs}px Quicksand, sans-serif`;
+      ctx.font      = `${weight} ${Math.round(fs * s)}px Quicksand, sans-serif`;
       ctx.fillStyle = `rgba(30, 20, 70, ${alpha})`;
       ctx.fillText(title, CX, y);
     }
   }
 
-  // ── Edge fade so list fades into disk ────────────────────────────
-  const FADE = 30;
+  const FADE = 30 * s;
   const topFade = ctx.createLinearGradient(0, CY - R_DISK + 3, 0, CY - R_DISK + 3 + FADE);
   topFade.addColorStop(0, '#f8f5ff');
   topFade.addColorStop(1, 'rgba(248,245,255,0)');
@@ -565,35 +561,34 @@ function drawDisk() {
 }
 
 function drawActiveIndicator() {
-  // Soft glowing dot at 12 o'clock — shows which slot is active
+  const { CX, CY, R_RING, R_RIM, s } = L;
   const song        = SONGS[selectedIdx];
   const accentColor = song.unlocked ? song.color : '#a855f7';
   const solidColor  = ensureReadable(accentColor);
-  const { r: gr, g: gg, b: gb } = hexToRgb(accentColor); // original for glow
-  const { r, g, b }              = hexToRgb(solidColor);  // darkened for solid elements
+  const { r: gr, g: gg, b: gb } = hexToRgb(accentColor);
+  const { r, g, b }              = hexToRgb(solidColor);
 
   const ix = CX;
   const iy = CY - R_RING;
 
-  const grd = ctx.createRadialGradient(ix, iy, 0, ix, iy, 20);
+  const grd = ctx.createRadialGradient(ix, iy, 0, ix, iy, 20 * s);
   grd.addColorStop(0,    `rgba(${gr},${gg},${gb},0.9)`);
   grd.addColorStop(0.45, `rgba(${gr},${gg},${gb},0.4)`);
   grd.addColorStop(1,    'transparent');
   ctx.beginPath();
-  ctx.arc(ix, iy, 20, 0, Math.PI * 2);
+  ctx.arc(ix, iy, 20 * s, 0, Math.PI * 2);
   ctx.fillStyle = grd;
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(ix, iy, 5, 0, Math.PI * 2);
+  ctx.arc(ix, iy, 5 * s, 0, Math.PI * 2);
   ctx.fillStyle = solidColor;
   ctx.fill();
 
-  // Short color arc on the outer rim at top
   ctx.beginPath();
-  ctx.arc(CX, CY, R_RIM - 7, -Math.PI / 2 - 0.22, -Math.PI / 2 + 0.22);
+  ctx.arc(CX, CY, R_RIM - 7 * s, -Math.PI / 2 - 0.22, -Math.PI / 2 + 0.22);
   ctx.strokeStyle = `rgba(${r},${g},${b},0.65)`;
-  ctx.lineWidth   = 8;
+  ctx.lineWidth   = 8 * s;
   ctx.lineCap     = 'round';
   ctx.stroke();
 }
