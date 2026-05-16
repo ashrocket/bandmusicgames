@@ -15,6 +15,8 @@ private let trackDurationMs: Double = 212_000   // Francis · Darger ≈ 3:32
 private struct AmbientStar {
     let id: Int
     let nx, ny, radius: Double
+    let temperature: Double   // 0 cool blue → 1 warm gold
+    let phase: Double         // twinkle offset
     var lit = false
 
     static func pseudo(_ n: Int) -> Double {
@@ -60,10 +62,14 @@ private final class FrancisGame: ObservableObject {
 
     init() {
         ambient = (0..<ambientCount).map { i in
-            AmbientStar(id: i,
-                        nx: AmbientStar.pseudo(i * 2 + 1),
-                        ny: AmbientStar.pseudo(i * 2 + 2),
-                        radius: 0.6 + AmbientStar.pseudo(i * 3) * 1.4)
+            AmbientStar(
+                id: i,
+                nx: AmbientStar.pseudo(i * 2 + 1),
+                ny: AmbientStar.pseudo(i * 2 + 2),
+                radius: 0.6 + AmbientStar.pseudo(i * 3) * 1.4,
+                temperature: AmbientStar.pseudo(i * 5),
+                phase: AmbientStar.pseudo(i * 7) * 2 * .pi
+            )
         }
         targets = targetNormPoints.enumerated().map { i, p in
             TargetStar(id: i, nx: p.0, ny: p.1)
@@ -189,6 +195,15 @@ struct FrancisGameView: View {
                 ZStack(alignment: .topLeading) {
                     skyBackground
                     starCanvas(size: geo.size)
+                    // VoiceOver layer: targets are otherwise unreachable (Canvas-drawn)
+                    ForEach(game.targets, id: \.id) { target in
+                        Color.clear
+                            .frame(width: 32, height: 32)
+                            .position(x: target.nx * geo.size.width, y: target.ny * geo.size.height)
+                            .accessibilityLabel("Target star \(target.id + 1)\(target.lit ? "" : ", hidden")")
+                            .accessibilityHint(target.lit ? "Drag from here to connect to another star" : "")
+                            .accessibilityHidden(!target.lit)
+                    }
                     if game.phase == .pressPlay  { pressPlayOverlay }
                     if game.phase == .intro      { DogIntroView(onDone: {}) }
                     if game.phase == .playing    { hud }
@@ -228,9 +243,17 @@ struct FrancisGameView: View {
                 let x = s.nx * size.width + tx
                 let y = s.ny * size.height + ty
                 let r = s.radius
+                // Twinkle: alpha modulates by sin(time + phase)
+                let twinkle = 0.7 + 0.3 * sin(game.positionMs / 600 + s.phase)
+                // Temperature: cool blue → warm gold
+                let starColor = Color(
+                    red: 0.85 + s.temperature * 0.15,
+                    green: 0.85 + s.temperature * 0.05,
+                    blue: 1.0 - s.temperature * 0.4
+                )
                 ctx.fill(
                     Path(ellipseIn: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2)),
-                    with: .color(.white.opacity(0.55))
+                    with: .color(starColor.opacity(0.55 * twinkle))
                 )
             }
 
@@ -241,7 +264,10 @@ struct FrancisGameView: View {
                 path.move(to: CGPoint(x: a.nx * size.width + ttx, y: a.ny * size.height + tty))
                 path.addLine(to: CGPoint(x: b.nx * size.width + ttx, y: b.ny * size.height + tty))
                 let color: Color = link.correct ? Color(hex: "#a6f0a6") : Color(hex: "#ff8066")
-                ctx.stroke(path, with: .color(color.opacity(link.correct ? 0.85 : 0.6)), lineWidth: 1.5)
+                let style: StrokeStyle = link.correct
+                    ? StrokeStyle(lineWidth: 1.5)
+                    : StrokeStyle(lineWidth: 1.5, dash: [6, 4])
+                ctx.stroke(path, with: .color(color.opacity(link.correct ? 0.85 : 0.6)), style: style)
             }
 
             // Pending drag line
@@ -432,6 +458,7 @@ struct FrancisGameView: View {
 
 private struct DogIntroView: View {
     let onDone: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dogVisible = false
     @State private var thought1 = false
     @State private var thought2 = false
@@ -445,7 +472,7 @@ private struct DogIntroView: View {
                 HStack {
                     dogShape
                         .offset(x: dogVisible ? 0 : -300)
-                        .animation(.spring(duration: 0.9, bounce: 0.2), value: dogVisible)
+                        .animation(reduceMotion ? .easeInOut(duration: 0.3) : .spring(duration: 0.9, bounce: 0.2), value: dogVisible)
                     Spacer()
                 }
                 .padding(.bottom, 120)
@@ -483,9 +510,48 @@ private struct DogIntroView: View {
     }
 
     private var dogShape: some View {
-        Text("🐕")
-            .font(.system(size: 72))
-            .padding(.leading, 24)
+        Canvas { ctx, size in
+            let gold = Color(hex: "#ffd27a")
+            // Body
+            ctx.fill(
+                Path(roundedRect: CGRect(x: 16, y: 24, width: 44, height: 22), cornerSize: CGSize(width: 8, height: 8)),
+                with: .color(gold)
+            )
+            // Head
+            ctx.fill(
+                Path(ellipseIn: CGRect(x: 0, y: 14, width: 26, height: 26)),
+                with: .color(gold)
+            )
+            // Ear (triangle-ish)
+            var ear = Path()
+            ear.move(to: CGPoint(x: 4, y: 16))
+            ear.addLine(to: CGPoint(x: 14, y: 8))
+            ear.addLine(to: CGPoint(x: 16, y: 22))
+            ear.closeSubpath()
+            ctx.fill(ear, with: .color(gold))
+            // Snout
+            ctx.fill(
+                Path(roundedRect: CGRect(x: -6, y: 24, width: 14, height: 10), cornerSize: CGSize(width: 4, height: 4)),
+                with: .color(gold)
+            )
+            // Legs (4 small bars)
+            for x in [22, 32, 44, 54] {
+                ctx.fill(
+                    Path(roundedRect: CGRect(x: CGFloat(x), y: 44, width: 6, height: 14), cornerSize: CGSize(width: 2, height: 2)),
+                    with: .color(gold)
+                )
+            }
+            // Tail
+            var tail = Path()
+            tail.move(to: CGPoint(x: 60, y: 26))
+            tail.addLine(to: CGPoint(x: 74, y: 14))
+            tail.addLine(to: CGPoint(x: 76, y: 20))
+            tail.addLine(to: CGPoint(x: 64, y: 32))
+            tail.closeSubpath()
+            ctx.fill(tail, with: .color(gold))
+        }
+        .frame(width: 80, height: 64)
+        .padding(.leading, 24)
     }
 
     private func runSequence() {
@@ -540,6 +606,7 @@ private struct ResultCardView: View {
     let total: Int
     let onDismiss: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var flipped = false
 
     private let won: Bool
@@ -569,7 +636,7 @@ private struct ResultCardView: View {
             .frame(width: min(360, UIScreen.main.bounds.width * 0.86))
             .aspectRatio(3/4, contentMode: .fit)
             .rotation3DEffect(.degrees(flipped ? 0 : 180), axis: (x: 0, y: 1, z: 0))
-            .animation(.spring(duration: 1.2), value: flipped)
+            .animation(reduceMotion ? .easeInOut(duration: 0.4) : .spring(duration: 1.2), value: flipped)
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
