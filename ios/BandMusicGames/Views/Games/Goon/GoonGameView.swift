@@ -15,6 +15,8 @@ struct GoonGameView: View {
             )
             .ignoresSafeArea()
             if scene.phase == .playing {
+                GoonHUDOverlay(scene: scene)
+                    .ignoresSafeArea(.container, edges: .bottom)
                 GoonControlOverlay(input: scene.input)
                     .ignoresSafeArea()
             }

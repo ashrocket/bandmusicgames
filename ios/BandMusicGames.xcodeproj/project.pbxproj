@@ -32,6 +32,7 @@
 		B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */; };
 		B77ADD7A2AD67E86F96C3409 /* GoonLevels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0338A82AF4E4E8477F0B562F /* GoonLevels.swift */; };
 		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
+		BA87BC91DD6002F9E8023C88 /* GoonHUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77E03C385FCE3B8AAB906A6 /* GoonHUDOverlay.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
 /* End PBXBuildFile section */
@@ -70,6 +71,7 @@
 		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D77DC43028C080E39E78EBBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleTubeView.swift; sourceTree = "<group>"; };
+		E77E03C385FCE3B8AAB906A6 /* GoonHUDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonHUDOverlay.swift; sourceTree = "<group>"; };
 		EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromePlayButton.swift; sourceTree = "<group>"; };
 		EF43B323C8E92D981EE43C95 /* GoonGridTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGridTests.swift; sourceTree = "<group>"; };
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 			isa = PBXGroup;
 			children = (
 				6F97DAC80503BDB8BE146A93 /* GoonControlOverlay.swift */,
+				E77E03C385FCE3B8AAB906A6 /* GoonHUDOverlay.swift */,
 			);
 			path = Overlays;
 			sourceTree = "<group>";
@@ -332,6 +335,7 @@
 				0BB28A9917C8246640D3306A /* GoonControlOverlay.swift in Sources */,
 				4EC835492418708E317D48D7 /* GoonGameScene.swift in Sources */,
 				887E8FD5FE145EB341235940 /* GoonGameView.swift in Sources */,
+				BA87BC91DD6002F9E8023C88 /* GoonHUDOverlay.swift in Sources */,
 				68BC58B6BD0404A8BCF8A96E /* GoonInputController.swift in Sources */,
 				B77ADD7A2AD67E86F96C3409 /* GoonLevels.swift in Sources */,
 				9F307F7F839964772355F998 /* GoonRenderer.swift in Sources */,
