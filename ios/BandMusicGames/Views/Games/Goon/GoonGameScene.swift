@@ -104,6 +104,22 @@ final class GoonGameScene: SKScene, ObservableObject {
         }
     }
 
+    private func redrawTile(atWorldPos pos: CGPoint) {
+        let ts = GoonRenderer.tileSize
+        let x = Int(pos.x / ts)
+        let y = Int((size.height - pos.y) / ts)
+        guard x >= 0, x < GoonGrid.width, y >= 0, y < GoonGrid.height else { return }
+        let cx = CGFloat(x) * ts + ts / 2
+        let cy = size.height - (CGFloat(y) * ts + ts / 2)
+        for child in gridLayer.children where abs(child.position.x - cx) < 0.5 && abs(child.position.y - cy) < 0.5 {
+            child.removeFromParent()
+            break
+        }
+        let node = GoonRenderer.tileNode(for: grid.at(x, y))
+        node.position = CGPoint(x: cx, y: cy)
+        gridLayer.addChild(node)
+    }
+
     // MARK: - SpriteKit lifecycle
     override func didMove(to view: SKView) {
         super.didMove(to: view)
@@ -153,6 +169,13 @@ final class GoonGameScene: SKScene, ObservableObject {
         mower.position = clampToLawn(proposed)
         mowerNode?.position = mower.position
         mowerNode?.zRotation = mower.facing
+
+        // Cut tiles under the mower
+        let cuts = grid.cutTilesUnderMower(atWorldPos: mower.position, sceneHeight: size.height)
+        if cuts > 0 {
+            score += 1
+            redrawTile(atWorldPos: mower.position)
+        }
 
         // Game-over check
         if gas <= 0 {

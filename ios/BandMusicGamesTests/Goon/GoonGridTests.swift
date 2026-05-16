@@ -37,3 +37,40 @@ final class GoonGridTests: XCTestCase {
         XCTAssertEqual(grid.cutPercentage, 1.0 / Double(mowable), accuracy: 0.001)
     }
 }
+
+extension GoonGridTests {
+    func test_mowerCutsTallTileBeneathIt() {
+        var grid = GoonGrid.make(for: GoonLevels.all[1])
+        XCTAssertEqual(grid.at(5, 5), .tall)
+        let cutsMade = grid.cutTilesUnderMower(
+            atWorldPos: CGPoint(x: 5 * 32 + 16, y: 480 - (5 * 32 + 16)),
+            sceneHeight: 480
+        )
+        XCTAssertEqual(cutsMade, 1)
+        XCTAssertEqual(grid.at(5, 5), .cut)
+    }
+
+    func test_mowerDoesNotCutHouse() {
+        var grid = GoonGrid.make(for: GoonLevels.all[0])
+        // Level 1 row 2, col 20 is a house tile
+        let before = grid.at(20, 2)
+        XCTAssertEqual(before, .house)
+        let cutsMade = grid.cutTilesUnderMower(
+            atWorldPos: CGPoint(x: 20 * 32 + 16, y: 480 - (2 * 32 + 16)),
+            sceneHeight: 480
+        )
+        XCTAssertEqual(cutsMade, 0)
+        XCTAssertEqual(grid.at(20, 2), .house)
+    }
+
+    func test_mowerCutsCellsAlreadyCutReturnsZero() {
+        var grid = GoonGrid.make(for: GoonLevels.all[1])
+        // Pre-cut the cell
+        grid.set(5, 5, .cut)
+        let cutsMade = grid.cutTilesUnderMower(
+            atWorldPos: CGPoint(x: 5 * 32 + 16, y: 480 - (5 * 32 + 16)),
+            sceneHeight: 480
+        )
+        XCTAssertEqual(cutsMade, 0)
+    }
+}

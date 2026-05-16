@@ -116,3 +116,19 @@ struct GoonGrid {
         return GoonGrid(cells: cells)
     }
 }
+
+extension GoonGrid {
+    /// Cuts the tile at the world-space position (one tile per call), returns
+    /// the number of new cuts (0 or 1).
+    mutating func cutTilesUnderMower(atWorldPos pos: CGPoint, sceneHeight: CGFloat) -> Int {
+        let ts: CGFloat = 32
+        let x = Int(pos.x / ts)
+        let y = Int((sceneHeight - pos.y) / ts)
+        guard x >= 0, x < Self.width, y >= 0, y < Self.height else { return 0 }
+        if at(x, y) == .tall {
+            set(x, y, .cut)
+            return 1
+        }
+        return 0
+    }
+}
