@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06E8DA988C22A3A1CFE681A4 /* GoonGridTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF43B323C8E92D981EE43C95 /* GoonGridTests.swift */; };
 		0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEED640487C99F9E09BEAE4 /* GameWebView.swift */; };
 		16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */; };
 		1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */; };
@@ -62,6 +63,7 @@
 		D77DC43028C080E39E78EBBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleTubeView.swift; sourceTree = "<group>"; };
 		EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromePlayButton.swift; sourceTree = "<group>"; };
+		EF43B323C8E92D981EE43C95 /* GoonGridTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGridTests.swift; sourceTree = "<group>"; };
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
 		FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				0D69141D52E6E5337080195C /* .gitkeep */,
+				EF43B323C8E92D981EE43C95 /* GoonGridTests.swift */,
 				19C5610ECC95D9810ED7EB35 /* GoonLevelsTests.swift */,
 			);
 			path = Goon;
@@ -288,6 +291,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06E8DA988C22A3A1CFE681A4 /* GoonGridTests.swift in Sources */,
 				86AEB69B7971143FE375B455 /* GoonLevelsTests.swift in Sources */,
 				B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */,
 			);

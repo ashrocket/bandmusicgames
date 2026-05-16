@@ -54,3 +54,65 @@ enum GoonLevels {
         ),
     ]
 }
+
+enum GoonTile: UInt8 {
+    case tall = 0      // mowable
+    case cut = 1
+    case stump = 2     // impassable until dug
+    case house = 3     // impassable, not mowable
+    case garden = 4    // passable, not mowable
+}
+
+struct GoonGrid {
+    static let width = 25
+    static let height = 15
+
+    var cells: ContiguousArray<GoonTile>
+
+    var cutPercentage: Double {
+        var mowable = 0
+        var cut = 0
+        for cell in cells {
+            switch cell {
+            case .tall: mowable += 1
+            case .cut: mowable += 1; cut += 1
+            default: break
+            }
+        }
+        return mowable == 0 ? 0 : Double(cut) / Double(mowable)
+    }
+
+    func at(_ x: Int, _ y: Int) -> GoonTile {
+        guard x >= 0, x < Self.width, y >= 0, y < Self.height else { return .house }
+        return cells[y * Self.width + x]
+    }
+
+    mutating func set(_ x: Int, _ y: Int, _ tile: GoonTile) {
+        guard x >= 0, x < Self.width, y >= 0, y < Self.height else { return }
+        cells[y * Self.width + x] = tile
+    }
+
+    mutating func cut(at x: Int, _ y: Int) {
+        guard at(x, y) == .tall else { return }
+        set(x, y, .cut)
+    }
+
+    static func make(for config: GoonLevelConfig) -> GoonGrid {
+        var cells = ContiguousArray<GoonTile>(repeating: .tall, count: width * height)
+        if config.n == 1 {
+            // House footprint: 6×4 block at top-right corner (rows 1–4, cols 18–23)
+            for y in 1...4 {
+                for x in 18...23 {
+                    cells[y * width + x] = .house
+                }
+            }
+            // Garden bed: 2 rows of garden tiles below the house
+            for y in 5...6 {
+                for x in 18...23 {
+                    cells[y * width + x] = .garden
+                }
+            }
+        }
+        return GoonGrid(cells: cells)
+    }
+}
