@@ -14,6 +14,7 @@
 		1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */; };
 		25D266A2AE39D11E3290207A /* GoonGameStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296710A4C4054B8847E988E0 /* GoonGameStateTests.swift */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
+		48DDF8F7F562AAB3706B076F /* GoonWinCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C46AB1759D3E2B0FD65873 /* GoonWinCard.swift */; };
 		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
 		4EC835492418708E317D48D7 /* GoonGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A735B0E92EF1D656491CF991 /* GoonGameScene.swift */; };
 		62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */; };
@@ -29,12 +30,14 @@
 		99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE185679CAD568601C864B6E /* ArchHeaderView.swift */; };
 		9F307F7F839964772355F998 /* GoonRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289083FA7A01889E99082256 /* GoonRenderer.swift */; };
 		A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */; };
+		A7E850702F30A3217A87833B /* GoonGameOverCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FF22F4EAB0DDE94EEB76E94 /* GoonGameOverCard.swift */; };
 		B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */; };
 		B77ADD7A2AD67E86F96C3409 /* GoonLevels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0338A82AF4E4E8477F0B562F /* GoonLevels.swift */; };
 		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
 		BA87BC91DD6002F9E8023C88 /* GoonHUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77E03C385FCE3B8AAB906A6 /* GoonHUDOverlay.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
+		FB4EDC48D0759D59A6C5F99B /* GoonLevelCompleteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFD72A55F6FAFCFB0B8E46 /* GoonLevelCompleteCard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +52,7 @@
 
 /* Begin PBXFileReference section */
 		0338A82AF4E4E8477F0B562F /* GoonLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonLevels.swift; sourceTree = "<group>"; };
+		06C46AB1759D3E2B0FD65873 /* GoonWinCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonWinCard.swift; sourceTree = "<group>"; };
 		07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
 		0D69141D52E6E5337080195C /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		1191C69D4C779ABC78D45D43 /* GoonGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameView.swift; sourceTree = "<group>"; };
@@ -60,6 +64,7 @@
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
 		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
 		6F97DAC80503BDB8BE146A93 /* GoonControlOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonControlOverlay.swift; sourceTree = "<group>"; };
+		6FF22F4EAB0DDE94EEB76E94 /* GoonGameOverCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameOverCard.swift; sourceTree = "<group>"; };
 		79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameView.swift; sourceTree = "<group>"; };
 		82AB66BC63FF553633DE7F80 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BandMusicGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -67,6 +72,7 @@
 		9D7C5C786747064F3815AA29 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		A735B0E92EF1D656491CF991 /* GoonGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameScene.swift; sourceTree = "<group>"; };
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
+		C9FFD72A55F6FAFCFB0B8E46 /* GoonLevelCompleteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonLevelCompleteCard.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
 		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D77DC43028C080E39E78EBBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -197,7 +203,10 @@
 			isa = PBXGroup;
 			children = (
 				6F97DAC80503BDB8BE146A93 /* GoonControlOverlay.swift */,
+				6FF22F4EAB0DDE94EEB76E94 /* GoonGameOverCard.swift */,
 				E77E03C385FCE3B8AAB906A6 /* GoonHUDOverlay.swift */,
+				C9FFD72A55F6FAFCFB0B8E46 /* GoonLevelCompleteCard.swift */,
+				06C46AB1759D3E2B0FD65873 /* GoonWinCard.swift */,
 			);
 			path = Overlays;
 			sourceTree = "<group>";
@@ -333,12 +342,15 @@
 				62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */,
 				0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */,
 				0BB28A9917C8246640D3306A /* GoonControlOverlay.swift in Sources */,
+				A7E850702F30A3217A87833B /* GoonGameOverCard.swift in Sources */,
 				4EC835492418708E317D48D7 /* GoonGameScene.swift in Sources */,
 				887E8FD5FE145EB341235940 /* GoonGameView.swift in Sources */,
 				BA87BC91DD6002F9E8023C88 /* GoonHUDOverlay.swift in Sources */,
 				68BC58B6BD0404A8BCF8A96E /* GoonInputController.swift in Sources */,
+				FB4EDC48D0759D59A6C5F99B /* GoonLevelCompleteCard.swift in Sources */,
 				B77ADD7A2AD67E86F96C3409 /* GoonLevels.swift in Sources */,
 				9F307F7F839964772355F998 /* GoonRenderer.swift in Sources */,
+				48DDF8F7F562AAB3706B076F /* GoonWinCard.swift in Sources */,
 				CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */,
 				1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */,
 				8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */,

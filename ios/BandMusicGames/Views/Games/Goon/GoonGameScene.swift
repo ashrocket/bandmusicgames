@@ -199,6 +199,9 @@ final class GoonGameScene: SKScene, ObservableObject {
                 phase = .levelComplete
             }
         }
+
+        // Notify SwiftUI overlays so gas/score-dependent views redraw.
+        objectWillChange.send()
     }
 
     // MARK: - Lifecycle

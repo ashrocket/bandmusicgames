@@ -14,11 +14,23 @@ struct GoonGameView: View {
                 options: [.ignoresSiblingOrder, .shouldCullNonVisibleNodes]
             )
             .ignoresSafeArea()
-            if scene.phase == .playing {
+            switch scene.phase {
+            case .playing:
                 GoonHUDOverlay(scene: scene)
                     .ignoresSafeArea(.container, edges: .bottom)
                 GoonControlOverlay(input: scene.input)
                     .ignoresSafeArea()
+            case .levelComplete:
+                GoonLevelCompleteCard(level: scene.levelNum) { scene.nextLevel() }
+            case .gameOver:
+                GoonGameOverCard(
+                    onRetry: { scene.retry() },
+                    onMenu:  { scene.resetAndReturnToTitle() }
+                )
+            case .win:
+                GoonWinCard { scene.replayFromWin() }
+            case .title:
+                EmptyView()
             }
             closeButton
         }
