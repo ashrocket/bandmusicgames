@@ -41,6 +41,9 @@ struct ContentView: View {
             case .lizzyMcGuire:
                 LizzyMcGuireGameView()
                     .environmentObject(auth)
+            case .goon:
+                GoonGameView()
+                    .environmentObject(auth)
             case nil:
                 GameSheetView(song: song, spotifyToken: auth.accessToken)
             }
@@ -93,6 +96,7 @@ struct ContentView: View {
     private enum NativeGame {
         case francis
         case lizzyMcGuire
+        case goon
     }
 
     private func nativeGame(for song: Song) -> NativeGame? {
@@ -104,6 +108,10 @@ struct ContentView: View {
             || song.gameUrl.localizedCaseInsensitiveContains("lizzymcguire")
             || song.title.localizedCaseInsensitiveContains("lizzy") {
             return .lizzyMcGuire
+        }
+
+        if song.id == "goon" {
+            return .goon
         }
 
         return nil
