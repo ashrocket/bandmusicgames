@@ -23,13 +23,25 @@
 		8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */; };
 		99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE185679CAD568601C864B6E /* ArchHeaderView.swift */; };
 		A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */; };
+		B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */; };
 		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		695E40D9FFF2D07FE82FF5B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EBEB5370E94A17E28C6ED964 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2D49D197F3FAA99C1DCB7626;
+			remoteInfo = BandMusicGames;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
+		0D69141D52E6E5337080195C /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		1191C69D4C779ABC78D45D43 /* GoonGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameView.swift; sourceTree = "<group>"; };
 		1AEED640487C99F9E09BEAE4 /* GameWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWebView.swift; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
@@ -42,11 +54,13 @@
 		A735B0E92EF1D656491CF991 /* GoonGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameScene.swift; sourceTree = "<group>"; };
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
+		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D77DC43028C080E39E78EBBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleTubeView.swift; sourceTree = "<group>"; };
 		EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromePlayButton.swift; sourceTree = "<group>"; };
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
+		FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JukeboxView.swift; sourceTree = "<group>"; };
 		FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -124,9 +138,27 @@
 			isa = PBXGroup;
 			children = (
 				128AB88CDD9DDB290A232974 /* BandMusicGames */,
+				8FAC014724E2F2C7F2A3E5E9 /* BandMusicGamesTests */,
 				AED8F6CE3DF690382D21F806 /* Frameworks */,
 				FF6B55FAC4BD53FB04D8BC73 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		8FAC014724E2F2C7F2A3E5E9 /* BandMusicGamesTests */ = {
+			isa = PBXGroup;
+			children = (
+				FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */,
+				93691F5E4C04940AF172597D /* Goon */,
+			);
+			path = BandMusicGamesTests;
+			sourceTree = "<group>";
+		};
+		93691F5E4C04940AF172597D /* Goon */ = {
+			isa = PBXGroup;
+			children = (
+				0D69141D52E6E5337080195C /* .gitkeep */,
+			);
+			path = Goon;
 			sourceTree = "<group>";
 		};
 		AED8F6CE3DF690382D21F806 /* Frameworks */ = {
@@ -150,6 +182,7 @@
 			isa = PBXGroup;
 			children = (
 				8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */,
+				CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -176,6 +209,24 @@
 			productReference = 8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */;
 			productType = "com.apple.product-type.application";
 		};
+		7F5526DE96087751F2441ECD /* BandMusicGamesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8910255B15214860891324F6 /* Build configuration list for PBXNativeTarget "BandMusicGamesTests" */;
+			buildPhases = (
+				D931139572BD046179C6AE5A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				399BB02C5DC481BB6B49A3B8 /* PBXTargetDependency */,
+			);
+			name = BandMusicGamesTests;
+			packageProductDependencies = (
+			);
+			productName = BandMusicGamesTests;
+			productReference = CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -186,6 +237,10 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					2D49D197F3FAA99C1DCB7626 = {
+						DevelopmentTeam = 6P24N3R4TP;
+						ProvisioningStyle = Automatic;
+					};
+					7F5526DE96087751F2441ECD = {
 						DevelopmentTeam = 6P24N3R4TP;
 						ProvisioningStyle = Automatic;
 					};
@@ -206,6 +261,7 @@
 			projectRoot = "";
 			targets = (
 				2D49D197F3FAA99C1DCB7626 /* BandMusicGames */,
+				7F5526DE96087751F2441ECD /* BandMusicGamesTests */,
 			);
 		};
 /* End PBXProject section */
@@ -222,6 +278,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D931139572BD046179C6AE5A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FE3BC4012F7FF206E04A239F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -246,6 +310,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		399BB02C5DC481BB6B49A3B8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2D49D197F3FAA99C1DCB7626 /* BandMusicGames */;
+			targetProxy = 695E40D9FFF2D07FE82FF5B2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		45BE1D5DBAFA75F516F2360F /* Release */ = {
@@ -303,6 +375,27 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
+		};
+		86A347C0A25420A7AD310F3C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6P24N3R4TP;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = party.bandmusicgames.app.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BandMusicGames.app/BandMusicGames";
+			};
+			name = Debug;
 		};
 		90DBEC10CA8F7D41740B13D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -367,6 +460,27 @@
 			};
 			name = Debug;
 		};
+		A21B9BA020E938B122196770 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 6P24N3R4TP;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = party.bandmusicgames.app.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BandMusicGames.app/BandMusicGames";
+			};
+			name = Release;
+		};
 		BC97A4042A3BEFD4EB4A3325 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -414,6 +528,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8910255B15214860891324F6 /* Build configuration list for PBXNativeTarget "BandMusicGamesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				86A347C0A25420A7AD310F3C /* Debug */,
+				A21B9BA020E938B122196770 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		8E282F4B7F3B4E76A192797F /* Build configuration list for PBXNativeTarget "BandMusicGames" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
