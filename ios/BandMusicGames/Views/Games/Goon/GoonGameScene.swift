@@ -27,6 +27,9 @@ final class GoonGameScene: SKScene, ObservableObject {
     /// Test hook — when non-nil, used in place of grid.cutPercentage by tickGameLogic.
     var cutPctOverride: Double?
 
+    // MARK: - Render layers
+    private let gridLayer = SKNode()
+
     // MARK: - Construction
     static func make() -> GoonGameScene {
         let scene = GoonGameScene(size: CGSize(width: 800, height: 600))
@@ -42,6 +45,31 @@ final class GoonGameScene: SKScene, ObservableObject {
         gas = config.gasMax
         cutPctOverride = nil
         phase = .playing
+        drawGrid()
+    }
+
+    func drawGrid() {
+        gridLayer.removeAllChildren()
+        let ts = GoonRenderer.tileSize
+        for y in 0..<GoonGrid.height {
+            for x in 0..<GoonGrid.width {
+                let node = GoonRenderer.tileNode(for: grid.at(x, y))
+                // Origin at top-left of lawn; tile centers stride by tileSize
+                node.position = CGPoint(
+                    x: CGFloat(x) * ts + ts / 2,
+                    y: size.height - (CGFloat(y) * ts + ts / 2)
+                )
+                gridLayer.addChild(node)
+            }
+        }
+    }
+
+    // MARK: - SpriteKit lifecycle
+    override func didMove(to view: SKView) {
+        super.didMove(to: view)
+        if gridLayer.parent == nil {
+            addChild(gridLayer)
+        }
     }
 
     func retry() {
