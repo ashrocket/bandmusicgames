@@ -50,9 +50,12 @@ final class GoonGameScene: SKScene, ObservableObject {
 
     func nextLevel() {
         if levelNum >= GoonLevels.all.count {
+            saveWon()
             phase = .win
         } else {
-            startLevel(levelNum + 1)
+            let next = levelNum + 1
+            save(level: next)
+            startLevel(next)
         }
     }
 
@@ -68,9 +71,14 @@ final class GoonGameScene: SKScene, ObservableObject {
             phase = .gameOver
             return
         }
-        let pct = cutPctOverride ?? grid.cutPercentage
+        let pct = cutPctOverride ?? Double(grid.cutPercentage)
         if pct >= Double(config.win) {
-            phase = (levelNum >= GoonLevels.all.count) ? .win : .levelComplete
+            if levelNum >= GoonLevels.all.count {
+                saveWon()
+                phase = .win
+            } else {
+                phase = .levelComplete
+            }
         }
     }
 
@@ -86,3 +94,48 @@ final class GoonGameScene: SKScene, ObservableObject {
     }
     private var lastUpdate: TimeInterval?
 }
+
+// MARK: - Persistence
+
+extension GoonGameScene {
+    private static let savedLevelKey = "goon_level"
+    private static let hasWonKey = "goon_won"
+
+    static var savedLevel: Int {
+        let n = UserDefaults.standard.integer(forKey: savedLevelKey)
+        return n == 0 ? 1 : min(n, GoonLevels.all.count)
+    }
+
+    static var hasWon: Bool {
+        UserDefaults.standard.bool(forKey: hasWonKey)
+    }
+
+    fileprivate func save(level: Int) {
+        UserDefaults.standard.set(level, forKey: Self.savedLevelKey)
+    }
+
+    fileprivate func saveWon() {
+        UserDefaults.standard.set(true, forKey: Self.hasWonKey)
+    }
+
+    fileprivate func clearProgress() {
+        UserDefaults.standard.removeObject(forKey: Self.savedLevelKey)
+        UserDefaults.standard.removeObject(forKey: Self.hasWonKey)
+    }
+
+    func replayFromWin() {
+        clearProgress()
+        levelNum = 1
+        score = 0
+        phase = .title
+    }
+}
+
+#if DEBUG
+extension GoonGameScene {
+    var phaseForTesting: GoonPhase {
+        get { phase }
+        set { phase = newValue }
+    }
+}
+#endif

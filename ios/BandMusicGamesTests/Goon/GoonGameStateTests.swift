@@ -53,3 +53,42 @@ final class GoonGameStateTests: XCTestCase {
         XCTAssertEqual(scene.gas, 180)
     }
 }
+
+extension GoonGameStateTests {
+    func test_savedLevel_defaultsTo1() {
+        UserDefaults.standard.removeObject(forKey: "goon_level")
+        XCTAssertEqual(GoonGameScene.savedLevel, 1)
+    }
+
+    func test_completingLevel_savesNextAsUnlocked() {
+        UserDefaults.standard.removeObject(forKey: "goon_level")
+        let scene = GoonGameScene.make()
+        scene.startLevel(1)
+        scene.cutPctOverride = 0.81
+        scene.tickGameLogic(deltaSeconds: 0.016)
+        XCTAssertEqual(scene.phase, .levelComplete)
+        scene.nextLevel()
+        XCTAssertEqual(GoonGameScene.savedLevel, 2)
+    }
+
+    func test_winningLevel5_setsWonFlag() {
+        UserDefaults.standard.removeObject(forKey: "goon_won")
+        let scene = GoonGameScene.make()
+        scene.startLevel(5)
+        scene.cutPctOverride = 0.91
+        scene.tickGameLogic(deltaSeconds: 0.016)
+        XCTAssertEqual(scene.phase, .win)
+        XCTAssertTrue(GoonGameScene.hasWon)
+    }
+
+    func test_replayFromWin_resetsAllProgress() {
+        UserDefaults.standard.set(5, forKey: "goon_level")
+        UserDefaults.standard.set(true, forKey: "goon_won")
+        let scene = GoonGameScene.make()
+        scene.phaseForTesting = .win
+        scene.replayFromWin()
+        XCTAssertEqual(scene.phase, .title)
+        XCTAssertEqual(GoonGameScene.savedLevel, 1)
+        XCTAssertFalse(GoonGameScene.hasWon)
+    }
+}
