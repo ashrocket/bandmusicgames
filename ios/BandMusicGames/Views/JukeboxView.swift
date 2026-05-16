@@ -99,13 +99,15 @@ struct JukeboxView: View {
                     Spacer(minLength: 12)
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .clipShape(RoundedRectangle(cornerRadius: 28))
             .overlay(
                 RoundedRectangle(cornerRadius: 28)
                     .stroke(outerChrome, lineWidth: 5)
             )
             .shadow(color: .black.opacity(0.7), radius: 20, y: 10)
-            .padding(16)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
         }
         .onAppear { cabinetGlow = isCurrentSongPlaying }
         .onChange(of: isCurrentSongPlaying) { playing in

@@ -29,26 +29,6 @@ extension Song {
             unlocked: true
         ),
         Song(
-            id: "fratty",
-            title: "FRATTY PIPELINE",
-            artist: "GROUCHO BARKS",
-            gameName: "FRATTY PIPELINE",
-            gameUrl: "https://frattypipeline.grouchobarks.bandmusicgames.party",
-            trackUri: "spotify:track:33lVSu93J91BDmhfRT7iTA",
-            hexColor: "#ff8c00",
-            unlocked: true
-        ),
-        Song(
-            id: "garden",
-            title: "STAINED GRASS WINDOW",
-            artist: "GROUCHO BARKS",
-            gameName: "GARDEN",
-            gameUrl: "https://garden.grouchobarks.bandmusicgames.party",
-            trackUri: "spotify:track:5FjmryC7WxCnaeutu1XpRg",
-            hexColor: "#a8e063",
-            unlocked: true
-        ),
-        Song(
             id: "francis",
             title: "FRANCIS",
             artist: "DARGER",
@@ -59,42 +39,12 @@ extension Song {
             unlocked: true
         ),
         Song(
-            id: "thai-lunch",
-            title: "THAI LUNCH",
-            artist: "VARIOUS",
-            gameName: "THAI LUNCH",
-            gameUrl: "https://thai-lunch.bandmusicgames.party",
-            trackUri: "spotify:track:5F6r2aDjKbkaz1sNFcql5c",
-            hexColor: "#ff4e50",
-            unlocked: true
-        ),
-        Song(
-            id: "pale",
-            title: "PALE",
-            artist: "???",
-            gameName: "PALE",
-            gameUrl: "https://pale.bandmusicgames.party",
-            trackUri: "spotify:track:6lrQWiXw2IMtxKJd53PhJV",
-            hexColor: "#c9d6df",
-            unlocked: true
-        ),
-        Song(
-            id: "rust-cards",
-            title: "RUST CARDS",
-            artist: "???",
-            gameName: "RUST CARDS",
-            gameUrl: "https://rust-cards.bandmusicgames.party",
-            trackUri: "spotify:track:52y4KhkcAbYcogFg2u7UVP",
-            hexColor: "#ce2f39",
-            unlocked: true
-        ),
-        Song(
             id: "narasroom",
             title: "LIZZY MCGUIRE",
             artist: "NARA'S ROOM",
             gameName: "HALF COURT HERO",
             gameUrl: "https://lizzymcguire.narasroom.bandmusicgames.party",
-            trackUri: "spotify:track:0000000000000000000001",
+            trackUri: "spotify:track:7kNqAfUxLmrETcwvBTQCkg",
             hexColor: "#FF1493",
             unlocked: true
         ),

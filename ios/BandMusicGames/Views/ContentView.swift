@@ -33,10 +33,19 @@ struct ContentView: View {
                 onSkip: { auth.skipSpotify() }
             )
         }
-        .sheet(item: $launchingSong) { song in
-            GameSheetView(song: song, spotifyToken: auth.accessToken)
+        .fullScreenCover(item: $launchingSong) { song in
+            switch nativeGame(for: song) {
+            case .francis:
+                FrancisGameView()
+                    .environmentObject(auth)
+            case .lizzyMcGuire:
+                LizzyMcGuireGameView()
+                    .environmentObject(auth)
+            case nil:
+                GameSheetView(song: song, spotifyToken: auth.accessToken)
+            }
         }
-        .sheet(isPresented: $showSpotifySheet) {
+        .fullScreenCover(isPresented: $showSpotifySheet) {
             SpotifySheetView()
                 .environmentObject(auth)
         }
@@ -59,7 +68,8 @@ struct ContentView: View {
             return
         }
 
-        if !auth.isConnected {
+        let isNative = nativeGame(for: song) != nil
+        if !auth.isConnected && !isNative {
             showSpotifySheet = true
             return
         }
@@ -78,6 +88,25 @@ struct ContentView: View {
         }
 
         launchingSong = song
+    }
+
+    private enum NativeGame {
+        case francis
+        case lizzyMcGuire
+    }
+
+    private func nativeGame(for song: Song) -> NativeGame? {
+        if song.id == "francis" {
+            return .francis
+        }
+
+        if song.id == "narasroom"
+            || song.gameUrl.localizedCaseInsensitiveContains("lizzymcguire")
+            || song.title.localizedCaseInsensitiveContains("lizzy") {
+            return .lizzyMcGuire
+        }
+
+        return nil
     }
 }
 

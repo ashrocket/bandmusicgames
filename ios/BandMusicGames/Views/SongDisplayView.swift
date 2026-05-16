@@ -119,7 +119,7 @@ struct SongDisplayView: View {
         VStack(spacing: 8) {
             Text(song.unlocked ? song.title : "???")
                 .font(.system(size: 22, weight: .black, design: .serif))
-                .tracking(3)
+                .tracking(1.5)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(
                     song.unlocked
@@ -136,7 +136,7 @@ struct SongDisplayView: View {
                 )
                 .shadow(color: song.color.opacity(isThisSongPlaying ? 0.9 : 0.6), radius: isThisSongPlaying ? 12 : 8)
                 .lineLimit(2)
-                .minimumScaleFactor(0.7)
+                .minimumScaleFactor(0.5)
                 .animation(.easeInOut(duration: 0.4), value: isThisSongPlaying)
 
             if song.unlocked {
@@ -215,20 +215,25 @@ struct SongDisplayView: View {
                 .tracking(5)
                 .foregroundStyle(amberGradient)
                 .shadow(color: Color(red: 1.0, green: 0.65, blue: 0.10).opacity(0.7), radius: 10)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
 
             Text("CONNECT SPOTIFY TO PLAY WITH MUSIC")
                 .font(.system(size: 9, weight: .medium, design: .monospaced))
-                .tracking(2)
+                .tracking(1)
                 .foregroundColor(Color(red: 0.65, green: 0.52, blue: 0.30).opacity(0.7))
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             Spacer()
 
             Button(action: onShowSpotify) {
                 Text("▶  CONNECT SPOTIFY")
                     .font(.system(size: 13, weight: .bold, design: .monospaced))
-                    .tracking(2)
+                    .tracking(1)
                     .foregroundColor(Color(red: 0.08, green: 0.05, blue: 0.02))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
                     .background(amberGradient)
@@ -242,6 +247,8 @@ struct SongDisplayView: View {
                     .font(.system(size: 9, weight: .medium, design: .monospaced))
                     .tracking(2)
                     .foregroundColor(Color(red: 0.60, green: 0.48, blue: 0.28).opacity(0.65))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
             }
         }
     }

@@ -12,9 +12,11 @@
 		1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
 		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
+		62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */; };
 		72D64E1818F031BF93F3AD9C /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = F282D587BD99FF41373791FB /* Song.swift */; };
 		78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D77DC43028C080E39E78EBBA /* Assets.xcassets */; };
 		78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AB66BC63FF553633DE7F80 /* ContentView.swift */; };
+		7F2F44C698F84FC2BFC5B1E1 /* LizzyMcGuireGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C39C2C62896419DB81342DE /* LizzyMcGuireGameView.swift */; };
 		8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */; };
 		8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */; };
 		99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE185679CAD568601C864B6E /* ArchHeaderView.swift */; };
@@ -28,6 +30,8 @@
 		1AEED640487C99F9E09BEAE4 /* GameWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWebView.swift; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
 		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
+		4C39C2C62896419DB81342DE /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
+		79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameView.swift; sourceTree = "<group>"; };
 		82AB66BC63FF553633DE7F80 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BandMusicGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
@@ -88,8 +92,18 @@
 				FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */,
 				CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */,
 				494493654D27227DBC1E24DB /* SpotifySheetView.swift */,
+				78F249AC8A96E504E2113CCA /* Games */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		78F249AC8A96E504E2113CCA /* Games */ = {
+			isa = PBXGroup;
+			children = (
+				79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */,
+				4C39C2C62896419DB81342DE /* LizzyMcGuireGameView.swift */,
+			);
+			path = Games;
 			sourceTree = "<group>";
 		};
 		82DA9B57FC9D7047E19AC897 = {
@@ -203,9 +217,11 @@
 				8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */,
 				8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */,
 				78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */,
+				62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */,
 				0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */,
 				CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */,
 				1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */,
+				7F2F44C698F84FC2BFC5B1E1 /* LizzyMcGuireGameView.swift in Sources */,
 				72D64E1818F031BF93F3AD9C /* Song.swift in Sources */,
 				BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */,
 				48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */,

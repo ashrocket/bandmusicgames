@@ -44,7 +44,9 @@ struct ArchHeaderView: View {
             VStack(spacing: 5) {
                 Text("BAND MUSIC GAMES")
                     .font(.system(size: 20, weight: .black, design: .serif))
-                    .tracking(5)
+                    .tracking(2.5)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
                     .foregroundStyle(amberGoldGradient)
                     .shadow(
                         color: Color(red: 1.0, green: 0.68, blue: 0.10).opacity(0.90),
@@ -54,9 +56,12 @@ struct ArchHeaderView: View {
 
                 Text("SELECT A SONG TO PLAY")
                     .font(.system(size: 8, weight: .semibold, design: .monospaced))
-                    .tracking(3.5)
+                    .tracking(2.5)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                     .foregroundColor(Color(red: 0.85, green: 0.68, blue: 0.35).opacity(0.72))
             }
+            .padding(.horizontal, 16)
             .padding(.top, 24)
         }
         .onAppear { glowing = true }
