@@ -14,9 +14,16 @@ struct GoonGameView: View {
                 options: [.ignoresSiblingOrder, .shouldCullNonVisibleNodes]
             )
             .ignoresSafeArea()
+            if scene.phase == .playing {
+                GoonControlOverlay(input: scene.input)
+                    .ignoresSafeArea()
+            }
             closeButton
         }
-        .onAppear { scene.activate() }
+        .onAppear {
+            scene.activate()
+            scene.startLevel(GoonGameScene.savedLevel)
+        }
         .onDisappear { scene.deactivate() }
     }
 

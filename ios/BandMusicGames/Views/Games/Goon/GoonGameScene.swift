@@ -9,8 +9,19 @@ enum GoonPhase {
     case win
 }
 
+struct GoonMower {
+    var position: CGPoint
+    var velocity: CGVector
+    var facing: CGFloat    // radians
+    var lowGas: Bool
+}
+
 @MainActor
 final class GoonGameScene: SKScene, ObservableObject {
+
+    // MARK: - Constants
+    private static let mowerSpeed: CGFloat = 220  // points per second
+    private static let mowerSize = CGSize(width: 56, height: 56)
 
     // MARK: - Phase state (observed by SwiftUI overlays)
     @Published private(set) var phase: GoonPhase = .title
@@ -23,6 +34,9 @@ final class GoonGameScene: SKScene, ObservableObject {
     var gas: CGFloat = 0
     var grid = GoonGrid(cells: ContiguousArray<GoonTile>(repeating: .tall, count: GoonGrid.width * GoonGrid.height))
     var score: Int = 0
+    var mower: GoonMower = GoonMower(position: .zero, velocity: .zero, facing: 0, lowGas: false)
+    var input: GoonInputController = GoonInputController()
+    private var mowerNode: SKNode?
 
     /// Test hook — when non-nil, used in place of grid.cutPercentage by tickGameLogic.
     var cutPctOverride: Double?
@@ -44,8 +58,34 @@ final class GoonGameScene: SKScene, ObservableObject {
         grid = GoonGrid.make(for: config)
         gas = config.gasMax
         cutPctOverride = nil
+        input.canDig = config.stumps > 0
+        mower.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        mower.velocity = .zero
+        mower.facing = 0
         phase = .playing
         drawGrid()
+        placeMowerNode()
+    }
+
+    private func placeMowerNode() {
+        mowerNode?.removeFromParent()
+        let node = GoonRenderer.sprite(
+            named: "mower-body",
+            size: Self.mowerSize,
+            fallbackColor: SKColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1)
+        )
+        node.position = mower.position
+        node.zPosition = 10
+        addChild(node)
+        mowerNode = node
+    }
+
+    private func clampToLawn(_ p: CGPoint) -> CGPoint {
+        let half = Self.mowerSize.width / 2
+        return CGPoint(
+            x: max(half, min(p.x, size.width - half)),
+            y: max(half, min(p.y, size.height - half))
+        )
     }
 
     func drawGrid() {
@@ -95,6 +135,26 @@ final class GoonGameScene: SKScene, ObservableObject {
 
     func tickGameLogic(deltaSeconds: CGFloat) {
         guard phase == .playing else { return }
+
+        // Apply input to mower
+        let dir = input.joystick
+        let speed = Self.mowerSpeed * deltaSeconds
+        mower.velocity = CGVector(dx: dir.dx * speed, dy: -dir.dy * speed)   // SwiftUI y is inverted vs SpriteKit
+        let dx = mower.velocity.dx
+        let dy = mower.velocity.dy
+        let mag = sqrt(dx * dx + dy * dy)
+        if mag > 0.01 {
+            mower.facing = atan2(dy, dx)
+        }
+        let proposed = CGPoint(
+            x: mower.position.x + mower.velocity.dx,
+            y: mower.position.y + mower.velocity.dy
+        )
+        mower.position = clampToLawn(proposed)
+        mowerNode?.position = mower.position
+        mowerNode?.zRotation = mower.facing
+
+        // Game-over check
         if gas <= 0 {
             phase = .gameOver
             return
