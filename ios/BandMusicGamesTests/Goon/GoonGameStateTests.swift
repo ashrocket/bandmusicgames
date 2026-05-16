@@ -92,3 +92,22 @@ extension GoonGameStateTests {
         XCTAssertFalse(GoonGameScene.hasWon)
     }
 }
+
+extension GoonGameStateTests {
+    func test_gasDrainsOverTimeWhenPlaying() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(2)
+        let initial = scene.gas
+        scene.tickGameLogic(deltaSeconds: 1.0)
+        XCTAssertLessThan(scene.gas, initial)
+    }
+
+    func test_gasDoesNotDrainWhenNotPlaying() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(1)
+        scene.phaseForTesting = .title
+        let initial = scene.gas
+        scene.tickGameLogic(deltaSeconds: 1.0)
+        XCTAssertEqual(scene.gas, initial)
+    }
+}

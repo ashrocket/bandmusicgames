@@ -177,6 +177,14 @@ final class GoonGameScene: SKScene, ObservableObject {
             redrawTile(atWorldPos: mower.position)
         }
 
+        // Gas drain (~16.67ms per frame in web; deltaSeconds * 60 is the scale factor)
+        let drainScale: CGFloat = deltaSeconds * 60
+        let mowerX = Int(mower.position.x / GoonRenderer.tileSize)
+        let mowerY = Int((size.height - mower.position.y) / GoonRenderer.tileSize)
+        let onCut = grid.at(mowerX, mowerY) == .cut
+        let drain = onCut ? config.gasDrain * 0.4 : config.gasDrain
+        gas = max(0, gas - drain * drainScale)
+
         // Game-over check
         if gas <= 0 {
             phase = .gameOver
