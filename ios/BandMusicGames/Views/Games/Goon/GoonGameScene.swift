@@ -13,7 +13,6 @@ struct GoonMower {
     var position: CGPoint
     var velocity: CGVector
     var facing: CGFloat    // radians
-    var lowGas: Bool
 }
 
 @MainActor
@@ -34,7 +33,7 @@ final class GoonGameScene: SKScene, ObservableObject {
     var gas: CGFloat = 0
     var grid = GoonGrid(cells: ContiguousArray<GoonTile>(repeating: .tall, count: GoonGrid.width * GoonGrid.height))
     var score: Int = 0
-    var mower: GoonMower = GoonMower(position: .zero, velocity: .zero, facing: 0, lowGas: false)
+    var mower: GoonMower = GoonMower(position: .zero, velocity: .zero, facing: 0)
     var input: GoonInputController = GoonInputController()
     private var mowerNode: SKNode?
 
@@ -58,6 +57,7 @@ final class GoonGameScene: SKScene, ObservableObject {
         grid = GoonGrid.make(for: config)
         gas = config.gasMax
         cutPctOverride = nil
+        input.reset()
         input.canDig = config.stumps > 0
         mower.position = CGPoint(x: size.width / 2, y: size.height / 2)
         mower.velocity = .zero
