@@ -52,6 +52,7 @@ private final class FrancisGame: ObservableObject {
     @Published var positionMs: Double = 0
     @Published var tiltX: Double = 0
     @Published var tiltY: Double = 0
+    @Published var playerWon: Bool = false
 
     private var ticker: Timer?
     private var startTime: Date?
@@ -78,8 +79,15 @@ private final class FrancisGame: ObservableObject {
         }
         startMotion()
         // Transition from intro → playing after the dog sequence
-        DispatchQueue.main.asyncAfter(deadline: .now() + 9.4) {
-            if self.phase == .intro { self.phase = .playing }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 9.4) { [weak self] in
+            guard let self else { return }
+            if self.phase == .intro {
+                self.phase = .playing
+                // Reveal the canonical pattern immediately on entering play
+                for i in self.targets.indices { self.targets[i].lit = true }
+                self.revealed = true
+                self.doFlash(count: 3)
+            }
         }
     }
 
@@ -120,18 +128,25 @@ private final class FrancisGame: ObservableObject {
     }
 
     func tryConnect(_ a: Int, _ b: Int) {
+        guard phase == .playing else { return }
         guard a != b else { return }
         let key = edgeKey(a, b)
         guard !links.contains(where: { edgeKey($0.a, $0.b) == key }) else { return }
         let correct = canonicalEdges.contains { edgeKey($0.0, $0.1) == key }
         links.append(StarLink(a: a, b: b, correct: correct))
-        if links.filter(\.correct).count == 4 { endMatch() }
+        if links.filter(\.correct).count == 4 && !playerWon {
+            playerWon = true
+            doFlash(count: 5)   // celebratory flash
+        }
     }
 
     private func endMatch() {
         guard phase != .ended else { return }
         phase = .ended
         ticker?.invalidate()
+        dragFrom = nil
+        cursorNorm = nil
+        motion.stopDeviceMotionUpdates()
     }
 
     func nearestTarget(nx: Double, ny: Double, threshold: Double) -> Int? {
@@ -185,11 +200,7 @@ struct FrancisGameView: View {
             }
             .ignoresSafeArea()
         }
-        .onAppear {
-            if auth.accessToken != nil {
-                Task { await auth.playTrack("spotify:track:64h0585a6LWXOdsCD2pOiW") }
-            }
-        }
+        .onAppear { }
         .onDisappear { game.stop() }
     }
 
@@ -260,7 +271,7 @@ struct FrancisGameView: View {
                 let x = t.nx * size.width + ttx
                 let y = t.ny * size.height + tty
                 let isActive = game.dragFrom == t.id
-                let r: Double = isActive ? 8 : 4
+                let r: Double = isActive ? 8 : 5
                 let accent = Color(hex: "#ffd27a")
                 // Glow
                 ctx.fill(Path(ellipseIn: CGRect(x: x - r * 3, y: y - r * 3, width: r * 6, height: r * 6)),
@@ -278,18 +289,22 @@ struct FrancisGameView: View {
     private func dragGesture(in size: CGSize) -> some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { v in
-                let nx = v.location.x / size.width
-                let ny = v.location.y / size.height
+                let ttx = game.tiltX * 0.55
+                let tty = game.tiltY * 0.55
+                let nx = (v.location.x - ttx) / size.width
+                let ny = (v.location.y - tty) / size.height
                 if game.dragFrom == nil {
-                    game.dragFrom = game.nearestTarget(nx: nx, ny: ny, threshold: 0.07)
+                    game.dragFrom = game.nearestTarget(nx: nx, ny: ny, threshold: 0.09)
                 }
                 game.cursorNorm = CGPoint(x: nx, y: ny)
             }
             .onEnded { v in
-                let nx = v.location.x / size.width
-                let ny = v.location.y / size.height
+                let ttx = game.tiltX * 0.55
+                let tty = game.tiltY * 0.55
+                let nx = (v.location.x - ttx) / size.width
+                let ny = (v.location.y - tty) / size.height
                 if let fi = game.dragFrom,
-                   let ti = game.nearestTarget(nx: nx, ny: ny, threshold: 0.07) {
+                   let ti = game.nearestTarget(nx: nx, ny: ny, threshold: 0.09) {
                     game.tryConnect(fi, ti)
                 }
                 game.dragFrom = nil
@@ -314,12 +329,19 @@ struct FrancisGameView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .contentShape(Rectangle())
-        .onTapGesture { game.onPlayPressed() }
+        .onTapGesture { startPlayWithMusic() }
+    }
+
+    private func startPlayWithMusic() {
+        if auth.accessToken != nil {
+            Task { await auth.playTrack("spotify:track:64h0585a6LWXOdsCD2pOiW") }
+        }
+        game.onPlayPressed()
     }
 
     private var playButton: some View {
         Button {
-            game.onPlayPressed()
+            startPlayWithMusic()
         } label: {
             ZStack {
                 Circle()
