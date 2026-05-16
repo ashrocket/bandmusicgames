@@ -172,6 +172,96 @@ git commit -m "feat(goon): scaffold native game module + ContentView wiring"
 
 ---
 
+### Task 1.5: Add BandMusicGamesTests target
+
+**Why this exists:** The plan assumed a `BandMusicGamesTests` XCTest target existed. It doesn't — the project has only the `BandMusicGames` app target. This task adds the target so subsequent TDD-driven tasks (2, 3, 4, 5, 10, 11, 12, 13) have somewhere to put tests.
+
+**Files:**
+- Modify: `bandmusicgames/ios/project.yml`
+- Create: `bandmusicgames/ios/BandMusicGamesTests/Goon/.gitkeep`
+- Create: `bandmusicgames/ios/BandMusicGamesTests/SmokeTests.swift`
+
+- [ ] **Step 1: Add the test target to project.yml**
+
+In `bandmusicgames/ios/project.yml`, under `targets:`, add a second target after `BandMusicGames:`:
+
+```yaml
+  BandMusicGamesTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: BandMusicGamesTests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: party.bandmusicgames.app.tests
+        SWIFT_VERSION: "5.10"
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: 6P24N3R4TP
+        GENERATE_INFOPLIST_FILE: "YES"
+    dependencies:
+      - target: BandMusicGames
+```
+
+- [ ] **Step 2: Create the smoke test**
+
+Create `bandmusicgames/ios/BandMusicGamesTests/SmokeTests.swift`:
+
+```swift
+import XCTest
+@testable import BandMusicGames
+
+final class SmokeTests: XCTestCase {
+    func test_smoke_targetIsImportable() {
+        // If this file compiles, the test target can see the app module.
+        XCTAssertTrue(true)
+    }
+}
+```
+
+Create the Goon subdirectory placeholder so subsequent tasks have a home:
+
+```bash
+mkdir -p ios/BandMusicGamesTests/Goon
+touch ios/BandMusicGamesTests/Goon/.gitkeep
+```
+
+- [ ] **Step 3: Regenerate the Xcode project**
+
+```bash
+cd /Users/ashrocket/ashcode/bandmusicgames/ios && xcodegen generate
+```
+
+Expected: no errors, project.pbxproj updated with new test target.
+
+- [ ] **Step 4: Run the smoke test**
+
+```bash
+xcodebuild -project BandMusicGames.xcodeproj \
+  -scheme BandMusicGames \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
+  -derivedDataPath /private/tmp/bmg-derived \
+  -only-testing:BandMusicGamesTests/SmokeTests/test_smoke_targetIsImportable \
+  test 2>&1 | tail -10
+```
+
+Expected: `** TEST SUCCEEDED **`
+
+If the destination string fails because "iPhone 17" isn't installed, use any available iOS Simulator destination — list them with `xcrun simctl list devices available`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add ios/project.yml \
+        ios/BandMusicGames.xcodeproj \
+        ios/BandMusicGamesTests/SmokeTests.swift \
+        ios/BandMusicGamesTests/Goon/.gitkeep
+git commit -m "feat(goon): add BandMusicGamesTests target + smoke test"
+```
+
+---
+
 ## Phase 2 — Level data & grid
 
 ### Task 2: Level configs with parity tests
