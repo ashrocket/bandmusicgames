@@ -6,13 +6,20 @@ struct GoonControlOverlay: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                JoystickView(direction: $input.joystick)
+                JoystickView(direction: $input.joystick, label: "LEFT")
                     .frame(width: 130, height: 130)
-                    .position(x: geo.size.width / 2, y: geo.size.height - 75)
+                    .position(x: 75, y: geo.size.height - 75)
+
+                JoystickView(direction: $input.joystick2, label: "RIGHT")
+                    .frame(width: 130, height: 130)
+                    .position(x: geo.size.width - 75, y: geo.size.height - 75)
+
                 if input.canDig {
+                    // When dig is needed (Task 11+), the dig button lives at top-right
+                    // to avoid clashing with the right stick.
                     DigButton(isPressed: $input.digging)
-                        .frame(width: 130, height: 130)
-                        .position(x: geo.size.width - 75, y: geo.size.height - 75)
+                        .frame(width: 80, height: 80)
+                        .position(x: geo.size.width - 50, y: 90)
                 }
             }
         }
@@ -21,6 +28,7 @@ struct GoonControlOverlay: View {
 
 private struct JoystickView: View {
     @Binding var direction: CGVector
+    let label: String
     @State private var anchor: CGPoint?
     @State private var knob: CGPoint?
 
@@ -30,8 +38,8 @@ private struct JoystickView: View {
                 .fill(Color.white.opacity(0.04))
                 .overlay(Circle().stroke(Color.white.opacity(0.13), lineWidth: 1.5))
 
-            Text("MOVE")
-                .font(.system(size: 12, weight: .bold, design: .monospaced))
+            Text(label)
+                .font(.system(size: 11, weight: .bold, design: .monospaced))
                 .foregroundColor(.white.opacity(0.25))
                 .tracking(1)
                 .opacity(anchor == nil ? 1 : 0)

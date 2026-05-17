@@ -13,7 +13,9 @@
 		16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */; };
 		1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */; };
 		25D266A2AE39D11E3290207A /* GoonGameStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296710A4C4054B8847E988E0 /* GoonGameStateTests.swift */; };
+		2E1941048FCCA967E3209B4E /* mower-body-test.png in Resources */ = {isa = PBXBuildFile; fileRef = AFA2751CFDA95FA6D42E962C /* mower-body-test.png */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
+		3E6CF8FDDAD1FC4C7FB6D3F0 /* PROMPTS.md in Resources */ = {isa = PBXBuildFile; fileRef = AEF87F8F9CB6000885157098 /* PROMPTS.md */; };
 		48DDF8F7F562AAB3706B076F /* GoonWinCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C46AB1759D3E2B0FD65873 /* GoonWinCard.swift */; };
 		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
 		4EC835492418708E317D48D7 /* GoonGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A735B0E92EF1D656491CF991 /* GoonGameScene.swift */; };
@@ -72,6 +74,8 @@
 		9D7C5C786747064F3815AA29 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		A735B0E92EF1D656491CF991 /* GoonGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameScene.swift; sourceTree = "<group>"; };
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
+		AEF87F8F9CB6000885157098 /* PROMPTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PROMPTS.md; sourceTree = "<group>"; };
+		AFA2751CFDA95FA6D42E962C /* mower-body-test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body-test.png"; sourceTree = "<group>"; };
 		C9FFD72A55F6FAFCFB0B8E46 /* GoonLevelCompleteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonLevelCompleteCard.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
 		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -107,9 +111,18 @@
 				4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */,
 				43525B9D693EF310A0F4202C /* Managers */,
 				D8E608E4CDFF018030681AF9 /* Models */,
+				B1080D866BA832A6FD163859 /* Resources */,
 				4EB8570FC283E5A5346975F0 /* Views */,
 			);
 			path = BandMusicGames;
+			sourceTree = "<group>";
+		};
+		3833823A22221E5AE71A21C2 /* Sprites */ = {
+			isa = PBXGroup;
+			children = (
+				57FB63D47A62B89D5C0E912F /* Goon */,
+			);
+			path = Sprites;
 			sourceTree = "<group>";
 		};
 		43525B9D693EF310A0F4202C /* Managers */ = {
@@ -137,6 +150,15 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		57FB63D47A62B89D5C0E912F /* Goon */ = {
+			isa = PBXGroup;
+			children = (
+				AEF87F8F9CB6000885157098 /* PROMPTS.md */,
+				777A4338F82A12683263B385 /* raw */,
+			);
+			path = Goon;
+			sourceTree = "<group>";
+		};
 		6CFBF67D690061FDF4D1E166 /* Goon */ = {
 			isa = PBXGroup;
 			children = (
@@ -148,6 +170,14 @@
 				D67C957DB7DC5D780F03C96A /* Overlays */,
 			);
 			path = Goon;
+			sourceTree = "<group>";
+		};
+		777A4338F82A12683263B385 /* raw */ = {
+			isa = PBXGroup;
+			children = (
+				AFA2751CFDA95FA6D42E962C /* mower-body-test.png */,
+			);
+			path = raw;
 			sourceTree = "<group>";
 		};
 		78F249AC8A96E504E2113CCA /* Games */ = {
@@ -197,6 +227,14 @@
 				FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B1080D866BA832A6FD163859 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3833823A22221E5AE71A21C2 /* Sprites */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		D67C957DB7DC5D780F03C96A /* Overlays */ = {
@@ -313,6 +351,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */,
+				3E6CF8FDDAD1FC4C7FB6D3F0 /* PROMPTS.md in Resources */,
+				2E1941048FCCA967E3209B4E /* mower-body-test.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
