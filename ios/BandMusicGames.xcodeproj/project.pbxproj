@@ -18,12 +18,16 @@
 		3E6CF8FDDAD1FC4C7FB6D3F0 /* PROMPTS.md in Resources */ = {isa = PBXBuildFile; fileRef = AEF87F8F9CB6000885157098 /* PROMPTS.md */; };
 		48DDF8F7F562AAB3706B076F /* GoonWinCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06C46AB1759D3E2B0FD65873 /* GoonWinCard.swift */; };
 		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
+		4B3A7B4EEF853269B3CD1BBD /* tile-cut-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 09D5BD445B18C23A699FDD90 /* tile-cut-1.png */; };
 		4EC835492418708E317D48D7 /* GoonGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A735B0E92EF1D656491CF991 /* GoonGameScene.swift */; };
+		5D60DA52312B3014AB1D782F /* tile-garden-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C44E565AE7E3C0EBFA2C7C9 /* tile-garden-1.png */; };
 		62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */; };
 		68BC58B6BD0404A8BCF8A96E /* GoonInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0976F12D8E9A856D2B313 /* GoonInputController.swift */; };
 		72D64E1818F031BF93F3AD9C /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = F282D587BD99FF41373791FB /* Song.swift */; };
 		78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D77DC43028C080E39E78EBBA /* Assets.xcassets */; };
 		78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AB66BC63FF553633DE7F80 /* ContentView.swift */; };
+		7AADE38802292EF9CBF54AF7 /* tiles.atlas in Resources */ = {isa = PBXBuildFile; fileRef = B3033EE1AE62BCDE59E1725D /* tiles.atlas */; };
+		7D5EAF06C698AE610D313D32 /* mower.atlas in Resources */ = {isa = PBXBuildFile; fileRef = FC21AA98BAB28784B6205613 /* mower.atlas */; };
 		8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */; };
 		8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */; };
 		86AEB69B7971143FE375B455 /* GoonLevelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19C5610ECC95D9810ED7EB35 /* GoonLevelsTests.swift */; };
@@ -39,6 +43,9 @@
 		BA87BC91DD6002F9E8023C88 /* GoonHUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77E03C385FCE3B8AAB906A6 /* GoonHUDOverlay.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
+		CF9FE793BA8757A319F7ECE3 /* tile-house-wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 3CA565CCD94A1866375C8ADC /* tile-house-wall.png */; };
+		E0A73FCD4FE32E5CCE2B91E0 /* tile-tall-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 591554E9E63E0426478FFE77 /* tile-tall-1.png */; };
+		EF77C5FAEED84D4BFFFD9B16 /* mower-body.png in Resources */ = {isa = PBXBuildFile; fileRef = 9725E24546E8CC47861575E4 /* mower-body.png */; };
 		FB4EDC48D0759D59A6C5F99B /* GoonLevelCompleteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFD72A55F6FAFCFB0B8E46 /* GoonLevelCompleteCard.swift */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +63,7 @@
 		0338A82AF4E4E8477F0B562F /* GoonLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonLevels.swift; sourceTree = "<group>"; };
 		06C46AB1759D3E2B0FD65873 /* GoonWinCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonWinCard.swift; sourceTree = "<group>"; };
 		07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
+		09D5BD445B18C23A699FDD90 /* tile-cut-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-cut-1.png"; sourceTree = "<group>"; };
 		0D69141D52E6E5337080195C /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		1191C69D4C779ABC78D45D43 /* GoonGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameView.swift; sourceTree = "<group>"; };
 		19C5610ECC95D9810ED7EB35 /* GoonLevelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonLevelsTests.swift; sourceTree = "<group>"; };
@@ -63,19 +71,24 @@
 		289083FA7A01889E99082256 /* GoonRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonRenderer.swift; sourceTree = "<group>"; };
 		296710A4C4054B8847E988E0 /* GoonGameStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameStateTests.swift; sourceTree = "<group>"; };
 		3AA0976F12D8E9A856D2B313 /* GoonInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonInputController.swift; sourceTree = "<group>"; };
+		3CA565CCD94A1866375C8ADC /* tile-house-wall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-house-wall.png"; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
 		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
+		591554E9E63E0426478FFE77 /* tile-tall-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-tall-1.png"; sourceTree = "<group>"; };
+		5C44E565AE7E3C0EBFA2C7C9 /* tile-garden-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-garden-1.png"; sourceTree = "<group>"; };
 		6F97DAC80503BDB8BE146A93 /* GoonControlOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonControlOverlay.swift; sourceTree = "<group>"; };
 		6FF22F4EAB0DDE94EEB76E94 /* GoonGameOverCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameOverCard.swift; sourceTree = "<group>"; };
 		79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameView.swift; sourceTree = "<group>"; };
 		82AB66BC63FF553633DE7F80 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BandMusicGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		9725E24546E8CC47861575E4 /* mower-body.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body.png"; sourceTree = "<group>"; };
 		9D7C5C786747064F3815AA29 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		A735B0E92EF1D656491CF991 /* GoonGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameScene.swift; sourceTree = "<group>"; };
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
 		AEF87F8F9CB6000885157098 /* PROMPTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PROMPTS.md; sourceTree = "<group>"; };
 		AFA2751CFDA95FA6D42E962C /* mower-body-test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body-test.png"; sourceTree = "<group>"; };
+		B3033EE1AE62BCDE59E1725D /* tiles.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = tiles.atlas; sourceTree = "<group>"; };
 		C9FFD72A55F6FAFCFB0B8E46 /* GoonLevelCompleteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonLevelCompleteCard.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
 		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +100,7 @@
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
 		FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
+		FC21AA98BAB28784B6205613 /* mower.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = mower.atlas; sourceTree = "<group>"; };
 		FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JukeboxView.swift; sourceTree = "<group>"; };
 		FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -153,7 +167,9 @@
 		57FB63D47A62B89D5C0E912F /* Goon */ = {
 			isa = PBXGroup;
 			children = (
+				FC21AA98BAB28784B6205613 /* mower.atlas */,
 				AEF87F8F9CB6000885157098 /* PROMPTS.md */,
+				B3033EE1AE62BCDE59E1725D /* tiles.atlas */,
 				777A4338F82A12683263B385 /* raw */,
 			);
 			path = Goon;
@@ -176,6 +192,11 @@
 			isa = PBXGroup;
 			children = (
 				AFA2751CFDA95FA6D42E962C /* mower-body-test.png */,
+				9725E24546E8CC47861575E4 /* mower-body.png */,
+				09D5BD445B18C23A699FDD90 /* tile-cut-1.png */,
+				5C44E565AE7E3C0EBFA2C7C9 /* tile-garden-1.png */,
+				3CA565CCD94A1866375C8ADC /* tile-house-wall.png */,
+				591554E9E63E0426478FFE77 /* tile-tall-1.png */,
 			);
 			path = raw;
 			sourceTree = "<group>";
@@ -353,6 +374,13 @@
 				78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */,
 				3E6CF8FDDAD1FC4C7FB6D3F0 /* PROMPTS.md in Resources */,
 				2E1941048FCCA967E3209B4E /* mower-body-test.png in Resources */,
+				EF77C5FAEED84D4BFFFD9B16 /* mower-body.png in Resources */,
+				7D5EAF06C698AE610D313D32 /* mower.atlas in Resources */,
+				4B3A7B4EEF853269B3CD1BBD /* tile-cut-1.png in Resources */,
+				5D60DA52312B3014AB1D782F /* tile-garden-1.png in Resources */,
+				CF9FE793BA8757A319F7ECE3 /* tile-house-wall.png in Resources */,
+				E0A73FCD4FE32E5CCE2B91E0 /* tile-tall-1.png in Resources */,
+				7AADE38802292EF9CBF54AF7 /* tiles.atlas in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
