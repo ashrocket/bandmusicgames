@@ -152,25 +152,18 @@ final class GoonGameScene: SKScene, ObservableObject {
     func tickGameLogic(deltaSeconds: CGFloat) {
         guard phase == .playing else { return }
 
-        // Zero-turn mower controls:
-        // - Each stick's vertical axis drives one wheel forward/reverse.
-        // - Linear speed = average wheel speed.
-        // - Angular speed = right wheel - left wheel (positive = turn right/clockwise).
-        let leftWheel  = -input.joystick.dy   // SwiftUI Y inverted: push UP on stick = forward (+)
-        let rightWheel = -input.joystick2.dy
-        let linearSpeed  = (leftWheel + rightWheel) / 2         // -1 ... +1
-        let angularSpeed = (rightWheel - leftWheel)             // -2 ... +2
-
-        // Turning rate scales with the asymmetry. 3.0 rad/s at full opposing sticks.
-        mower.facing += angularSpeed * deltaSeconds * 1.5
-
-        // Move forward in current facing direction.
-        let dist = linearSpeed * Self.mowerSpeed * deltaSeconds
+        // Apply input to mower (single joystick: direction = mower velocity vector)
+        let dir = input.joystick
+        let speed = Self.mowerSpeed * deltaSeconds
+        mower.velocity = CGVector(dx: dir.dx * speed, dy: -dir.dy * speed)   // SwiftUI y inverted vs SpriteKit
+        let mag = sqrt(mower.velocity.dx * mower.velocity.dx + mower.velocity.dy * mower.velocity.dy)
+        if mag > 0.01 {
+            mower.facing = atan2(mower.velocity.dy, mower.velocity.dx)
+        }
         let proposed = CGPoint(
-            x: mower.position.x + cos(mower.facing) * dist,
-            y: mower.position.y + sin(mower.facing) * dist
+            x: mower.position.x + mower.velocity.dx,
+            y: mower.position.y + mower.velocity.dy
         )
-        mower.velocity = CGVector(dx: proposed.x - mower.position.x, dy: proposed.y - mower.position.y)
         mower.position = clampToLawn(proposed)
         mowerNode?.position = mower.position
         mowerNode?.zRotation = mower.facing
