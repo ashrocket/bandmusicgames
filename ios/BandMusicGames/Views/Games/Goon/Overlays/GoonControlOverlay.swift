@@ -8,7 +8,7 @@ struct GoonControlOverlay: View {
             ZStack {
                 JoystickView(direction: $input.joystick)
                     .frame(width: 130, height: 130)
-                    .position(x: 75, y: geo.size.height - 75)
+                    .position(x: geo.size.width / 2, y: geo.size.height - 75)
                 if input.canDig {
                     DigButton(isPressed: $input.digging)
                         .frame(width: 130, height: 130)
