@@ -7,7 +7,7 @@ private let targetNormPoints: [(Double, Double)] = [
     (0.18, 0.35), (0.35, 0.52), (0.52, 0.28), (0.72, 0.62), (0.88, 0.38),
 ]
 private let canonicalEdges: [(Int, Int)] = [(0,1),(1,2),(2,3),(3,4)]
-private let ambientCount = 75
+private let ambientCount = 220
 private let trackDurationMs: Double = 212_000   // Francis · Darger ≈ 3:32
 
 // MARK: - Models
@@ -55,6 +55,7 @@ private final class FrancisGame: ObservableObject {
     @Published var tiltX: Double = 0
     @Published var tiltY: Double = 0
     @Published var playerWon: Bool = false
+    private var playerWonAt: TimeInterval = 0
 
     private var ticker: Timer?
     private var startTime: Date?
@@ -92,7 +93,7 @@ private final class FrancisGame: ObservableObject {
                 // Reveal the canonical pattern immediately on entering play
                 for i in self.targets.indices { self.targets[i].lit = true }
                 self.revealed = true
-                self.doFlash(count: 3)
+                self.doFlash(count: 2)
             }
         }
     }
@@ -106,19 +107,25 @@ private final class FrancisGame: ObservableObject {
         guard let t0 = startTime else { return }
         positionMs = min(-t0.timeIntervalSinceNow * 1000, trackDurationMs)
         updateReveal()
-        if phase == .playing && positionMs >= trackDurationMs - 500 { endMatch() }
+        if phase == .playing {
+            if positionMs >= trackDurationMs - 500 {
+                endMatch()
+            } else if playerWon && (positionMs - playerWonAt) >= 30_000 {
+                endMatch()   // they've already won; give the card 30s after victory regardless of song length
+            }
+        }
     }
 
     private func updateReveal() {
         let t = positionMs / trackDurationMs
-        let ambLit = Int(min(t / 0.3, 1.0) * Double(ambientCount))
+        let ambLit = Int(min(t / 0.15, 1.0) * Double(ambientCount))
         for i in ambient.indices { ambient[i].lit = i < ambLit }
-        let tgtLit = Int(max(0, (t - 0.05) / 0.20) * Double(targets.count))
+        let tgtLit = Int(max(0, (t - 0.02) / 0.10) * Double(targets.count))
         for i in targets.indices { targets[i].lit = i < tgtLit }
-        if t >= 0.3 && !revealed {
+        if t >= 0.15 && !revealed {
             revealed = true
             for i in targets.indices { targets[i].lit = true }
-            doFlash(count: 3)
+            doFlash(count: 2)   // reminder flash, 2x not 3x
         }
     }
 
@@ -142,6 +149,7 @@ private final class FrancisGame: ObservableObject {
         links.append(StarLink(a: a, b: b, correct: correct))
         if links.filter(\.correct).count == 4 && !playerWon {
             playerWon = true
+            playerWonAt = positionMs
             doFlash(count: 5)   // celebratory flash
         }
     }
@@ -207,7 +215,10 @@ struct FrancisGameView: View {
                     if game.phase == .pressPlay  { pressPlayOverlay }
                     if game.phase == .intro      { DogIntroView(onDone: {}) }
                     if game.phase == .playing    { hud }
-                    if game.phase == .ended      { ResultCardView(correct: game.correctCount, total: 4, onDismiss: { dismiss() }) }
+                    if game.phase == .ended {
+                        ResultCardView(correct: game.correctCount, total: 4, onDismiss: { dismiss() })
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
                     controls
                 }
                 .contentShape(Rectangle())
@@ -243,9 +254,8 @@ struct FrancisGameView: View {
                 let x = s.nx * size.width + tx
                 let y = s.ny * size.height + ty
                 let r = s.radius
-                // Twinkle: alpha modulates by sin(time + phase)
-                let twinkle = 0.7 + 0.3 * sin(game.positionMs / 600 + s.phase)
-                // Temperature: cool blue → warm gold
+                // Stronger twinkle: 0.2 to 1.0 range; faster cycle
+                let twinkle = 0.6 + 0.4 * sin(game.positionMs / 380 + s.phase)
                 let starColor = Color(
                     red: 0.85 + s.temperature * 0.15,
                     green: 0.85 + s.temperature * 0.05,
@@ -253,7 +263,7 @@ struct FrancisGameView: View {
                 )
                 ctx.fill(
                     Path(ellipseIn: CGRect(x: x - r, y: y - r, width: r * 2, height: r * 2)),
-                    with: .color(starColor.opacity(0.55 * twinkle))
+                    with: .color(starColor.opacity(0.7 * twinkle))
                 )
             }
 
