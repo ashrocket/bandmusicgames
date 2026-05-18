@@ -11,8 +11,11 @@
 		0BB28A9917C8246640D3306A /* GoonControlOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F97DAC80503BDB8BE146A93 /* GoonControlOverlay.swift */; };
 		0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEED640487C99F9E09BEAE4 /* GameWebView.swift */; };
 		16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */; };
+		1A3845C70CAD91BD6F4928C0 /* FrattypipelineHUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B444D7D63A005E550F74F2 /* FrattypipelineHUDOverlay.swift */; };
 		1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */; };
+		1DAE0B13CB8CC742ECB95E17 /* FrattypipelineGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74250B428E7A65502C984FBB /* FrattypipelineGameView.swift */; };
 		25D266A2AE39D11E3290207A /* GoonGameStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296710A4C4054B8847E988E0 /* GoonGameStateTests.swift */; };
+		27D27FD09BA6BD46DC01D61C /* FrattypipelineInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5D105B53CF7E46B6B8310E2 /* FrattypipelineInputController.swift */; };
 		2E1941048FCCA967E3209B4E /* mower-body-test.png in Resources */ = {isa = PBXBuildFile; fileRef = AFA2751CFDA95FA6D42E962C /* mower-body-test.png */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
 		3E6CF8FDDAD1FC4C7FB6D3F0 /* PROMPTS.md in Resources */ = {isa = PBXBuildFile; fileRef = AEF87F8F9CB6000885157098 /* PROMPTS.md */; };
@@ -36,6 +39,7 @@
 		99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE185679CAD568601C864B6E /* ArchHeaderView.swift */; };
 		9F307F7F839964772355F998 /* GoonRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289083FA7A01889E99082256 /* GoonRenderer.swift */; };
 		A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */; };
+		A7C07EA5BC2B1041E571DE88 /* FrattypipelinePrototypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C202C01CBDDADC69CA3063 /* FrattypipelinePrototypeTests.swift */; };
 		A7E850702F30A3217A87833B /* GoonGameOverCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FF22F4EAB0DDE94EEB76E94 /* GoonGameOverCard.swift */; };
 		B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */; };
 		B77ADD7A2AD67E86F96C3409 /* GoonLevels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0338A82AF4E4E8477F0B562F /* GoonLevels.swift */; };
@@ -43,7 +47,9 @@
 		BA87BC91DD6002F9E8023C88 /* GoonHUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E77E03C385FCE3B8AAB906A6 /* GoonHUDOverlay.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
+		CE5BCDEC45C1BE97B045DCDA /* FrattypipelineControlOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30171B83B6A54D4DEC5A1A9B /* FrattypipelineControlOverlay.swift */; };
 		CF9FE793BA8757A319F7ECE3 /* tile-house-wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 3CA565CCD94A1866375C8ADC /* tile-house-wall.png */; };
+		D51A40EA079F5AA2B1A25A85 /* FrattypipelineScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37353837C222690B0AB7363 /* FrattypipelineScene.swift */; };
 		E0A73FCD4FE32E5CCE2B91E0 /* tile-tall-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 591554E9E63E0426478FFE77 /* tile-tall-1.png */; };
 		EF77C5FAEED84D4BFFFD9B16 /* mower-body.png in Resources */ = {isa = PBXBuildFile; fileRef = 9725E24546E8CC47861575E4 /* mower-body.png */; };
 		FB4EDC48D0759D59A6C5F99B /* GoonLevelCompleteCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9FFD72A55F6FAFCFB0B8E46 /* GoonLevelCompleteCard.swift */; };
@@ -70,6 +76,7 @@
 		1AEED640487C99F9E09BEAE4 /* GameWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWebView.swift; sourceTree = "<group>"; };
 		289083FA7A01889E99082256 /* GoonRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonRenderer.swift; sourceTree = "<group>"; };
 		296710A4C4054B8847E988E0 /* GoonGameStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameStateTests.swift; sourceTree = "<group>"; };
+		30171B83B6A54D4DEC5A1A9B /* FrattypipelineControlOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrattypipelineControlOverlay.swift; sourceTree = "<group>"; };
 		3AA0976F12D8E9A856D2B313 /* GoonInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonInputController.swift; sourceTree = "<group>"; };
 		3CA565CCD94A1866375C8ADC /* tile-house-wall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-house-wall.png"; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
@@ -78,12 +85,14 @@
 		5C44E565AE7E3C0EBFA2C7C9 /* tile-garden-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-garden-1.png"; sourceTree = "<group>"; };
 		6F97DAC80503BDB8BE146A93 /* GoonControlOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonControlOverlay.swift; sourceTree = "<group>"; };
 		6FF22F4EAB0DDE94EEB76E94 /* GoonGameOverCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameOverCard.swift; sourceTree = "<group>"; };
+		74250B428E7A65502C984FBB /* FrattypipelineGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrattypipelineGameView.swift; sourceTree = "<group>"; };
 		79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameView.swift; sourceTree = "<group>"; };
 		82AB66BC63FF553633DE7F80 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BandMusicGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		9725E24546E8CC47861575E4 /* mower-body.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body.png"; sourceTree = "<group>"; };
 		9D7C5C786747064F3815AA29 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		A1B444D7D63A005E550F74F2 /* FrattypipelineHUDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrattypipelineHUDOverlay.swift; sourceTree = "<group>"; };
 		A735B0E92EF1D656491CF991 /* GoonGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameScene.swift; sourceTree = "<group>"; };
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
 		AEF87F8F9CB6000885157098 /* PROMPTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PROMPTS.md; sourceTree = "<group>"; };
@@ -92,9 +101,12 @@
 		C9FFD72A55F6FAFCFB0B8E46 /* GoonLevelCompleteCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonLevelCompleteCard.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
 		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D5D105B53CF7E46B6B8310E2 /* FrattypipelineInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrattypipelineInputController.swift; sourceTree = "<group>"; };
 		D77DC43028C080E39E78EBBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleTubeView.swift; sourceTree = "<group>"; };
+		E37353837C222690B0AB7363 /* FrattypipelineScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrattypipelineScene.swift; sourceTree = "<group>"; };
 		E77E03C385FCE3B8AAB906A6 /* GoonHUDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonHUDOverlay.swift; sourceTree = "<group>"; };
+		E8C202C01CBDDADC69CA3063 /* FrattypipelinePrototypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrattypipelinePrototypeTests.swift; sourceTree = "<group>"; };
 		EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromePlayButton.swift; sourceTree = "<group>"; };
 		EF43B323C8E92D981EE43C95 /* GoonGridTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGridTests.swift; sourceTree = "<group>"; };
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
@@ -206,6 +218,7 @@
 			children = (
 				79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */,
 				07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */,
+				9E1DDE99A9A4987A96F8A9EC /* Frattypipeline */,
 				6CFBF67D690061FDF4D1E166 /* Goon */,
 			);
 			path = Games;
@@ -225,6 +238,7 @@
 			isa = PBXGroup;
 			children = (
 				FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */,
+				9DABF462AA1E6081C7AFA8F7 /* Frattypipeline */,
 				93691F5E4C04940AF172597D /* Goon */,
 			);
 			path = BandMusicGamesTests;
@@ -239,6 +253,25 @@
 				19C5610ECC95D9810ED7EB35 /* GoonLevelsTests.swift */,
 			);
 			path = Goon;
+			sourceTree = "<group>";
+		};
+		9DABF462AA1E6081C7AFA8F7 /* Frattypipeline */ = {
+			isa = PBXGroup;
+			children = (
+				E8C202C01CBDDADC69CA3063 /* FrattypipelinePrototypeTests.swift */,
+			);
+			path = Frattypipeline;
+			sourceTree = "<group>";
+		};
+		9E1DDE99A9A4987A96F8A9EC /* Frattypipeline */ = {
+			isa = PBXGroup;
+			children = (
+				74250B428E7A65502C984FBB /* FrattypipelineGameView.swift */,
+				D5D105B53CF7E46B6B8310E2 /* FrattypipelineInputController.swift */,
+				E37353837C222690B0AB7363 /* FrattypipelineScene.swift */,
+				ECB055E86D99CA7EC6C43CED /* Overlays */,
+			);
+			path = Frattypipeline;
 			sourceTree = "<group>";
 		};
 		AED8F6CE3DF690382D21F806 /* Frameworks */ = {
@@ -276,6 +309,15 @@
 				F282D587BD99FF41373791FB /* Song.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		ECB055E86D99CA7EC6C43CED /* Overlays */ = {
+			isa = PBXGroup;
+			children = (
+				30171B83B6A54D4DEC5A1A9B /* FrattypipelineControlOverlay.swift */,
+				A1B444D7D63A005E550F74F2 /* FrattypipelineHUDOverlay.swift */,
+			);
+			path = Overlays;
 			sourceTree = "<group>";
 		};
 		FF6B55FAC4BD53FB04D8BC73 /* Products */ = {
@@ -391,6 +433,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7C07EA5BC2B1041E571DE88 /* FrattypipelinePrototypeTests.swift in Sources */,
 				25D266A2AE39D11E3290207A /* GoonGameStateTests.swift in Sources */,
 				06E8DA988C22A3A1CFE681A4 /* GoonGridTests.swift in Sources */,
 				86AEB69B7971143FE375B455 /* GoonLevelsTests.swift in Sources */,
@@ -408,6 +451,11 @@
 				8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */,
 				78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */,
 				62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */,
+				CE5BCDEC45C1BE97B045DCDA /* FrattypipelineControlOverlay.swift in Sources */,
+				1DAE0B13CB8CC742ECB95E17 /* FrattypipelineGameView.swift in Sources */,
+				1A3845C70CAD91BD6F4928C0 /* FrattypipelineHUDOverlay.swift in Sources */,
+				27D27FD09BA6BD46DC01D61C /* FrattypipelineInputController.swift in Sources */,
+				D51A40EA079F5AA2B1A25A85 /* FrattypipelineScene.swift in Sources */,
 				0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */,
 				0BB28A9917C8246640D3306A /* GoonControlOverlay.swift in Sources */,
 				A7E850702F30A3217A87833B /* GoonGameOverCard.swift in Sources */,

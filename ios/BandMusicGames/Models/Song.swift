@@ -48,6 +48,16 @@ extension Song {
             hexColor: "#FF1493",
             unlocked: true
         ),
+        Song(
+            id: "frattypipeline",
+            title: "GROUCHO BARKS",
+            artist: "FRATTYPIPELINE",
+            gameName: "FRATTYPIPELINE V2",
+            gameUrl: "https://frattypipeline.bandmusicgames.party",
+            trackUri: "spotify:track:frattypipeline-groucho-barks",
+            hexColor: "#E0AD55",
+            unlocked: true
+        ),
     ]
 }
 

@@ -44,6 +44,9 @@ struct ContentView: View {
             case .goon:
                 GoonGameView()
                     .environmentObject(auth)
+            case .frattypipeline:
+                FrattypipelineGameView(autoplayDemo: frattypipelineAutoplayDemo)
+                    .environmentObject(auth)
             case nil:
                 GameSheetView(song: song, spotifyToken: auth.accessToken)
             }
@@ -70,6 +73,8 @@ struct ContentView: View {
         let targetId: String?
         if args.contains("-bmg-open-goon") {
             targetId = "goon"
+        } else if args.contains("-bmg-open-frattypipeline") {
+            targetId = "frattypipeline"
         } else if args.contains("-bmg-open-francis") {
             targetId = "francis"
         } else if args.contains("-bmg-open-lizzy") {
@@ -118,10 +123,19 @@ struct ContentView: View {
         launchingSong = song
     }
 
+    private var frattypipelineAutoplayDemo: Bool {
+#if DEBUG
+        ProcessInfo.processInfo.arguments.contains("-bmg-frattypipeline-autoplay")
+#else
+        false
+#endif
+    }
+
     private enum NativeGame {
         case francis
         case lizzyMcGuire
         case goon
+        case frattypipeline
     }
 
     private func nativeGame(for song: Song) -> NativeGame? {
@@ -137,6 +151,10 @@ struct ContentView: View {
 
         if song.id == "goon" {
             return .goon
+        }
+
+        if song.id == "frattypipeline" {
+            return .frattypipeline
         }
 
         return nil
