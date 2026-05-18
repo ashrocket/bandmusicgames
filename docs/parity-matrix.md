@@ -15,7 +15,7 @@ Bring the web/laptop games and native iOS games to consistent, high-quality pari
 
 | Surface | Gate | Current command or evidence |
 | --- | --- | --- |
-| Native iOS | Builds on simulator | `xcodebuild -project ios/BandMusicGames.xcodeproj -scheme BandMusicGames -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` |
+| Native iOS | Builds, installs, launches key states, and captures screenshots | `scripts/smoke-ios.sh` |
 | Web lobby | Local page serves and DOM markers render in a browser | `scripts/smoke-web.sh` |
 | Web games | Live URLs respond and local DOM markers render in a browser | `scripts/smoke-web.sh` |
 | Web deploys | GitHub Actions Cloudflare deploy passes | `gh run list --repo ashrocket/<repo> --branch main --limit 1` |
@@ -70,7 +70,7 @@ Bring the web/laptop games and native iOS games to consistent, high-quality pari
 ## Current Implementation Backlog
 
 1. Add the missing `CLOUDFLARE_API_TOKEN` secret to `ashrocket/francis` and rerun the deploy workflow.
-2. Add simulator launch-state checks for native Lizzy, Goon, and Francis.
+2. Expand `scripts/smoke-ios.sh` with stronger visual assertions for each screenshot.
 3. Expand `scripts/smoke-web.sh` with desktop/mobile viewport interaction checks for each game.
 4. For each game, compare web and native manually once, then convert the differences into issue-sized tasks.
 5. Promote better mechanics both ways: web remains laptop canonical, native remains iPhone canonical.

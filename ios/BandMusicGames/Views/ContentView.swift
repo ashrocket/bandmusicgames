@@ -66,9 +66,21 @@ struct ContentView: View {
 
     private func handleLaunchArguments() {
 #if DEBUG
-        guard ProcessInfo.processInfo.arguments.contains("-bmg-open-lizzy"),
-              launchingSong == nil,
-              let song = songs.first(where: { $0.id == "narasroom" })
+        let args = ProcessInfo.processInfo.arguments
+        let targetId: String?
+        if args.contains("-bmg-open-goon") {
+            targetId = "goon"
+        } else if args.contains("-bmg-open-francis") {
+            targetId = "francis"
+        } else if args.contains("-bmg-open-lizzy") {
+            targetId = "narasroom"
+        } else {
+            targetId = nil
+        }
+
+        guard launchingSong == nil,
+              let targetId,
+              let song = songs.first(where: { $0.id == targetId })
         else { return }
 
         selectedIndex = songs.firstIndex(of: song) ?? selectedIndex
