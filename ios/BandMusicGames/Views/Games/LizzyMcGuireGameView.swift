@@ -42,6 +42,14 @@ struct LizzyMcGuireGameView: View {
         .background(Color(hex: "#1a0a3e"))
         .onAppear {
             game.prepare()
+#if DEBUG
+            let args = ProcessInfo.processInfo.arguments
+            if args.contains("-bmg-lizzy-gameplay") {
+                game.debugStartGameplay()
+            } else if args.contains("-bmg-lizzy-teammate-picker") {
+                game.debugOpenTeammatePicker()
+            }
+#endif
             if auth.accessToken != nil {
                 Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
             }
@@ -537,8 +545,7 @@ private struct HalfCourtHeroBadge: View {
 
     var body: some View {
         Canvas { context, size in
-            let p = CourtPlayer(id: hero, team: .home, position: CGPoint(x: size.width / 2, y: size.height - 4), facing: 1)
-            HalfCourtHeroRenderer.drawPlayer(p, in: &context, frame: selected ? 20 : 0, scale: 0.56, active: selected, hasBall: false, overrideGround: size.height - 4)
+            HalfCourtHeroRenderer.drawBadge(hero: hero, in: &context, size: size, selected: selected)
         }
         .opacity(dimmed ? 0.35 : 1)
     }
@@ -600,6 +607,21 @@ private final class HalfCourtHeroGame: ObservableObject {
     func isSelected(_ hero: HalfCourtHeroID) -> Bool {
         hero == selectedPlayer || hero == selectedTeammate
     }
+
+#if DEBUG
+    func debugOpenTeammatePicker() {
+        phase = .characterSelect
+        selectedPlayer = .nara
+        selectedTeammate = .ethan
+        selectStep = 2
+    }
+
+    func debugStartGameplay() {
+        selectedPlayer = .nara
+        selectedTeammate = .ethan
+        startGame()
+    }
+#endif
 
     func startGame() {
         if selectedTeammate == nil || selectedTeammate == selectedPlayer {
@@ -1402,9 +1424,7 @@ private enum HalfCourtHeroRenderer {
             return
         }
 
-        drawSky(in: &context)
-        drawCrowd(in: &context)
-        drawFloor(in: &context)
+        drawCourtBackground(in: &context)
         drawHoop(in: &context)
 
         let ordered = game.players.values.sorted { a, b in
@@ -1427,7 +1447,7 @@ private enum HalfCourtHeroRenderer {
         let groundY = overrideGround ?? p.position.y
         var ctx = context
         ctx.translateBy(x: p.position.x, y: groundY + p.jump)
-        ctx.scaleBy(x: depthScale * p.facing, y: depthScale)
+        ctx.scaleBy(x: depthScale, y: depthScale)
 
         let bob: CGFloat
         let stretchX: CGFloat
@@ -1472,7 +1492,7 @@ private enum HalfCourtHeroRenderer {
         ctx.translateBy(x: 0, y: bob)
         ctx.scaleBy(x: stretchX, y: stretchY)
 
-        drawBody(char: char, in: &ctx)
+        drawSprite(char: char, in: &ctx)
 
         if hasBall {
             if p.animation == .shoot || p.animation == .jump {
@@ -1484,9 +1504,39 @@ private enum HalfCourtHeroRenderer {
         }
     }
 
+    static func drawBadge(hero: HalfCourtHeroID, in context: inout GraphicsContext, size: CGSize, selected: Bool) {
+        let char = hero.character
+        let bottomPad: CGFloat = 7
+        let topPad: CGFloat = 2
+        let spriteHeight = max(1, size.height - topPad - bottomPad)
+        let spriteWidth = spriteHeight * char.spriteAspect
+        let centerX = size.width / 2
+        let groundY = topPad + spriteHeight
+        let shadowWidth = max(34, spriteWidth * 0.68)
+
+        context.fill(
+            Path(ellipseIn: CGRect(x: centerX - shadowWidth / 2, y: groundY - 4, width: shadowWidth, height: 8)),
+            with: .color(.black.opacity(0.28))
+        )
+
+        if selected {
+            context.stroke(
+                Path(ellipseIn: CGRect(x: centerX - shadowWidth * 0.65, y: groundY - 10, width: shadowWidth * 1.3, height: 18)),
+                with: .color(char.hue.opacity(0.85)),
+                lineWidth: 3
+            )
+        }
+
+        context.draw(
+            Image(char.spriteAssetName),
+            in: CGRect(x: centerX - spriteWidth / 2, y: topPad, width: spriteWidth, height: spriteHeight)
+        )
+    }
+
     private static func drawTitleBackground(in context: inout GraphicsContext, frame: Int) {
+        drawCourtBackground(in: &context)
         context.fill(Path(CGRect(x: 0, y: 0, width: hchW, height: hchH)), with: .linearGradient(
-            Gradient(colors: [Color(hex: "#1a0a3e"), Color(hex: "#2d0f5a"), Color(hex: "#0a2060")]),
+            Gradient(colors: [Color(hex: "#1a0a3e").opacity(0.92), Color(hex: "#2d0f5a").opacity(0.72), Color(hex: "#0a2060").opacity(0.82)]),
             startPoint: CGPoint(x: 0, y: 0),
             endPoint: CGPoint(x: 0, y: hchH)
         ))
@@ -1502,6 +1552,10 @@ private enum HalfCourtHeroRenderer {
         let ballY = 155 + abs(sin(CGFloat(frame) * 0.08)) * 40
         let ballX = hchW / 2 + sin(CGFloat(frame) * 0.048) * 130
         drawBall(at: CGPoint(x: ballX, y: ballY), radius: 11, in: &context)
+    }
+
+    private static func drawCourtBackground(in context: inout GraphicsContext) {
+        context.draw(Image("hch-court-env"), in: CGRect(x: 0, y: 0, width: hchW, height: hchH))
     }
 
     private static func drawSky(in context: inout GraphicsContext) {
@@ -1582,6 +1636,12 @@ private enum HalfCourtHeroRenderer {
             net.addLine(to: CGPoint(x: hchHoopX + cos(a) * hchRimR * 0.38, y: hchRimY + 22))
             context.stroke(net, with: .color(.white.opacity(0.85)), lineWidth: 1.2)
         }
+    }
+
+    private static func drawSprite(char: HalfCourtHero, in context: inout GraphicsContext) {
+        let h = char.height
+        let w = h * char.spriteAspect
+        context.draw(Image(char.spriteAssetName), in: CGRect(x: -w / 2, y: -h, width: w, height: h))
     }
 
     private static func drawBody(char: HalfCourtHero, in context: inout GraphicsContext) {
@@ -1747,6 +1807,8 @@ private enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shirt: Color(hex: "#222222"),
                 pants: Color(hex: "#3366DD"),
                 shoes: Color(hex: "#2A2A2A"),
+                spriteAssetName: "hch-nara-sprite",
+                spriteAspect: 569.0 / 1200.0,
                 hairStyle: .bob,
                 threeBonus: 0.10,
                 stealBonus: 0,
@@ -1766,6 +1828,8 @@ private enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shirt: Color(hex: "#32CD32"),
                 pants: Color(hex: "#1C1C2E"),
                 shoes: .white,
+                spriteAssetName: "hch-ethan-sprite",
+                spriteAspect: 320.0 / 987.0,
                 hairStyle: .long,
                 threeBonus: 0,
                 stealBonus: 0.20,
@@ -1785,6 +1849,8 @@ private enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shirt: Color(hex: "#FF6B35"),
                 pants: Color(hex: "#2D5A27"),
                 shoes: Color(hex: "#222222"),
+                spriteAssetName: "hch-brendan-sprite",
+                spriteAspect: 293.0 / 993.0,
                 hairStyle: .beanie,
                 threeBonus: 0,
                 stealBonus: 0,
@@ -1804,6 +1870,8 @@ private enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shirt: Color(hex: "#9B59B6"),
                 pants: Color(hex: "#2C2C2C"),
                 shoes: Color(hex: "#9B59B6"),
+                spriteAssetName: "hch-will-sprite",
+                spriteAspect: 360.0 / 986.0,
                 hairStyle: .glasses,
                 threeBonus: 0.08,
                 stealBonus: 0,
@@ -1826,6 +1894,8 @@ private struct HalfCourtHero {
     let shirt: Color
     let pants: Color
     let shoes: Color
+    let spriteAssetName: String
+    let spriteAspect: CGFloat
     let hairStyle: HairStyle
     let threeBonus: CGFloat
     let stealBonus: CGFloat

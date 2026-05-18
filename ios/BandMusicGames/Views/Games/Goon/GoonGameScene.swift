@@ -42,6 +42,7 @@ final class GoonGameScene: SKScene, ObservableObject {
 
     // MARK: - Render layers
     private let gridLayer = SKNode()
+    private var tileNodes: [Int: SKNode] = [:]
 
     // MARK: - Construction
     static func make() -> GoonGameScene {
@@ -90,34 +91,60 @@ final class GoonGameScene: SKScene, ObservableObject {
 
     func drawGrid() {
         gridLayer.removeAllChildren()
+        tileNodes.removeAll(keepingCapacity: true)
         let ts = GoonRenderer.tileSize
         for y in 0..<GoonGrid.height {
             for x in 0..<GoonGrid.width {
-                let node = GoonRenderer.tileNode(for: grid.at(x, y))
+                let node = GoonRenderer.tileNode(for: grid.at(x, y), x: x, y: y)
                 // Origin at top-left of lawn; tile centers stride by tileSize
                 node.position = CGPoint(
                     x: CGFloat(x) * ts + ts / 2,
                     y: size.height - (CGFloat(y) * ts + ts / 2)
                 )
                 gridLayer.addChild(node)
+                tileNodes[tileIndex(x, y)] = node
             }
         }
     }
 
-    private func redrawTile(atWorldPos pos: CGPoint) {
+    private func redrawTile(x: Int, y: Int, animated: Bool) {
         let ts = GoonRenderer.tileSize
-        let x = Int(pos.x / ts)
-        let y = Int((size.height - pos.y) / ts)
         guard x >= 0, x < GoonGrid.width, y >= 0, y < GoonGrid.height else { return }
         let cx = CGFloat(x) * ts + ts / 2
         let cy = size.height - (CGFloat(y) * ts + ts / 2)
-        for child in gridLayer.children where abs(child.position.x - cx) < 0.5 && abs(child.position.y - cy) < 0.5 {
-            child.removeFromParent()
-            break
-        }
-        let node = GoonRenderer.tileNode(for: grid.at(x, y))
+        let index = tileIndex(x, y)
+        tileNodes[index]?.removeFromParent()
+        let node = GoonRenderer.tileNode(for: grid.at(x, y), x: x, y: y)
         node.position = CGPoint(x: cx, y: cy)
         gridLayer.addChild(node)
+        tileNodes[index] = node
+        if animated {
+            GoonRenderer.runCutSettleAnimation(on: node)
+            emitGrassClippings(at: node.position)
+        }
+    }
+
+    private func tileIndex(_ x: Int, _ y: Int) -> Int {
+        y * GoonGrid.width + x
+    }
+
+    private func tileCoordinate(atWorldPos pos: CGPoint) -> (x: Int, y: Int)? {
+        let ts = GoonRenderer.tileSize
+        let x = Int(pos.x / ts)
+        let y = Int((size.height - pos.y) / ts)
+        guard x >= 0, x < GoonGrid.width, y >= 0, y < GoonGrid.height else { return nil }
+        return (x, y)
+    }
+
+    private func emitGrassClippings(at position: CGPoint) {
+        let emitter = GoonRenderer.clippingEmitter()
+        emitter.position = position
+        gridLayer.addChild(emitter)
+        let cleanup = SKAction.sequence([
+            SKAction.wait(forDuration: 0.55),
+            SKAction.removeFromParent(),
+        ])
+        emitter.run(cleanup)
     }
 
     // MARK: - SpriteKit lifecycle
@@ -169,10 +196,13 @@ final class GoonGameScene: SKScene, ObservableObject {
         mowerNode?.zRotation = mower.facing
 
         // Cut tiles under the mower
+        let cutCoordinate = tileCoordinate(atWorldPos: mower.position)
         let cuts = grid.cutTilesUnderMower(atWorldPos: mower.position, sceneHeight: size.height)
         if cuts > 0 {
             score += 1
-            redrawTile(atWorldPos: mower.position)
+            if let cutCoordinate {
+                redrawTile(x: cutCoordinate.x, y: cutCoordinate.y, animated: true)
+            }
         }
 
         // Gas drain (~16.67ms per frame in web; deltaSeconds * 60 is the scale factor)

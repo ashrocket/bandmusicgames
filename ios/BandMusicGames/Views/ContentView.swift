@@ -59,9 +59,22 @@ struct ContentView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
+        .onAppear(perform: handleLaunchArguments)
     }
 
     // MARK: - Actions
+
+    private func handleLaunchArguments() {
+#if DEBUG
+        guard ProcessInfo.processInfo.arguments.contains("-bmg-open-lizzy"),
+              launchingSong == nil,
+              let song = songs.first(where: { $0.id == "narasroom" })
+        else { return }
+
+        selectedIndex = songs.firstIndex(of: song) ?? selectedIndex
+        launchingSong = song
+#endif
+    }
 
     private func handlePlay() {
         let song = songs[selectedIndex]
