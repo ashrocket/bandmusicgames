@@ -26,7 +26,7 @@ Bring the web/laptop games and native iOS games to consistent, high-quality pari
 
 | Area | Web state | Native state | Reference | Gap / next work |
 | --- | --- | --- | --- | --- |
-| Gameplay | Phaser game with 5 levels, gas, stumps, crickets, skunks, poo hazards, score, retry, win, replay. | SpriteKit port with levels, tile grid, mowing, gas, phase state, renderer, native overlays. | Web for gameplay completeness. | Audit hazard behavior against web: skunks, poo, cricket timing, gas penalties, score, replay. |
+| Gameplay | Phaser game with 5 levels, gas, stumps, crickets, skunks, poo hazards, score, retry, win, replay. | SpriteKit port with levels, tile grid, mowing, movement-gated gas drain/cutting, gas-can placement/pickup, stump blockers/digging, phase state, renderer, native overlays. | Web for gameplay completeness. | Continue hazard parity: crickets, skunks, poo, gas penalties, score/combo, replay, and stump power-up behavior. |
 | Controls | Keyboard, pointer, mobile D-pad/throttle/dig, canvas fallback. | Native joystick and dig overlay. | Split: web for laptop, native for app ergonomics. | Add explicit native parity tests for one-hand controls and verify level 3 stump digging. |
 | Art | Pixel/procedural web visuals with Phaser effects. | Native SpriteKit fallback shapes plus texture lookup and grass animation. | Native for texture pipeline, web for gameplay readability. | Finish missing native sprite atlas and compare tile/hazard readability on device. |
 | Audio | Web Audio SFX plus Spotify overlay integration. | Procedural/native audio planned or partial; Spotify track starts from app auth. | Web for SFX richness, native for app Spotify lifecycle. | Port SFX set: mower, cut, gas, dig, splat, spray, game over, level complete. |

@@ -76,6 +76,7 @@ struct GoonGrid {
             switch cell {
             case .tall: mowable += 1
             case .cut: mowable += 1; cut += 1
+            case .stump: mowable += 1
             default: break
             }
         }

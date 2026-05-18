@@ -5,6 +5,7 @@ ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 DEVICE_NAME=${DEVICE_NAME:-iPhone 17}
 BUNDLE_ID=${BUNDLE_ID:-party.bandmusicgames.app}
 DERIVED_DATA=${DERIVED_DATA:-/private/tmp/bmg-ios-smoke-derived}
+SMOKE_SETTLE_SECONDS=${SMOKE_SETTLE_SECONDS:-8}
 
 cd "$ROOT"
 
@@ -50,14 +51,21 @@ run_state() {
   local name=$1
   shift || true
   printf 'LAUNCH %-18s %s\n' "$name" "$*"
-  xcrun simctl terminate "$DEVICE_UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true
-  xcrun simctl launch "$DEVICE_UDID" "$BUNDLE_ID" "$@" >/tmp/bmg-ios-smoke-"$name".log
-  sleep 2
+  xcrun simctl launch \
+    --terminate-running-process \
+    --stdout="/tmp/bmg-ios-smoke-$name.stdout.log" \
+    --stderr="/tmp/bmg-ios-smoke-$name.stderr.log" \
+    "$DEVICE_UDID" \
+    "$BUNDLE_ID" \
+    "$@" >/tmp/bmg-ios-smoke-"$name".log
+  sleep "$SMOKE_SETTLE_SECONDS"
   xcrun simctl io "$DEVICE_UDID" screenshot "/private/tmp/bmg-ios-smoke-$name.png" >/dev/null
 }
 
 run_state "lobby"
 run_state "goon" "-bmg-open-goon"
+run_state "goon-level2" "-bmg-open-goon" "-bmg-goon-level" "2"
+run_state "goon-level3" "-bmg-open-goon" "-bmg-goon-level" "3"
 run_state "francis" "-bmg-open-francis"
 run_state "lizzy-title" "-bmg-open-lizzy"
 run_state "lizzy-picker" "-bmg-open-lizzy" "-bmg-lizzy-teammate-picker"

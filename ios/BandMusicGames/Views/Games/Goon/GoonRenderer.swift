@@ -88,6 +88,84 @@ enum GoonRenderer {
         return emitter
     }
 
+    static func gasCanNode(size: CGSize) -> SKNode {
+        if let texture = textureIfAvailable("gas-can") {
+            let node = SKSpriteNode(texture: texture, size: size)
+            node.texture?.filteringMode = .nearest
+            node.name = "gas-can"
+            return node
+        }
+
+        let container = SKNode()
+        container.name = "gas-can"
+
+        let body = SKShapeNode(rectOf: CGSize(width: size.width * 0.72, height: size.height * 0.78), cornerRadius: 3)
+        body.fillColor = SKColor(red: 0.86, green: 0.08, blue: 0.08, alpha: 1)
+        body.strokeColor = SKColor(red: 0.40, green: 0.02, blue: 0.02, alpha: 1)
+        body.lineWidth = 2
+        container.addChild(body)
+
+        let handle = SKShapeNode(rectOf: CGSize(width: size.width * 0.38, height: size.height * 0.18), cornerRadius: 2)
+        handle.position = CGPoint(x: 0, y: size.height * 0.32)
+        handle.fillColor = SKColor(red: 0.12, green: 0.04, blue: 0.02, alpha: 1)
+        handle.strokeColor = .clear
+        container.addChild(handle)
+
+        let label = SKLabelNode(text: "GAS")
+        label.fontName = "Menlo-Bold"
+        label.fontSize = 7
+        label.fontColor = .white
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        label.position = CGPoint(x: 0, y: -1)
+        label.zPosition = 1
+        container.addChild(label)
+
+        let glow = SKShapeNode(circleOfRadius: size.width * 0.55)
+        glow.fillColor = SKColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 0.12)
+        glow.strokeColor = .clear
+        glow.zPosition = -1
+        container.addChild(glow)
+
+        return container
+    }
+
+    static func gasPickupEmitter() -> SKEmitterNode {
+        let emitter = SKEmitterNode()
+        emitter.particleTexture = sparkTexture
+        emitter.numParticlesToEmit = 18
+        emitter.particleBirthRate = 220
+        emitter.particleLifetime = 0.34
+        emitter.particleLifetimeRange = 0.12
+        emitter.particleSpeed = 96
+        emitter.particleSpeedRange = 36
+        emitter.emissionAngleRange = .pi * 2
+        emitter.particleAlpha = 0.95
+        emitter.particleAlphaSpeed = -2.4
+        emitter.particleScale = 0.9
+        emitter.particleScaleRange = 0.25
+        emitter.particleScaleSpeed = -1.5
+        emitter.particleColor = SKColor(red: 1.0, green: 0.78, blue: 0.12, alpha: 1)
+        emitter.particleColorBlendFactor = 1
+        emitter.zPosition = 12
+        return emitter
+    }
+
+    static func stumpProgressNodes() -> (background: SKNode, fill: SKNode) {
+        let background = SKShapeNode(rectOf: CGSize(width: 44, height: 12), cornerRadius: 3)
+        background.fillColor = SKColor.black.withAlphaComponent(0.72)
+        background.strokeColor = SKColor.white.withAlphaComponent(0.22)
+        background.lineWidth = 1
+        background.name = "stump-progress-bg"
+
+        let fill = SKShapeNode(rect: CGRect(x: -20, y: -4, width: 40, height: 8), cornerRadius: 2)
+        fill.fillColor = SKColor(red: 1.0, green: 0.65, blue: 0.02, alpha: 1)
+        fill.strokeColor = .clear
+        fill.name = "stump-progress-fill"
+
+        return (background, fill)
+    }
+
     static func grassVariant(x: Int, y: Int) -> Int {
         abs((x * 37 + y * 53 + x * y * 11) % 3) + 1
     }
@@ -157,6 +235,19 @@ enum GoonRenderer {
         return texture
     }()
 
+    private static let sparkTexture: SKTexture = {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 5, height: 5), format: format).image { context in
+            UIColor(red: 1.0, green: 0.95, blue: 0.35, alpha: 1).setFill()
+            context.cgContext.fill(CGRect(x: 2, y: 0, width: 1, height: 5))
+            context.cgContext.fill(CGRect(x: 0, y: 2, width: 5, height: 1))
+        }
+        let texture = SKTexture(image: image)
+        texture.filteringMode = .nearest
+        return texture
+    }()
+
     private static func textureIfAvailable(_ name: String) -> SKTexture? {
         // Bundle lookup is authoritative — SKTexture(imageNamed:) returns a
         // missing-resource placeholder if the image isn't found, but it has
@@ -165,7 +256,7 @@ enum GoonRenderer {
             return SKTexture(imageNamed: name)
         }
         // Check inside atlas folders too
-        for atlas in ["mower", "cricket", "skunk", "stump", "tiles", "fx"] {
+        for atlas in ["mower", "cricket", "skunk", "stump", "tiles", "items", "fx"] {
             if Bundle.main.url(forResource: name, withExtension: "png", subdirectory: "\(atlas).atlas") != nil {
                 return SKTexture(imageNamed: name)
             }

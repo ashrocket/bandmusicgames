@@ -36,10 +36,39 @@ struct GoonGameView: View {
         }
         .onAppear {
             scene.activate()
-            scene.startLevel(GoonGameScene.savedLevel)
+            scene.startLevel(launchLevel)
         }
         .onDisappear { scene.deactivate() }
     }
+
+    private var launchLevel: Int {
+#if DEBUG
+        if let debugLevel = debugLaunchLevel {
+            return debugLevel
+        }
+#endif
+        return GoonGameScene.savedLevel
+    }
+
+#if DEBUG
+    private var debugLaunchLevel: Int? {
+        let args = ProcessInfo.processInfo.arguments
+        if let index = args.firstIndex(of: "-bmg-goon-level"),
+           args.indices.contains(index + 1),
+           let level = Int(args[index + 1]) {
+            return level
+        }
+
+        for arg in args {
+            if arg.hasPrefix("-bmg-goon-level="),
+               let level = Int(arg.replacingOccurrences(of: "-bmg-goon-level=", with: "")) {
+                return level
+            }
+        }
+
+        return nil
+    }
+#endif
 
     private var closeButton: some View {
         VStack {

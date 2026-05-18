@@ -97,9 +97,18 @@ extension GoonGameStateTests {
     func test_gasDrainsOverTimeWhenPlaying() {
         let scene = GoonGameScene.make()
         scene.startLevel(2)
+        scene.input.joystick = CGVector(dx: 1, dy: 0)
         let initial = scene.gas
         scene.tickGameLogic(deltaSeconds: 1.0)
         XCTAssertLessThan(scene.gas, initial)
+    }
+
+    func test_gasDoesNotDrainWhileIdleWhenPlaying() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(2)
+        let initial = scene.gas
+        scene.tickGameLogic(deltaSeconds: 1.0)
+        XCTAssertEqual(scene.gas, initial)
     }
 
     func test_gasDoesNotDrainWhenNotPlaying() {
@@ -109,5 +118,81 @@ extension GoonGameStateTests {
         let initial = scene.gas
         scene.tickGameLogic(deltaSeconds: 1.0)
         XCTAssertEqual(scene.gas, initial)
+    }
+
+    func test_idleMowerDoesNotCutGrass() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(2)
+        let initialCutPercentage = scene.grid.cutPercentage
+        scene.tickGameLogic(deltaSeconds: 1.0)
+        XCTAssertEqual(scene.grid.cutPercentage, initialCutPercentage, accuracy: 0.001)
+        XCTAssertEqual(scene.score, 0)
+    }
+}
+
+extension GoonGameStateTests {
+    func test_startLevelPlacesConfiguredGasCans() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(2)
+
+        XCTAssertEqual(scene.gasCans.count, 2)
+        XCTAssertTrue(scene.gasCans.allSatisfy { !$0.collected })
+        XCTAssertEqual(Set(scene.gasCans.map { "\($0.tileX),\($0.tileY)" }).count, 2)
+        XCTAssertTrue(scene.gasCans.allSatisfy { scene.grid.at($0.tileX, $0.tileY) == .tall })
+    }
+
+    func test_collectingGasCanRefillsGasAndMarksItCollected() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(2)
+        let can = scene.gasCans[0]
+        scene.gas = 25
+        scene.mower.position = can.position
+
+        scene.tickGameLogic(deltaSeconds: 0.016)
+
+        XCTAssertEqual(scene.gas, scene.config.gasMax)
+        XCTAssertTrue(scene.gasCans[0].collected)
+        XCTAssertEqual(scene.phase, .playing)
+    }
+
+    func test_startLevelPlacesConfiguredStumpsWithoutGasCanOverlap() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(3)
+
+        let gasTiles = Set(scene.gasCans.map { "\($0.tileX),\($0.tileY)" })
+        let stumpTiles = Set(scene.stumps.map { "\($0.tileX),\($0.tileY)" })
+
+        XCTAssertEqual(scene.stumps.count, 2)
+        XCTAssertEqual(stumpTiles.count, 2)
+        XCTAssertTrue(scene.input.canDig)
+        XCTAssertTrue(stumpTiles.isDisjoint(with: gasTiles))
+        XCTAssertTrue(scene.stumps.allSatisfy { !$0.dug })
+        XCTAssertTrue(scene.stumps.allSatisfy { scene.grid.at($0.tileX, $0.tileY) == .stump })
+    }
+
+    func test_stumpDoesNotDigWithoutDigInput() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(3)
+        let stump = scene.stumps[0]
+        scene.mower.position = stump.position
+
+        scene.tickGameLogic(deltaSeconds: 3.0)
+
+        XCTAssertFalse(scene.stumps[0].dug)
+        XCTAssertEqual(scene.grid.at(stump.tileX, stump.tileY), .stump)
+    }
+
+    func test_diggingStumpRemovesBlockerAndCutsTile() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(3)
+        let stump = scene.stumps[0]
+        scene.mower.position = stump.position
+        scene.input.digging = true
+
+        scene.tickGameLogic(deltaSeconds: 3.0)
+
+        XCTAssertTrue(scene.stumps[0].dug)
+        XCTAssertEqual(scene.grid.at(stump.tileX, stump.tileY), .cut)
+        XCTAssertEqual(scene.phase, .playing)
     }
 }

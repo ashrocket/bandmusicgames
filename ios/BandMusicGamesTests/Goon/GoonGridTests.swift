@@ -36,6 +36,17 @@ final class GoonGridTests: XCTestCase {
         grid.cut(at: 0, 0)
         XCTAssertEqual(grid.cutPercentage, 1.0 / Double(mowable), accuracy: 0.001)
     }
+
+    func test_cutPercentageCountsStumpsAsMowableUntilDug() {
+        var grid = GoonGrid.make(for: GoonLevels.all[2])
+        let mowable = grid.cells.filter { $0 == .tall }.count
+
+        grid.set(4, 4, .stump)
+        XCTAssertEqual(grid.cutPercentage, 0, accuracy: 0.001)
+
+        grid.set(4, 4, .cut)
+        XCTAssertEqual(grid.cutPercentage, 1.0 / Double(mowable), accuracy: 0.001)
+    }
 }
 
 extension GoonGridTests {
@@ -72,5 +83,16 @@ extension GoonGridTests {
             sceneHeight: 480
         )
         XCTAssertEqual(cutsMade, 0)
+    }
+
+    func test_mowerDoesNotCutStumpUntilDug() {
+        var grid = GoonGrid.make(for: GoonLevels.all[2])
+        grid.set(5, 5, .stump)
+        let cutsMade = grid.cutTilesUnderMower(
+            atWorldPos: CGPoint(x: 5 * 32 + 16, y: 480 - (5 * 32 + 16)),
+            sceneHeight: 480
+        )
+        XCTAssertEqual(cutsMade, 0)
+        XCTAssertEqual(grid.at(5, 5), .stump)
     }
 }
