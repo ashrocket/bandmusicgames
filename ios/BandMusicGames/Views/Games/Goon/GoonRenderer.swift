@@ -166,6 +166,63 @@ enum GoonRenderer {
         return (background, fill)
     }
 
+    static func cricketNode(size: CGSize) -> SKNode {
+        if let name = ["cricket-idle", "cricket-hop-1"].first(where: { textureIfAvailable($0) != nil }),
+           let texture = textureIfAvailable(name) {
+            let node = SKSpriteNode(texture: texture, size: size)
+            node.texture?.filteringMode = .nearest
+            node.name = "cricket"
+            return node
+        }
+
+        let container = SKNode()
+        container.name = "cricket"
+
+        let body = SKShapeNode(ellipseOf: CGSize(width: size.width * 0.72, height: size.height * 0.46))
+        body.fillColor = SKColor(red: 0.06, green: 0.46, blue: 0.13, alpha: 1)
+        body.strokeColor = SKColor(red: 0.01, green: 0.16, blue: 0.03, alpha: 1)
+        body.lineWidth = 2
+        container.addChild(body)
+
+        let head = SKShapeNode(circleOfRadius: size.width * 0.22)
+        head.position = CGPoint(x: size.width * 0.28, y: size.height * 0.06)
+        head.fillColor = SKColor(red: 0.12, green: 0.60, blue: 0.18, alpha: 1)
+        head.strokeColor = .clear
+        container.addChild(head)
+
+        for y in [CGFloat(-0.22), CGFloat(0.22)] {
+            let leg = SKShapeNode(rectOf: CGSize(width: size.width * 0.42, height: 2), cornerRadius: 1)
+            leg.position = CGPoint(x: -size.width * 0.05, y: size.height * y)
+            leg.zRotation = y < 0 ? -0.45 : 0.45
+            leg.fillColor = SKColor(red: 0.02, green: 0.23, blue: 0.04, alpha: 1)
+            leg.strokeColor = .clear
+            container.addChild(leg)
+        }
+
+        return container
+    }
+
+    static func cricketSplatNode(size: CGSize) -> SKNode {
+        let container = SKNode()
+        container.name = "cricket-splat"
+
+        let center = SKShapeNode(circleOfRadius: size.width * 0.28)
+        center.fillColor = SKColor(red: 0.0, green: 0.52, blue: 0.08, alpha: 0.88)
+        center.strokeColor = .clear
+        container.addChild(center)
+
+        for i in 0..<7 {
+            let angle = CGFloat(i) / 7 * .pi * 2
+            let spot = SKShapeNode(circleOfRadius: size.width * 0.15)
+            spot.position = CGPoint(x: cos(angle) * size.width * 0.36, y: sin(angle) * size.width * 0.36)
+            spot.fillColor = SKColor(red: 0.08, green: 0.66, blue: 0.08, alpha: 0.80)
+            spot.strokeColor = .clear
+            container.addChild(spot)
+        }
+
+        return container
+    }
+
     static func grassVariant(x: Int, y: Int) -> Int {
         abs((x * 37 + y * 53 + x * y * 11) % 3) + 1
     }

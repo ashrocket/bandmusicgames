@@ -196,3 +196,73 @@ extension GoonGameStateTests {
         XCTAssertEqual(scene.phase, .playing)
     }
 }
+
+extension GoonGameStateTests {
+    func test_startLevelPlacesConfiguredCricketsWithoutItemOverlap() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(4)
+
+        let gasTiles = Set(scene.gasCans.map { "\($0.tileX),\($0.tileY)" })
+        let stumpTiles = Set(scene.stumps.map { "\($0.tileX),\($0.tileY)" })
+        let cricketTiles = Set(scene.crickets.map { "\($0.tileX),\($0.tileY)" })
+
+        XCTAssertEqual(scene.crickets.count, 2)
+        XCTAssertEqual(cricketTiles.count, 2)
+        XCTAssertTrue(cricketTiles.isDisjoint(with: gasTiles))
+        XCTAssertTrue(cricketTiles.isDisjoint(with: stumpTiles))
+        XCTAssertTrue(scene.crickets.allSatisfy { !$0.splatted })
+        XCTAssertTrue(scene.crickets.allSatisfy { scene.grid.at($0.tileX, $0.tileY) == .tall })
+    }
+
+    func test_cricketCollisionSplatsAndDeductsGasOnce() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(4)
+        let cricket = scene.crickets[0]
+        let initialGas = scene.gas
+        scene.mower.position = cricket.position
+
+        scene.tickGameLogic(deltaSeconds: 0.016)
+
+        XCTAssertTrue(scene.crickets[0].splatted)
+        XCTAssertEqual(scene.gas, initialGas - 30)
+        XCTAssertEqual(scene.phase, .playing)
+
+        let gasAfterSplat = scene.gas
+        scene.tickGameLogic(deltaSeconds: 0.016)
+        XCTAssertEqual(scene.gas, gasAfterSplat)
+    }
+
+    func test_cricketsHopOnConfiguredInterval() {
+        let scene = GoonGameScene.make()
+        scene.startLevel(4)
+        scene.mower.position = safeCorner(in: scene)
+
+        let before = scene.crickets.map { "\($0.tileX),\($0.tileY)" }
+        scene.tickGameLogic(deltaSeconds: CGFloat(scene.config.cricketMs) / 1000 + 0.01)
+        let after = scene.crickets.map { "\($0.tileX),\($0.tileY)" }
+
+        XCTAssertNotEqual(before, after)
+        XCTAssertTrue(scene.crickets.allSatisfy { !$0.splatted })
+    }
+
+    private func safeCorner(in scene: GoonGameScene) -> CGPoint {
+        let corners = [
+            CGPoint(x: 28, y: 28),
+            CGPoint(x: scene.size.width - 28, y: 28),
+            CGPoint(x: 28, y: scene.size.height - 28),
+            CGPoint(x: scene.size.width - 28, y: scene.size.height - 28),
+        ]
+
+        return corners.max { lhs, rhs in
+            minimumDistance(from: lhs, to: scene.crickets) < minimumDistance(from: rhs, to: scene.crickets)
+        } ?? CGPoint(x: 28, y: 28)
+    }
+
+    private func minimumDistance(from point: CGPoint, to crickets: [GoonCricket]) -> CGFloat {
+        crickets.map { cricket in
+            let dx = point.x - cricket.position.x
+            let dy = point.y - cricket.position.y
+            return sqrt(dx * dx + dy * dy)
+        }.min() ?? .greatestFiniteMagnitude
+    }
+}

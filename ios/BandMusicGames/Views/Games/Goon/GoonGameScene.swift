@@ -33,6 +33,14 @@ struct GoonStump {
     let barFill: SKNode
 }
 
+struct GoonCricket {
+    var tileX: Int
+    var tileY: Int
+    var position: CGPoint
+    var splatted: Bool
+    var node: SKNode
+}
+
 @MainActor
 final class GoonGameScene: SKScene, ObservableObject {
 
@@ -43,6 +51,8 @@ final class GoonGameScene: SKScene, ObservableObject {
     private static let gasCanPickupDistance = GoonRenderer.tileSize
     private static let stumpDigDistance = GoonRenderer.tileSize * 2
     private static let stumpDigRate: CGFloat = 0.35
+    private static let cricketSize = CGSize(width: 24, height: 24)
+    private static let cricketCollisionDistance = GoonRenderer.tileSize * 0.75
     private static let obstacleCollisionInset: CGFloat = 12
 
     // MARK: - Phase state (observed by SwiftUI overlays)
@@ -60,7 +70,11 @@ final class GoonGameScene: SKScene, ObservableObject {
     var input: GoonInputController = GoonInputController()
     private(set) var gasCans: [GoonGasCan] = []
     private(set) var stumps: [GoonStump] = []
+    private(set) var crickets: [GoonCricket] = []
     private var mowerNode: SKNode?
+    private var occupiedPlacementTiles: Set<Int> = []
+    private var cricketHopElapsed: CGFloat = 0
+    private var cricketHopSequence: Int = 0
 
     /// Test hook — when non-nil, used in place of grid.cutPercentage by tickGameLogic.
     var cutPctOverride: Double?
@@ -88,6 +102,10 @@ final class GoonGameScene: SKScene, ObservableObject {
         input.canDig = config.stumps > 0
         gasCans.removeAll(keepingCapacity: true)
         stumps.removeAll(keepingCapacity: true)
+        crickets.removeAll(keepingCapacity: true)
+        occupiedPlacementTiles.removeAll(keepingCapacity: true)
+        cricketHopElapsed = 0
+        cricketHopSequence = 0
         itemLayer.removeAllChildren()
         mower.position = CGPoint(x: size.width / 2, y: size.height / 2)
         mower.velocity = .zero
@@ -97,6 +115,7 @@ final class GoonGameScene: SKScene, ObservableObject {
         drawGrid()
         placeStumpProgressNodes()
         placeGasCanNodes()
+        placeCricketNodes()
         placeMowerNode()
     }
 
@@ -209,16 +228,14 @@ final class GoonGameScene: SKScene, ObservableObject {
         guard count > 0 else { return [] }
         let center = (x: GoonGrid.width / 2, y: GoonGrid.height / 2)
         var results: [(x: Int, y: Int)] = []
-        var occupied = Set<Int>()
-
         func appendIfAvailable(x: Int, y: Int) {
             guard results.count < count else { return }
             guard x > 0, x < GoonGrid.width - 1, y > 0, y < GoonGrid.height - 1 else { return }
             guard grid.at(x, y) == .tall else { return }
             guard abs(x - center.x) + abs(y - center.y) >= minManhattanFromCenter else { return }
             let index = tileIndex(x, y)
-            guard !occupied.contains(index) else { return }
-            occupied.insert(index)
+            guard !occupiedPlacementTiles.contains(index) else { return }
+            occupiedPlacementTiles.insert(index)
             results.append((x, y))
         }
 
@@ -307,6 +324,25 @@ final class GoonGameScene: SKScene, ObservableObject {
         }
     }
 
+    private func placeCricketNodes() {
+        for tile in placementTiles(count: config.crickets, minManhattanFromCenter: 3, salt: levelNum * 31 + 11) {
+            let position = worldCenterForTile(x: tile.x, y: tile.y)
+            let node = GoonRenderer.cricketNode(size: Self.cricketSize)
+            node.position = position
+            node.zPosition = 8
+            itemLayer.addChild(node)
+            crickets.append(
+                GoonCricket(
+                    tileX: tile.x,
+                    tileY: tile.y,
+                    position: position,
+                    splatted: false,
+                    node: node
+                )
+            )
+        }
+    }
+
     private func emitGrassClippings(at position: CGPoint) {
         let emitter = GoonRenderer.clippingEmitter()
         emitter.position = position
@@ -391,6 +427,8 @@ final class GoonGameScene: SKScene, ObservableObject {
 
         checkGasCans()
         checkStumps(deltaSeconds: deltaSeconds)
+        checkCrickets()
+        moveCrickets(deltaSeconds: deltaSeconds)
 
         // Game-over check
         if gas <= 0 {
@@ -472,6 +510,78 @@ final class GoonGameScene: SKScene, ObservableObject {
         stumps[index].barFill.removeFromParent()
         grid.set(stumps[index].tileX, stumps[index].tileY, .cut)
         redrawTile(x: stumps[index].tileX, y: stumps[index].tileY, animated: true)
+    }
+
+    private func checkCrickets() {
+        guard !crickets.isEmpty else { return }
+
+        for index in crickets.indices where !crickets[index].splatted {
+            let dx = mower.position.x - crickets[index].position.x
+            let dy = mower.position.y - crickets[index].position.y
+            let distance = sqrt(dx * dx + dy * dy)
+            if distance < Self.cricketCollisionDistance {
+                splatCricket(at: index)
+            }
+        }
+    }
+
+    private func splatCricket(at index: Int) {
+        crickets[index].splatted = true
+        gas = max(0, gas - 30)
+
+        let oldNode = crickets[index].node
+        let splat = GoonRenderer.cricketSplatNode(size: Self.cricketSize)
+        splat.position = crickets[index].position
+        splat.zPosition = oldNode.zPosition
+        oldNode.removeAllActions()
+        oldNode.removeFromParent()
+        itemLayer.addChild(splat)
+        crickets[index].node = splat
+    }
+
+    private func moveCrickets(deltaSeconds: CGFloat) {
+        guard config.crickets > 0, config.cricketMs > 0 else { return }
+
+        cricketHopElapsed += deltaSeconds
+        let hopInterval = CGFloat(config.cricketMs) / 1000
+        guard cricketHopElapsed >= hopInterval else { return }
+
+        cricketHopElapsed = cricketHopElapsed.truncatingRemainder(dividingBy: hopInterval)
+        cricketHopSequence += 1
+
+        for index in crickets.indices where !crickets[index].splatted {
+            hopCricket(at: index)
+        }
+    }
+
+    private func hopCricket(at index: Int) {
+        for direction in cricketDirections(for: index) {
+            let nx = crickets[index].tileX + direction.x
+            let ny = crickets[index].tileY + direction.y
+            guard nx >= 0, nx < GoonGrid.width, ny >= 0, ny < GoonGrid.height else { continue }
+            switch grid.at(nx, ny) {
+            case .stump, .house:
+                continue
+            default:
+                crickets[index].tileX = nx
+                crickets[index].tileY = ny
+                crickets[index].position = worldCenterForTile(x: nx, y: ny)
+                crickets[index].node.position = crickets[index].position
+                let hop = SKAction.sequence([
+                    SKAction.scaleX(to: 1.18, y: 0.82, duration: 0.08),
+                    SKAction.scaleX(to: 0.92, y: 1.22, duration: 0.08),
+                    SKAction.scale(to: 1, duration: 0.10),
+                ])
+                crickets[index].node.run(hop, withKey: "cricket-hop")
+                return
+            }
+        }
+    }
+
+    private func cricketDirections(for index: Int) -> [(x: Int, y: Int)] {
+        let directions: [(x: Int, y: Int)] = [(x: -1, y: 0), (x: 1, y: 0), (x: 0, y: -1), (x: 0, y: 1)]
+        let start = abs((levelNum * 31 + index * 17 + cricketHopSequence * 7) % directions.count)
+        return (0..<directions.count).map { directions[(start + $0) % directions.count] }
     }
 
     // MARK: - Lifecycle
