@@ -44,12 +44,17 @@ Use this prompt in a new Codex session.
    - `bandmusicgames` is on `feat/goon-native-port` tracking `origin/feat/goon-native-port`.
    - `forcuttinggrass`, `lizzymcguire`, and `francis` are on `main` tracking `origin/main`.
    - `forcuttinggrass`, `lizzymcguire`, and `francis` were clean by `git status -sb` at handoff.
-   - `bandmusicgames` should also be clean after the latest parity/prototype commits are pushed.
+   - `bandmusicgames` native TestFlight build `202605182100` was archived and uploaded to App Store Connect from this branch.
+   - Archive path used: `/private/tmp/BandMusicGames-202605182100.xcarchive`.
+   - Export/upload path used: `/private/tmp/BandMusicGames-202605182100-export`.
+   - App Store Connect upload output ended with `Uploaded BandMusicGames` and `** EXPORT SUCCEEDED **`; wait for TestFlight processing before installing.
    - `docs/parity-matrix.md` is the current parity tracker.
    - `scripts/smoke-web.sh` exists and passed previously with live HTTP checks plus local DOM checks.
-   - `scripts/smoke-ios.sh` exists and now launches lobby, Goon level 1, Goon level 2, Goon level 3, Francis, Lizzy title, Lizzy picker, and Lizzy gameplay.
-   - Native iOS tests passed with 34 tests and 0 failures.
-   - Native iOS smoke passed and produced screenshots under `/private/tmp/bmg-ios-smoke-*.png`.
+   - `scripts/smoke-ios.sh` exists and now launches lobby, Goon levels 1-5, Frattypipeline autoplay, Francis, Lizzy title, Lizzy picker, and Lizzy gameplay.
+   - Full native iOS tests passed with 41 tests and 0 failures on iPhone 17 simulator.
+   - Focused native iOS tests passed with 30 tests and 0 failures across Frattypipeline, Goon game state, and Goon levels.
+   - Native iOS smoke passed with `SMOKE_SETTLE_SECONDS=8 scripts/smoke-ios.sh` and produced screenshots under `/private/tmp/bmg-ios-smoke-*.png`.
+   - Screenshot sanity checks confirmed nonblank lobby, Goon levels 1-5, Frattypipeline, Francis, Lizzy title, Lizzy picker, and Lizzy gameplay captures.
    - `forcuttinggrass` deploy workflow passed: run `26057901595`.
    - `halfcourthero` deploy workflow passed: run `26057900787`.
    - `francis` deploy workflow failed: run `26059966440`.
@@ -64,29 +69,35 @@ Use this prompt in a new Codex session.
 
 6. Latest native Goon parity implemented:
 
+   - Pushed commits:
+     - `f31911c feat: close native goon gas and stump gaps`
+     - `7106d52 feat: add native goon cricket parity`
    - Movement-gated mowing and gas drain now match the web game behavior more closely.
    - Gas cans are placed deterministically, render on an item layer, bob visibly, refill gas to `config.gasMax`, and emit pickup particles.
    - Stumps are placed deterministically without overlapping gas cans, block mower movement and mowing, show dig progress, and become cut tiles when dug.
+   - Crickets are placed deterministically without overlapping gas cans or stumps, hop on the configured level timer, splat on collision, and subtract 30 gas.
    - Level debug launch arguments support `-bmg-goon-level 2` and `-bmg-goon-level=2`.
-   - Focused tests cover idle gas/cutting, gas-can placement and pickup, stump placement, stump blocking, and stump digging.
+   - Focused tests cover idle gas/cutting, gas-can placement and pickup, stump placement, stump blocking, stump digging, cricket placement, cricket hopping, and cricket gas penalty.
 
 7. Latest native Frattypipeline state:
 
    - A Frattypipeline V2 promise prototype exists under `ios/BandMusicGames/Views/Games/Frattypipeline/`.
    - The native app lobby can route to the prototype through the `frattypipeline` song entry.
+   - Debug launch supports `-bmg-open-frattypipeline` and `-bmg-frattypipeline-autoplay` for smoke-test capture.
+   - Prototype now has a beat-indexed song section, campus hype state, progressive stem unlocks, HUD pills for mood/section/stems, a generated audio conductor, and song-reactive backdrop/tile color changes.
    - Prototype tests exist under `ios/BandMusicGamesTests/Frattypipeline/`.
    - `docs/frattypipeline-v2-goal.md` captures the product goal and vertical-slice acceptance criteria.
    - `xcodegen generate` was run from `ios/` so the Xcode project includes the new prototype sources and tests.
 
 8. Next concrete implementation task:
 
-   Continue parity work by choosing the weakest remaining surface and closing the next small gap. For Goon native, the remaining gameplay gaps are crickets, skunks, poo hazards, gas penalties, score/combo behavior, replay details, and stump power-up behavior. For web/laptop quality, verify the live deployed versions against the native simulator captures and fix whichever side is weaker.
+   Continue parity work by choosing the weakest remaining surface and closing the next small gap. For Goon native, the remaining gameplay gaps are skunks, poo hazards, score/combo behavior, replay details, and stump power-up behavior. For web/laptop quality, verify the live deployed versions against the native simulator captures and fix whichever side is weaker.
 
    Inspect these files before editing Goon again:
    - `docs/parity-matrix.md`
    - `ios/BandMusicGames/Views/Games/Goon/GoonGameScene.swift`
    - `ios/BandMusicGames/Views/Games/Goon/GoonInputController.swift`
-   - `ios/BandMusicGames/Views/Games/Goon/GoonGrid.swift`
+   - `ios/BandMusicGames/Views/Games/Goon/GoonLevels.swift`
    - `ios/BandMusicGames/Views/Games/Goon/GoonRenderer.swift`
    - `ios/BandMusicGamesTests/Goon/GoonLevelsTests.swift`
    - `ios/BandMusicGamesTests/Goon/GoonGameStateTests.swift`

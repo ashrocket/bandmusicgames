@@ -17,7 +17,7 @@ targets:
       path: Info.plist
       properties:
         CFBundleShortVersionString: "1.0"
-        CFBundleVersion: "202605181300"
+        CFBundleVersion: "202605182100"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: party.bandmusicgames.app

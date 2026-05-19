@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		06E8DA988C22A3A1CFE681A4 /* GoonGridTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF43B323C8E92D981EE43C95 /* GoonGridTests.swift */; };
+		08287B5894ABBCEBDFE5EC88 /* FrattypipelineAudioConductor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C27F8008B04AEA1CAF6DF02 /* FrattypipelineAudioConductor.swift */; };
 		0BB28A9917C8246640D3306A /* GoonControlOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F97DAC80503BDB8BE146A93 /* GoonControlOverlay.swift */; };
 		0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEED640487C99F9E09BEAE4 /* GameWebView.swift */; };
 		16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */; };
@@ -70,6 +71,7 @@
 		06C46AB1759D3E2B0FD65873 /* GoonWinCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonWinCard.swift; sourceTree = "<group>"; };
 		07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
 		09D5BD445B18C23A699FDD90 /* tile-cut-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-cut-1.png"; sourceTree = "<group>"; };
+		0C27F8008B04AEA1CAF6DF02 /* FrattypipelineAudioConductor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrattypipelineAudioConductor.swift; sourceTree = "<group>"; };
 		0D69141D52E6E5337080195C /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		1191C69D4C779ABC78D45D43 /* GoonGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonGameView.swift; sourceTree = "<group>"; };
 		19C5610ECC95D9810ED7EB35 /* GoonLevelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoonLevelsTests.swift; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 		9E1DDE99A9A4987A96F8A9EC /* Frattypipeline */ = {
 			isa = PBXGroup;
 			children = (
+				0C27F8008B04AEA1CAF6DF02 /* FrattypipelineAudioConductor.swift */,
 				74250B428E7A65502C984FBB /* FrattypipelineGameView.swift */,
 				D5D105B53CF7E46B6B8310E2 /* FrattypipelineInputController.swift */,
 				E37353837C222690B0AB7363 /* FrattypipelineScene.swift */,
@@ -451,6 +454,7 @@
 				8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */,
 				78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */,
 				62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */,
+				08287B5894ABBCEBDFE5EC88 /* FrattypipelineAudioConductor.swift in Sources */,
 				CE5BCDEC45C1BE97B045DCDA /* FrattypipelineControlOverlay.swift in Sources */,
 				1DAE0B13CB8CC742ECB95E17 /* FrattypipelineGameView.swift in Sources */,
 				1A3845C70CAD91BD6F4928C0 /* FrattypipelineHUDOverlay.swift in Sources */,

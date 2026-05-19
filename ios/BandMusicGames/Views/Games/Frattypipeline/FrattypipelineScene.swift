@@ -40,6 +40,110 @@ enum FrattypipelineTile: CaseIterable {
     case water
 }
 
+enum FrattypipelineSongSection: Equatable {
+    case intro
+    case verse
+    case hook
+    case bridge
+
+    var title: String {
+        switch self {
+        case .intro:
+            return "Intro"
+        case .verse:
+            return "Verse"
+        case .hook:
+            return "Hook"
+        case .bridge:
+            return "Bridge"
+        }
+    }
+
+    static func section(forBeat beatIndex: Int) -> FrattypipelineSongSection {
+        switch (max(0, beatIndex) / 8) % 4 {
+        case 0:
+            return .intro
+        case 1:
+            return .verse
+        case 2:
+            return .hook
+        default:
+            return .bridge
+        }
+    }
+}
+
+struct FrattypipelineCampusMood: Equatable {
+    private(set) var level = 0
+
+    var title: String {
+        switch level {
+        case 0:
+            return "Quiet Quad"
+        case 1:
+            return "Heads Turning"
+        case 2:
+            return "Crowd Hype"
+        default:
+            return "Quad Awake"
+        }
+    }
+
+    var displayProgress: String {
+        "HYPE \(level)/3"
+    }
+
+    mutating func registerBark(onBeat: Bool) {
+        if onBeat {
+            level = min(3, level + 1)
+        } else {
+            level = max(0, level - 1)
+        }
+    }
+
+    mutating func complete() {
+        level = 3
+    }
+
+    mutating func reset() {
+        level = 0
+    }
+}
+
+struct FrattypipelineSongStack: Equatable {
+    private(set) var unlockedStemCount = 1
+
+    var displayProgress: String {
+        "STEMS \(unlockedStemCount)/4"
+    }
+
+    var activeStemTitle: String {
+        switch unlockedStemCount {
+        case 1:
+            return "Drums"
+        case 2:
+            return "Bass"
+        case 3:
+            return "Barks"
+        default:
+            return "Crowd"
+        }
+    }
+
+    mutating func registerBark(onBeat: Bool) {
+        guard onBeat else { return }
+        unlockedStemCount = min(4, unlockedStemCount + 1)
+    }
+
+    mutating func complete() {
+        unlockedStemCount = 4
+    }
+
+    mutating func reset() {
+        unlockedStemCount = 1
+    }
+}
+
 struct FrattypipelineBeatClock {
     let bpm: Double
     private(set) var time: TimeInterval = 0
@@ -51,6 +155,10 @@ struct FrattypipelineBeatClock {
     var phase: Double {
         let raw = time.truncatingRemainder(dividingBy: beatLength) / beatLength
         return raw < 0 ? raw + 1 : raw
+    }
+
+    var beatIndex: Int {
+        max(0, Int(floor(time / beatLength)))
     }
 
     var isInHitWindow: Bool {
@@ -76,6 +184,9 @@ final class FrattypipelineScene: SKScene, ObservableObject {
     @Published private(set) var beatPhase: Double = 0
     @Published private(set) var lastBarkWasOnBeat = false
     @Published private(set) var barkCount = 0
+    @Published private(set) var campusMood = FrattypipelineCampusMood()
+    @Published private(set) var songSection = FrattypipelineSongSection.intro
+    @Published private(set) var songStack = FrattypipelineSongStack()
 
     let input = FrattypipelineInputController()
     var autoplayDemo = false
@@ -90,8 +201,10 @@ final class FrattypipelineScene: SKScene, ObservableObject {
     private let avatarNode = SKNode()
     private let pulseNode = SKNode()
     private let patchNode = SKNode()
+    private let audioConductor = FrattypipelineAudioConductor()
     private var reactiveNodes: [SKNode] = []
     private var stageTileNodes: [SKShapeNode] = []
+    private var tileRecords: [(tile: FrattypipelineTile, node: SKShapeNode)] = []
     private var stageLit = false
 
     static func make() -> FrattypipelineScene {
@@ -106,12 +219,18 @@ final class FrattypipelineScene: SKScene, ObservableObject {
         worldNode.removeAllChildren()
         reactiveNodes.removeAll()
         stageTileNodes.removeAll()
+        tileRecords.removeAll()
         addChild(worldNode)
         addChild(pulseNode)
         buildWorld()
         buildGroucho()
         buildPatch()
         updateCameraLayout()
+        audioConductor.start()
+    }
+
+    override func willMove(from view: SKView) {
+        audioConductor.stop()
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -121,8 +240,14 @@ final class FrattypipelineScene: SKScene, ObservableObject {
     func resetPrototype() {
         questState = .findStage
         barkCount = 0
+        campusMood.reset()
+        beatClock = FrattypipelineBeatClock(bpm: 101)
+        beatPhase = beatClock.phase
+        songSection = .intro
+        songStack.reset()
         stageLit = false
-        refreshStageTiles()
+        refreshTileColors(animated: false)
+        updateSongBackdrop()
         lastBarkWasOnBeat = false
         grouchoGrid = CGPoint(x: 1.6, y: 6.8)
         patchNode.isHidden = true
@@ -140,6 +265,9 @@ final class FrattypipelineScene: SKScene, ObservableObject {
         lastUpdateTime = currentTime
         beatClock.advance(by: delta)
         beatPhase = beatClock.phase
+        songSection = FrattypipelineSongSection.section(forBeat: beatClock.beatIndex)
+        updateSongBackdrop()
+        audioConductor.update(section: songSection, stemCount: songStack.unlockedStemCount, beatEnergy: beatClock.energy)
 
         if autoplayDemo {
             updateAutoplay(delta: delta)
@@ -211,6 +339,9 @@ final class FrattypipelineScene: SKScene, ObservableObject {
 
         if questState == .collectPatch && distance(grouchoGrid, patchGrid) < 0.7 {
             questState = .complete
+            campusMood.complete()
+            songStack.complete()
+            refreshTileColors(animated: true)
             patchNode.isHidden = true
             runCompletionBurst()
         }
@@ -219,7 +350,12 @@ final class FrattypipelineScene: SKScene, ObservableObject {
     private func handleBark() {
         barkCount += 1
         lastBarkWasOnBeat = beatClock.isInHitWindow
+        campusMood.registerBark(onBeat: lastBarkWasOnBeat)
+        songStack.registerBark(onBeat: lastBarkWasOnBeat)
         drawBarkPulse(onBeat: lastBarkWasOnBeat)
+        refreshTileColors(animated: true)
+        updateSongBackdrop()
+        audioConductor.triggerBark(onBeat: lastBarkWasOnBeat, section: songSection)
 
         guard questState == .barkOnBeat else {
             nudgeWorld(onBeat: lastBarkWasOnBeat)
@@ -228,7 +364,7 @@ final class FrattypipelineScene: SKScene, ObservableObject {
 
         if lastBarkWasOnBeat {
             stageLit = true
-            refreshStageTiles()
+            refreshTileColors(animated: true)
             questState = .collectPatch
             patchNode.isHidden = false
             nudgeWorld(onBeat: true)
@@ -247,6 +383,7 @@ final class FrattypipelineScene: SKScene, ObservableObject {
                 if tile == .stage {
                     stageTileNodes.append(node)
                 }
+                tileRecords.append((tile: tile, node: node))
                 worldNode.addChild(node)
             }
         }
@@ -431,6 +568,23 @@ final class FrattypipelineScene: SKScene, ObservableObject {
         patchNode.alpha = 0.7 + beatClock.energy * 0.3
     }
 
+    private func updateSongBackdrop() {
+        let mood = CGFloat(campusMood.level) / 3
+        let stem = CGFloat(songStack.unlockedStemCount - 1) / 3
+        let beatLift = beatClock.energy * 0.018
+
+        switch songSection {
+        case .intro:
+            backgroundColor = UIColor(red: 0.08 + mood * 0.02, green: 0.10 + beatLift, blue: 0.09 + stem * 0.02, alpha: 1)
+        case .verse:
+            backgroundColor = UIColor(red: 0.07 + mood * 0.04, green: 0.11 + beatLift, blue: 0.10 + stem * 0.03, alpha: 1)
+        case .hook:
+            backgroundColor = UIColor(red: 0.10 + mood * 0.05, green: 0.10 + beatLift, blue: 0.07 + stem * 0.03, alpha: 1)
+        case .bridge:
+            backgroundColor = UIColor(red: 0.07 + mood * 0.03, green: 0.09 + beatLift, blue: 0.12 + stem * 0.05, alpha: 1)
+        }
+    }
+
     private func drawBarkPulse(onBeat: Bool) {
         let pulse = SKShapeNode(ellipseOf: CGSize(width: 56, height: 22))
         pulse.position = iso(x: grouchoGrid.x, y: grouchoGrid.y)
@@ -461,10 +615,14 @@ final class FrattypipelineScene: SKScene, ObservableObject {
         }
     }
 
-    private func refreshStageTiles() {
-        let fill = color(for: .stage)
+    private func refreshTileColors(animated: Bool) {
+        for record in tileRecords {
+            record.node.fillColor = color(for: record.tile)
+        }
+
+        guard animated else { return }
+
         for node in stageTileNodes {
-            node.fillColor = fill
             node.run(.sequence([
                 .scale(to: stageLit ? 1.08 : 1, duration: 0.12),
                 .scale(to: 1, duration: 0.18)
@@ -515,17 +673,33 @@ final class FrattypipelineScene: SKScene, ObservableObject {
     }
 
     private func color(for tile: FrattypipelineTile) -> UIColor {
+        let mood = CGFloat(campusMood.level) / 3
         switch tile {
         case .grass:
-            return UIColor(red: 0.36, green: 0.58, blue: 0.34, alpha: 1)
+            return UIColor(
+                red: 0.36 + mood * 0.08,
+                green: 0.58 + mood * 0.08,
+                blue: 0.34 - mood * 0.04,
+                alpha: 1
+            )
         case .path:
-            return UIColor(red: 0.48, green: 0.36, blue: 0.24, alpha: 1)
+            return UIColor(
+                red: 0.48 + mood * 0.12,
+                green: 0.36 + mood * 0.08,
+                blue: 0.24,
+                alpha: 1
+            )
         case .stage:
             return stageLit
-                ? UIColor(red: 0.72, green: 0.52, blue: 0.28, alpha: 1)
-                : UIColor(red: 0.42, green: 0.32, blue: 0.24, alpha: 1)
+                ? UIColor(red: 0.72 + mood * 0.12, green: 0.52 + mood * 0.10, blue: 0.28, alpha: 1)
+                : UIColor(red: 0.42 + mood * 0.10, green: 0.32 + mood * 0.08, blue: 0.24, alpha: 1)
         case .water:
-            return UIColor(red: 0.28, green: 0.53, blue: 0.58, alpha: 1)
+            return UIColor(
+                red: 0.28 + mood * 0.05,
+                green: 0.53 + mood * 0.04,
+                blue: 0.58 + mood * 0.12,
+                alpha: 1
+            )
         }
     }
 

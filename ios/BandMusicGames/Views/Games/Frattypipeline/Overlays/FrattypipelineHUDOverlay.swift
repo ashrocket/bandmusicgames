@@ -29,7 +29,13 @@ struct FrattypipelineHUDOverlay: View {
                 .minimumScaleFactor(0.8)
             HStack(spacing: 6) {
                 statusPill(scene.lastBarkWasOnBeat ? "ON BEAT" : "BARKS \(scene.barkCount)")
-                statusPill("PATCH 01")
+                statusPill(scene.campusMood.displayProgress)
+                statusPill(scene.campusMood.title.uppercased())
+            }
+            HStack(spacing: 6) {
+                statusPill(scene.songSection.title.uppercased())
+                statusPill(scene.songStack.displayProgress)
+                statusPill(scene.songStack.activeStemTitle.uppercased())
             }
             .padding(.top, 2)
         }
