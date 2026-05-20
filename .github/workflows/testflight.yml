@@ -1,0 +1,85 @@
+name: TestFlight
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/testflight.yml"
+      - "ios/**"
+
+concurrency:
+  group: testflight-main
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    name: Upload iOS Build
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    env:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64 }}
+      ARCHIVE_PATH: ${{ runner.temp }}/BandMusicGames.xcarchive
+      EXPORT_PATH: ${{ runner.temp }}/BandMusicGamesExport
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check App Store Connect secrets
+        id: asc_secrets
+        run: |
+          if [[ -n "$APP_STORE_CONNECT_API_KEY_ID" && -n "$APP_STORE_CONNECT_API_ISSUER_ID" && -n "$APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Skipping TestFlight upload because App Store Connect API key secrets are not configured."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Write App Store Connect API key
+        if: steps.asc_secrets.outputs.ready == 'true'
+        run: |
+          KEY_PATH="$RUNNER_TEMP/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8"
+          echo "$APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64" | base64 --decode > "$KEY_PATH"
+          chmod 600 "$KEY_PATH"
+          echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
+
+      - name: Set build number
+        if: steps.asc_secrets.outputs.ready == 'true'
+        run: |
+          echo "BMG_BUILD_NUMBER=$(date -u +%Y%m%d%H%M%S)" >> "$GITHUB_ENV"
+
+      - name: Archive
+        if: steps.asc_secrets.outputs.ready == 'true'
+        working-directory: ios
+        run: |
+          xcodebuild \
+            -project BandMusicGames.xcodeproj \
+            -scheme BandMusicGames \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$ARCHIVE_PATH" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$APP_STORE_CONNECT_API_KEY_ID" \
+            -authenticationKeyIssuerID "$APP_STORE_CONNECT_API_ISSUER_ID" \
+            CURRENT_PROJECT_VERSION="$BMG_BUILD_NUMBER" \
+            archive
+
+      - name: Upload to App Store Connect
+        if: steps.asc_secrets.outputs.ready == 'true'
+        working-directory: ios
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath "$EXPORT_PATH" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" \
+            -authenticationKeyID "$APP_STORE_CONNECT_API_KEY_ID" \
+            -authenticationKeyIssuerID "$APP_STORE_CONNECT_API_ISSUER_ID"

@@ -72,3 +72,21 @@ BandMusicGames/
 - Token expiry is tracked; expired tokens are cleared on next launch.
 - "Play without music" sets `sp_skip=1` in both `UserDefaults` and the WebView
   cookie store.
+
+## TestFlight automation
+
+`.github/workflows/testflight.yml` archives and uploads the iOS app to App Store
+Connect on pushes to `main` that touch `ios/**`, and can also be run manually.
+It uses automatic signing plus an App Store Connect API key.
+
+Required repository secrets:
+
+- `APP_STORE_CONNECT_API_KEY_ID`
+- `APP_STORE_CONNECT_API_ISSUER_ID`
+- `APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64`
+
+Encode the `.p8` key before saving it as the base64 secret:
+
+```sh
+base64 -i AuthKey_KEYID.p8 | pbcopy
+```
