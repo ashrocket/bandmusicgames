@@ -6,6 +6,11 @@ options:
   xcodeVersion: "16.0"
   bundleIdPrefix: party.bandmusicgames
 
+packages:
+  Lottie:
+    url: https://github.com/airbnb/lottie-spm.git
+    from: 4.6.0
+
 targets:
   BandMusicGames:
     type: application
@@ -15,6 +20,15 @@ targets:
       - path: BandMusicGames
     info:
       path: Info.plist
+      properties:
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
+        CFBundleExecutable: $(EXECUTABLE_NAME)
+        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: $(PRODUCT_NAME)
+        CFBundlePackageType: APPL
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "202605201610"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: party.bandmusicgames.app
@@ -23,8 +37,11 @@ targets:
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: 6P24N3R4TP
         INFOPLIST_FILE: Info.plist
+        CURRENT_PROJECT_VERSION: "202605201610"
         ENABLE_PREVIEWS: "YES"
         SWIFT_EMIT_LOC_STRINGS: "YES"
     dependencies:
       - sdk: WebKit.framework
       - sdk: AuthenticationServices.framework
+      - package: Lottie
+        product: Lottie

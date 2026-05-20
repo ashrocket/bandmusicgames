@@ -10,21 +10,26 @@ struct GameSheetView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            GameWebView(
-                url: URL(string: song.gameUrl)!,
-                spotifyToken: spotifyToken
-            )
-            .ignoresSafeArea()
+        GeometryReader { geo in
+            ZStack(alignment: .topTrailing) {
+                GameWebView(
+                    url: URL(string: song.gameUrl)!,
+                    spotifyToken: spotifyToken
+                )
+                .frame(width: geo.size.width, height: geo.size.height)
+                .ignoresSafeArea()
 
-            Button { dismiss() } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 28))
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.white, Color.black.opacity(0.55))
-                    .padding(12)
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 28))
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.white, Color.black.opacity(0.55))
+                        .padding(12)
+                }
             }
+            .frame(width: geo.size.width, height: geo.size.height)
         }
+        .ignoresSafeArea()
     }
 }
 
@@ -44,6 +49,11 @@ struct GameWebView: UIViewRepresentable {
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
         webView.scrollView.contentInsetAdjustmentBehavior = .never
+        webView.scrollView.contentInset = .zero
+        webView.scrollView.scrollIndicatorInsets = .zero
+        webView.scrollView.bounces = false
+        webView.scrollView.alwaysBounceVertical = false
+        webView.scrollView.alwaysBounceHorizontal = false
         webView.isOpaque = false
         webView.backgroundColor = UIColor(red: 0.04, green: 0.04, blue: 0.08, alpha: 1)
 

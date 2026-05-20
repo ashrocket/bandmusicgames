@@ -7,39 +7,80 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0BB28A9917C8246640D3306A /* ForCuttingGrassControlOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F97DAC80503BDB8BE146A93 /* ForCuttingGrassControlOverlay.swift */; };
+		0CB33EBCF18FD541CB238B61 /* JukeboxLineIdle.json in Resources */ = {isa = PBXBuildFile; fileRef = 1DEF3481E9967A067F380C47 /* JukeboxLineIdle.json */; };
 		0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEED640487C99F9E09BEAE4 /* GameWebView.swift */; };
+		158D8F08F041F7C10B28A262 /* LottieAnimationPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179F02B60F81160662AA2202 /* LottieAnimationPlayer.swift */; };
 		16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */; };
 		1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */; };
+		27159E56AFC91AD898ACB021 /* FrancisResultCardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EDE15631752327AC90636E /* FrancisResultCardNode.swift */; };
+		2E1941048FCCA967E3209B4E /* mower-body-test.png in Resources */ = {isa = PBXBuildFile; fileRef = AFA2751CFDA95FA6D42E962C /* mower-body-test.png */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
 		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
+		4B3A7B4EEF853269B3CD1BBD /* tile-cut-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 09D5BD445B18C23A699FDD90 /* tile-cut-1.png */; };
+		4EC835492418708E317D48D7 /* ForCuttingGrassGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A735B0E92EF1D656491CF991 /* ForCuttingGrassGameScene.swift */; };
+		5D60DA52312B3014AB1D782F /* tile-garden-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 5C44E565AE7E3C0EBFA2C7C9 /* tile-garden-1.png */; };
 		62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */; };
+		68BC58B6BD0404A8BCF8A96E /* ForCuttingGrassInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA0976F12D8E9A856D2B313 /* ForCuttingGrassInputController.swift */; };
 		72D64E1818F031BF93F3AD9C /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = F282D587BD99FF41373791FB /* Song.swift */; };
 		78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D77DC43028C080E39E78EBBA /* Assets.xcassets */; };
 		78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AB66BC63FF553633DE7F80 /* ContentView.swift */; };
-		7F2F44C698F84FC2BFC5B1E1 /* LizzyMcGuireGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C39C2C62896419DB81342DE /* LizzyMcGuireGameView.swift */; };
+		7969C8D20EF4146A40592CE3 /* JukeboxLineKnot.json in Resources */ = {isa = PBXBuildFile; fileRef = 4D0C48531D9DA41E250F59D8 /* JukeboxLineKnot.json */; };
 		8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */; };
+		85C60074DA1F975871E974E9 /* FrancisGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7238AEDFCD2DDC7C2750E4 /* FrancisGameScene.swift */; };
+		8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */; };
+		887E8FD5FE145EB341235940 /* ForCuttingGrassGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1191C69D4C779ABC78D45D43 /* ForCuttingGrassGameView.swift */; };
 		8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */; };
+		932968B85364E894B6E15E18 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = A6FB69BF3A025B9948986749 /* Lottie */; };
 		99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE185679CAD568601C864B6E /* ArchHeaderView.swift */; };
+		9F307F7F839964772355F998 /* ForCuttingGrassRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 289083FA7A01889E99082256 /* ForCuttingGrassRenderer.swift */; };
+		9F55F487EE8D3ABC0C84FE55 /* FrancisHUDNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1447C20787223E3BA94B7B5C /* FrancisHUDNode.swift */; };
 		A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */; };
+		B77ADD7A2AD67E86F96C3409 /* ForCuttingGrassLevels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0338A82AF4E4E8477F0B562F /* ForCuttingGrassLevels.swift */; };
 		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
+		BF19687A8D2F160BA8BEDEB5 /* ForCuttingGrassHazards.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5AAD668CB66B9838142BA8F /* ForCuttingGrassHazards.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
+		CF9FE793BA8757A319F7ECE3 /* tile-house-wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 3CA565CCD94A1866375C8ADC /* tile-house-wall.png */; };
+		D823116F5A7896EB8EB9B757 /* FrancisLevels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7328A2BFED306DD0D64C17E /* FrancisLevels.swift */; };
+		E0A73FCD4FE32E5CCE2B91E0 /* tile-tall-1.png in Resources */ = {isa = PBXBuildFile; fileRef = 591554E9E63E0426478FFE77 /* tile-tall-1.png */; };
+		EF77C5FAEED84D4BFFFD9B16 /* mower-body.png in Resources */ = {isa = PBXBuildFile; fileRef = 9725E24546E8CC47861575E4 /* mower-body.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0338A82AF4E4E8477F0B562F /* ForCuttingGrassLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassLevels.swift; sourceTree = "<group>"; };
+		07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
+		09D5BD445B18C23A699FDD90 /* tile-cut-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-cut-1.png"; sourceTree = "<group>"; };
+		1191C69D4C779ABC78D45D43 /* ForCuttingGrassGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassGameView.swift; sourceTree = "<group>"; };
+		1447C20787223E3BA94B7B5C /* FrancisHUDNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisHUDNode.swift; sourceTree = "<group>"; };
+		179F02B60F81160662AA2202 /* LottieAnimationPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieAnimationPlayer.swift; sourceTree = "<group>"; };
 		1AEED640487C99F9E09BEAE4 /* GameWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWebView.swift; sourceTree = "<group>"; };
+		1DEF3481E9967A067F380C47 /* JukeboxLineIdle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JukeboxLineIdle.json; sourceTree = "<group>"; };
+		289083FA7A01889E99082256 /* ForCuttingGrassRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassRenderer.swift; sourceTree = "<group>"; };
+		3AA0976F12D8E9A856D2B313 /* ForCuttingGrassInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassInputController.swift; sourceTree = "<group>"; };
+		3C7238AEDFCD2DDC7C2750E4 /* FrancisGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameScene.swift; sourceTree = "<group>"; };
+		3CA565CCD94A1866375C8ADC /* tile-house-wall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-house-wall.png"; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
 		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
-		4C39C2C62896419DB81342DE /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
+		4D0C48531D9DA41E250F59D8 /* JukeboxLineKnot.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JukeboxLineKnot.json; sourceTree = "<group>"; };
+		591554E9E63E0426478FFE77 /* tile-tall-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-tall-1.png"; sourceTree = "<group>"; };
+		5C44E565AE7E3C0EBFA2C7C9 /* tile-garden-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-garden-1.png"; sourceTree = "<group>"; };
+		6F97DAC80503BDB8BE146A93 /* ForCuttingGrassControlOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassControlOverlay.swift; sourceTree = "<group>"; };
 		79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameView.swift; sourceTree = "<group>"; };
 		82AB66BC63FF553633DE7F80 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BandMusicGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		9725E24546E8CC47861575E4 /* mower-body.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body.png"; sourceTree = "<group>"; };
 		9D7C5C786747064F3815AA29 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		A735B0E92EF1D656491CF991 /* ForCuttingGrassGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassGameScene.swift; sourceTree = "<group>"; };
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
+		AFA2751CFDA95FA6D42E962C /* mower-body-test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body-test.png"; sourceTree = "<group>"; };
+		C5AAD668CB66B9838142BA8F /* ForCuttingGrassHazards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassHazards.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
+		D7328A2BFED306DD0D64C17E /* FrancisLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisLevels.swift; sourceTree = "<group>"; };
 		D77DC43028C080E39E78EBBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleTubeView.swift; sourceTree = "<group>"; };
+		E7EDE15631752327AC90636E /* FrancisResultCardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisResultCardNode.swift; sourceTree = "<group>"; };
 		EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromePlayButton.swift; sourceTree = "<group>"; };
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
@@ -54,22 +95,44 @@
 			files = (
 				A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */,
 				16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */,
+				932968B85364E894B6E15E18 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0EB59B8CAE6B98A8868F072B /* Francis */ = {
+			isa = PBXGroup;
+			children = (
+				3C7238AEDFCD2DDC7C2750E4 /* FrancisGameScene.swift */,
+				1447C20787223E3BA94B7B5C /* FrancisHUDNode.swift */,
+				D7328A2BFED306DD0D64C17E /* FrancisLevels.swift */,
+				E7EDE15631752327AC90636E /* FrancisResultCardNode.swift */,
+			);
+			path = Francis;
+			sourceTree = "<group>";
+		};
 		128AB88CDD9DDB290A232974 /* BandMusicGames */ = {
 			isa = PBXGroup;
 			children = (
 				D77DC43028C080E39E78EBBA /* Assets.xcassets */,
 				4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */,
+				8567BD69AC65A149C336E5B2 /* Animations */,
 				43525B9D693EF310A0F4202C /* Managers */,
 				D8E608E4CDFF018030681AF9 /* Models */,
+				B1080D866BA832A6FD163859 /* Resources */,
 				4EB8570FC283E5A5346975F0 /* Views */,
 			);
 			path = BandMusicGames;
+			sourceTree = "<group>";
+		};
+		3833823A22221E5AE71A21C2 /* Sprites */ = {
+			isa = PBXGroup;
+			children = (
+				57FB63D47A62B89D5C0E912F /* ForCuttingGrass */,
+			);
+			path = Sprites;
 			sourceTree = "<group>";
 		};
 		43525B9D693EF310A0F4202C /* Managers */ = {
@@ -90,6 +153,7 @@
 				82AB66BC63FF553633DE7F80 /* ContentView.swift */,
 				1AEED640487C99F9E09BEAE4 /* GameWebView.swift */,
 				FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */,
+				179F02B60F81160662AA2202 /* LottieAnimationPlayer.swift */,
 				CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */,
 				494493654D27227DBC1E24DB /* SpotifySheetView.swift */,
 				78F249AC8A96E504E2113CCA /* Games */,
@@ -97,11 +161,48 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		57FB63D47A62B89D5C0E912F /* ForCuttingGrass */ = {
+			isa = PBXGroup;
+			children = (
+				777A4338F82A12683263B385 /* raw */,
+			);
+			path = ForCuttingGrass;
+			sourceTree = "<group>";
+		};
+		6CFBF67D690061FDF4D1E166 /* ForCuttingGrass */ = {
+			isa = PBXGroup;
+			children = (
+				A735B0E92EF1D656491CF991 /* ForCuttingGrassGameScene.swift */,
+				1191C69D4C779ABC78D45D43 /* ForCuttingGrassGameView.swift */,
+				C5AAD668CB66B9838142BA8F /* ForCuttingGrassHazards.swift */,
+				3AA0976F12D8E9A856D2B313 /* ForCuttingGrassInputController.swift */,
+				0338A82AF4E4E8477F0B562F /* ForCuttingGrassLevels.swift */,
+				289083FA7A01889E99082256 /* ForCuttingGrassRenderer.swift */,
+				D67C957DB7DC5D780F03C96A /* Overlays */,
+			);
+			path = ForCuttingGrass;
+			sourceTree = "<group>";
+		};
+		777A4338F82A12683263B385 /* raw */ = {
+			isa = PBXGroup;
+			children = (
+				AFA2751CFDA95FA6D42E962C /* mower-body-test.png */,
+				9725E24546E8CC47861575E4 /* mower-body.png */,
+				09D5BD445B18C23A699FDD90 /* tile-cut-1.png */,
+				5C44E565AE7E3C0EBFA2C7C9 /* tile-garden-1.png */,
+				3CA565CCD94A1866375C8ADC /* tile-house-wall.png */,
+				591554E9E63E0426478FFE77 /* tile-tall-1.png */,
+			);
+			path = raw;
+			sourceTree = "<group>";
+		};
 		78F249AC8A96E504E2113CCA /* Games */ = {
 			isa = PBXGroup;
 			children = (
 				79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */,
-				4C39C2C62896419DB81342DE /* LizzyMcGuireGameView.swift */,
+				07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */,
+				0EB59B8CAE6B98A8868F072B /* Francis */,
+				6CFBF67D690061FDF4D1E166 /* ForCuttingGrass */,
 			);
 			path = Games;
 			sourceTree = "<group>";
@@ -115,6 +216,15 @@
 			);
 			sourceTree = "<group>";
 		};
+		8567BD69AC65A149C336E5B2 /* Animations */ = {
+			isa = PBXGroup;
+			children = (
+				1DEF3481E9967A067F380C47 /* JukeboxLineIdle.json */,
+				4D0C48531D9DA41E250F59D8 /* JukeboxLineKnot.json */,
+			);
+			path = Animations;
+			sourceTree = "<group>";
+		};
 		AED8F6CE3DF690382D21F806 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,6 +232,22 @@
 				FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B1080D866BA832A6FD163859 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3833823A22221E5AE71A21C2 /* Sprites */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D67C957DB7DC5D780F03C96A /* Overlays */ = {
+			isa = PBXGroup;
+			children = (
+				6F97DAC80503BDB8BE146A93 /* ForCuttingGrassControlOverlay.swift */,
+			);
+			path = Overlays;
 			sourceTree = "<group>";
 		};
 		D8E608E4CDFF018030681AF9 /* Models */ = {
@@ -157,6 +283,7 @@
 			);
 			name = BandMusicGames;
 			packageProductDependencies = (
+				A6FB69BF3A025B9948986749 /* Lottie */,
 			);
 			productName = BandMusicGames;
 			productReference = 8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */;
@@ -186,6 +313,9 @@
 			);
 			mainGroup = 82DA9B57FC9D7047E19AC897;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				18F788ED21FA1D39FBD65E21 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = FF6B55FAC4BD53FB04D8BC73 /* Products */;
 			projectDirPath = "";
@@ -202,6 +332,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */,
+				0CB33EBCF18FD541CB238B61 /* JukeboxLineIdle.json in Resources */,
+				7969C8D20EF4146A40592CE3 /* JukeboxLineKnot.json in Resources */,
+				2E1941048FCCA967E3209B4E /* mower-body-test.png in Resources */,
+				EF77C5FAEED84D4BFFFD9B16 /* mower-body.png in Resources */,
+				4B3A7B4EEF853269B3CD1BBD /* tile-cut-1.png in Resources */,
+				5D60DA52312B3014AB1D782F /* tile-garden-1.png in Resources */,
+				CF9FE793BA8757A319F7ECE3 /* tile-house-wall.png in Resources */,
+				E0A73FCD4FE32E5CCE2B91E0 /* tile-tall-1.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,11 +355,23 @@
 				8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */,
 				8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */,
 				78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */,
+				85C60074DA1F975871E974E9 /* FrancisGameScene.swift in Sources */,
 				62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */,
+				9F55F487EE8D3ABC0C84FE55 /* FrancisHUDNode.swift in Sources */,
+				D823116F5A7896EB8EB9B757 /* FrancisLevels.swift in Sources */,
+				27159E56AFC91AD898ACB021 /* FrancisResultCardNode.swift in Sources */,
 				0F1AFBABE1F9D1870B3D767F /* GameWebView.swift in Sources */,
+				0BB28A9917C8246640D3306A /* ForCuttingGrassControlOverlay.swift in Sources */,
+				4EC835492418708E317D48D7 /* ForCuttingGrassGameScene.swift in Sources */,
+				887E8FD5FE145EB341235940 /* ForCuttingGrassGameView.swift in Sources */,
+				BF19687A8D2F160BA8BEDEB5 /* ForCuttingGrassHazards.swift in Sources */,
+				68BC58B6BD0404A8BCF8A96E /* ForCuttingGrassInputController.swift in Sources */,
+				B77ADD7A2AD67E86F96C3409 /* ForCuttingGrassLevels.swift in Sources */,
+				9F307F7F839964772355F998 /* ForCuttingGrassRenderer.swift in Sources */,
 				CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */,
 				1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */,
-				7F2F44C698F84FC2BFC5B1E1 /* LizzyMcGuireGameView.swift in Sources */,
+				8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */,
+				158D8F08F041F7C10B28A262 /* LottieAnimationPlayer.swift in Sources */,
 				72D64E1818F031BF93F3AD9C /* Song.swift in Sources */,
 				BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */,
 				48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */,
@@ -357,6 +507,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 202605201610;
 				DEVELOPMENT_TEAM = 6P24N3R4TP;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -379,6 +530,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 202605201610;
 				DEVELOPMENT_TEAM = 6P24N3R4TP;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -417,6 +569,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		18F788ED21FA1D39FBD65E21 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A6FB69BF3A025B9948986749 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 18F788ED21FA1D39FBD65E21 /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EBEB5370E94A17E28C6ED964 /* Project object */;
 }

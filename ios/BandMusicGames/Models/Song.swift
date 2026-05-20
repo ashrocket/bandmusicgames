@@ -22,7 +22,7 @@ extension Song {
             id: "goon",
             title: "FOR CUTTING GRASS",
             artist: "GOON",
-            gameName: "GRASS CUTTER 2003",
+            gameName: "FOR CUTTING GRASS",
             gameUrl: "https://forcuttinggrass.goon.bandmusicgames.party",
             trackUri: "spotify:track:6EJAb3oTjDFwrt1dpIJPbr",
             hexColor: "#39ff14",

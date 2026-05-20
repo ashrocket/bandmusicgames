@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>BAND MUSIC GAMES</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,7 +21,7 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
-  padding: 18px 18px max(18px, env(safe-area-inset-bottom));
+  padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
 }
 
 body::before {
@@ -300,6 +300,47 @@ body::before {
 }
 
 #cabinet::before, #cabinet::after { content: none; }
+
+@media (max-width: 500px) {
+  body {
+    padding: max(12px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
+  }
+  #cabinet {
+    border-radius: 36px;
+    padding-bottom: 20px;
+  }
+  #marquee {
+    padding: 16px 20px 12px;
+  }
+  #marquee span:first-child {
+    font-size: 20px;
+  }
+  #screen-bezel {
+    margin: 10px 12px 0;
+    width: calc(100% - 24px);
+    border-radius: 14px;
+  }
+  #spotify-overlay {
+    border-radius: 14px;
+  }
+  #overlay-content {
+    padding: 24px 20px;
+    border-radius: 20px;
+  }
+  #overlay-title {
+    font-size: 22px;
+  }
+  #song-title {
+    font-size: 17px;
+  }
+  #song-info {
+    min-height: 64px;
+  }
+  #controls-label {
+    font-size: 8px;
+    letter-spacing: 0.25em;
+  }
+}
 </style>
 </head>
 <body>

@@ -1389,7 +1389,7 @@ private final class HalfCourtHeroGame: ObservableObject {
 @MainActor
 private enum HalfCourtHeroRenderer {
     static func draw(game: HalfCourtHeroGame, context: inout GraphicsContext, size: CGSize) {
-        let scale = min(size.width / hchW, size.height / hchH)
+        let scale = max(size.width / hchW, size.height / hchH)
         let xOffset = (size.width - hchW * scale) / 2
         let yOffset = (size.height - hchH * scale) / 2
 

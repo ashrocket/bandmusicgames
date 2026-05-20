@@ -1,8 +1,8 @@
 # Band Music Games — iOS App
 
-Native SwiftUI jukebox launcher. Wurlitzer 1015–inspired cabinet with animated
-bubble tubes, warm chrome, and amber glow. Songs open in an embedded WKWebView
-with the Spotify token injected as a cookie so the web games see it.
+Native SwiftUI launcher with a Lottie-rendered line drawing selector. Songs open
+in native Swift games or an embedded WKWebView with the Spotify token injected
+as a cookie so the web games see it.
 
 ## Xcode setup
 
@@ -39,15 +39,19 @@ BandMusicGames/
 ├── Managers/
 │   ├── SpotifyAuthManager.swift— PKCE OAuth via ASWebAuthenticationSession
 │   └── HapticManager.swift     — UIFeedbackGenerator wrappers
+├── Animations/
+│   ├── JukeboxLineIdle.json    — Looping line selector animation
+│   └── JukeboxLineKnot.json    — Selection knot transition
 └── Views/
-    ├── ContentView.swift       — Root: jukebox + sheet coordination
-    ├── JukeboxView.swift       — Full cabinet layout
+    ├── ContentView.swift       — Root: selector + sheet coordination
+    ├── JukeboxView.swift       — Lottie line selector + song controls
+    ├── LottieAnimationPlayer.swift — SwiftUI wrapper for LottieAnimationView
+    ├── GameWebView.swift       — WKWebView wrapper + Spotify cookie injection
+    ├── SpotifySheetView.swift  — Connect/skip sheet in jukebox style
     ├── ArchHeaderView.swift    — Tombstone arch + animated amber glow + title
     ├── BubbleTubeView.swift    — TimelineView/Canvas animated bubble columns
     ├── SongDisplayView.swift   — Dark glass window, swipe/arrow navigation
-    ├── ChromePlayButton.swift  — Large circular chrome play button
-    ├── GameWebView.swift       — WKWebView wrapper + Spotify cookie injection
-    └── SpotifySheetView.swift  — Connect/skip sheet in jukebox style
+    └── ChromePlayButton.swift  — Legacy chrome play button
 ```
 
 ## Auth flow
