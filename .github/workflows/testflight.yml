@@ -23,8 +23,6 @@ jobs:
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
       APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY_BASE64 }}
-      ARCHIVE_PATH: ${{ runner.temp }}/BandMusicGames.xcarchive
-      EXPORT_PATH: ${{ runner.temp }}/BandMusicGamesExport
 
     steps:
       - name: Check out repository
@@ -62,7 +60,7 @@ jobs:
             -scheme BandMusicGames \
             -configuration Release \
             -destination 'generic/platform=iOS' \
-            -archivePath "$ARCHIVE_PATH" \
+            -archivePath "$RUNNER_TEMP/BandMusicGames.xcarchive" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$ASC_KEY_PATH" \
             -authenticationKeyID "$APP_STORE_CONNECT_API_KEY_ID" \
@@ -76,9 +74,9 @@ jobs:
         run: |
           xcodebuild \
             -exportArchive \
-            -archivePath "$ARCHIVE_PATH" \
+            -archivePath "$RUNNER_TEMP/BandMusicGames.xcarchive" \
             -exportOptionsPlist ExportOptions.plist \
-            -exportPath "$EXPORT_PATH" \
+            -exportPath "$RUNNER_TEMP/BandMusicGamesExport" \
             -allowProvisioningUpdates \
             -authenticationKeyPath "$ASC_KEY_PATH" \
             -authenticationKeyID "$APP_STORE_CONNECT_API_KEY_ID" \
