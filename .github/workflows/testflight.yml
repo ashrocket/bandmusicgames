@@ -74,6 +74,14 @@ jobs:
           cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$PP_UUID".mobileprovision
           echo "Installed provisioning profile $PP_UUID"
 
+      - name: Select latest Xcode
+        if: steps.asc_secrets.outputs.ready == 'true'
+        run: |
+          LATEST=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -1)
+          echo "Using Xcode: $LATEST"
+          sudo xcode-select -s "$LATEST/Contents/Developer"
+          xcodebuild -version
+
       - name: Set build number
         if: steps.asc_secrets.outputs.ready == 'true'
         run: |
