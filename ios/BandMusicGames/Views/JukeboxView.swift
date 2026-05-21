@@ -421,7 +421,6 @@ private struct InkJukeboxDrawing: View {
             height: size.height * 0.9
         )
         let plate = Path(roundedRect: rect, cornerRadius: 10)
-        context.fill(plate, with: .color(Color.black.opacity(0.38)))
         context.stroke(
             plate,
             with: .color(Color.white.opacity(0.18)),
@@ -429,10 +428,36 @@ private struct InkJukeboxDrawing: View {
         )
 
         for index in 0..<5 {
-            let x = size.width * (0.18 + CGFloat(index) * 0.15 + CGFloat(sin(time * 0.9 + Double(index))) * 0.005)
+            let phase = time * (1.25 + Double(index) * 0.17) + Double(index) * 1.73
+            let x = size.width * (0.18 + CGFloat(index) * 0.15 + CGFloat(sin(phase) + 0.42 * sin(phase * 2.7)) * 0.0065)
+            let upper = CGPoint(
+                x: x + CGFloat(sin(phase * 1.6) + 0.35 * sin(phase * 3.9)) * 5.5,
+                y: size.height * 0.08
+            )
+            let firstBend = CGPoint(
+                x: x + CGFloat(sin(phase * 2.1 + 0.7) + 0.48 * sin(phase * 4.6)) * 13,
+                y: size.height * 0.34
+            )
+            let secondBend = CGPoint(
+                x: x + CGFloat(cos(phase * 1.8 + 1.9) + 0.38 * sin(phase * 5.3)) * 11,
+                y: size.height * 0.62
+            )
+            let lower = CGPoint(
+                x: x + CGFloat(sin(phase * 1.1 + 2.6) + 0.3 * sin(phase * 6.1)) * 8,
+                y: size.height * 0.87
+            )
             var scratch = Path()
-            scratch.move(to: CGPoint(x: x, y: size.height * 0.08))
-            scratch.addLine(to: CGPoint(x: x + CGFloat(sin(time + Double(index))) * 7, y: size.height * 0.87))
+            scratch.move(to: upper)
+            scratch.addCurve(
+                to: secondBend,
+                control1: CGPoint(x: firstBend.x - 7, y: size.height * 0.22),
+                control2: CGPoint(x: secondBend.x + 10, y: size.height * 0.49)
+            )
+            scratch.addCurve(
+                to: lower,
+                control1: CGPoint(x: secondBend.x - 9, y: size.height * 0.7),
+                control2: CGPoint(x: lower.x + 6, y: size.height * 0.79)
+            )
             context.stroke(
                 scratch,
                 with: .color(Color.white.opacity(index.isMultiple(of: 2) ? 0.045 : 0.025)),
@@ -485,12 +510,6 @@ private struct InkJukeboxDrawing: View {
         let playbackProgress = clamped((unravelProgress - 0.52) / 0.24)
         let platterCenter = CGPoint(x: size.width * 0.5, y: size.height * 0.57)
         let platterDiameter = min(size.width, size.height) * 0.52
-        let platterRect = CGRect(
-            x: platterCenter.x - platterDiameter / 2,
-            y: platterCenter.y - platterDiameter / 2,
-            width: platterDiameter,
-            height: platterDiameter
-        )
 
         let magazine = Path(roundedRect: CGRect(
             x: size.width * 0.35,
@@ -505,10 +524,18 @@ private struct InkJukeboxDrawing: View {
         )
 
         for index in 0..<3 {
-            var stackLine = Path()
             let y = size.height * (0.125 + CGFloat(index) * 0.018)
-            stackLine.move(to: CGPoint(x: size.width * 0.39, y: y))
-            stackLine.addLine(to: CGPoint(x: size.width * 0.61, y: y + CGFloat(sin(filmFrame + Double(index))) * 0.5))
+            let stackLine = wavyThreadPath(
+                from: CGPoint(x: size.width * 0.39, y: y),
+                to: CGPoint(
+                    x: size.width * 0.61,
+                    y: y + CGFloat(sin(filmFrame + Double(index)) + 0.35 * sin(filmFrame * 2.4 + Double(index))) * 0.75
+                ),
+                time: time,
+                seed: 31 + Double(index) * 3.7,
+                amplitude: 0.65,
+                steps: 18
+            )
             context.stroke(
                 stackLine,
                 with: .color(Color.white.opacity(0.18)),
@@ -516,22 +543,33 @@ private struct InkJukeboxDrawing: View {
             )
         }
 
-        var platter = Path()
-        platter.addEllipse(in: platterRect)
+        let platter = wobblyEllipsePath(
+            center: platterCenter,
+            radius: CGPoint(x: platterDiameter / 2, y: platterDiameter / 2),
+            time: time,
+            seed: 3.8,
+            amplitude: max(1.15, platterDiameter * 0.013),
+            steps: 104
+        )
         context.stroke(
             platter,
             with: .color(Color.white.opacity(0.34)),
             style: StrokeStyle(lineWidth: 1.4, lineCap: .round, lineJoin: .round)
         )
 
-        var spindle = Path()
-        spindle.addEllipse(in: CGRect(
-            x: platterCenter.x - 4,
-            y: platterCenter.y - 4,
-            width: 8,
-            height: 8
-        ))
-        context.fill(spindle, with: .color(Color.white.opacity(0.68)))
+        let spindle = wobblyEllipsePath(
+            center: platterCenter,
+            radius: CGPoint(x: 4, y: 4),
+            time: time,
+            seed: 8.9,
+            amplitude: 0.38,
+            steps: 22
+        )
+        context.stroke(
+            spindle,
+            with: .color(Color.white.opacity(0.68)),
+            style: StrokeStyle(lineWidth: 1.1, lineCap: .round, lineJoin: .round)
+        )
 
         if unravelProgress > 0.001 {
             let startCenter = CGPoint(x: size.width * 0.5, y: size.height * 0.14)
@@ -562,13 +600,26 @@ private struct InkJukeboxDrawing: View {
         let restNeedle = CGPoint(x: size.width * 0.82, y: size.height * 0.68)
         let grooveNeedle = CGPoint(x: platterCenter.x + platterDiameter * 0.18, y: platterCenter.y - platterDiameter * 0.1)
         let needle = interpolate(from: restNeedle, to: grooveNeedle, progress: armProgress)
-        let armJitter = CGFloat(sin(filmFrame * 1.47)) * (unravelProgress > 0 ? 1.2 : 0.45)
+        let armEnergy: CGFloat = unravelProgress > 0 ? 1 : 0.45
+        let armEndJitter = CGPoint(
+            x: CGFloat(sin(time * 9.4 + 1.1) + 0.48 * sin(time * 16.8 + 3.4) + 0.23 * sin(time * 27.1 + 0.3)) * armEnergy * 1.9,
+            y: CGFloat(cos(time * 7.8 + 2.2) + 0.43 * sin(time * 14.2 + 0.9) + 0.2 * cos(time * 24.6 + 5.1)) * armEnergy * 1.25
+        )
+        let armControlWiggle = CGPoint(
+            x: CGFloat(sin(time * 6.7 + filmFrame * 0.13) + 0.5 * sin(time * 13.9 + 2.6) + 0.24 * sin(time * 22.5 + 5.3)) * armEnergy * 5.2,
+            y: CGFloat(cos(time * 5.9 + 1.7) + 0.46 * sin(time * 12.6 + 4.4) + 0.22 * cos(time * 20.8 + 2.1)) * armEnergy * 4.2
+        )
+        let armTarget = CGPoint(x: needle.x + armEndJitter.x, y: needle.y + armEndJitter.y)
+        let armControl = CGPoint(
+            x: pivot.x - size.width * 0.06 + armControlWiggle.x,
+            y: pivot.y + size.height * 0.13 + armControlWiggle.y
+        )
 
         var arm = Path()
         arm.move(to: pivot)
         arm.addQuadCurve(
-            to: CGPoint(x: needle.x + armJitter, y: needle.y),
-            control: CGPoint(x: pivot.x - size.width * 0.06, y: pivot.y + size.height * 0.13)
+            to: armTarget,
+            control: armControl
         )
         context.stroke(
             arm,
@@ -576,8 +627,14 @@ private struct InkJukeboxDrawing: View {
             style: StrokeStyle(lineWidth: 2.1, lineCap: .round, lineJoin: .round)
         )
 
-        var pivotPath = Path()
-        pivotPath.addEllipse(in: CGRect(x: pivot.x - 12, y: pivot.y - 12, width: 24, height: 24))
+        let pivotPath = wobblyEllipsePath(
+            center: pivot,
+            radius: CGPoint(x: 12, y: 12),
+            time: time,
+            seed: 18.6,
+            amplitude: 0.72,
+            steps: 38
+        )
         context.stroke(
             pivotPath,
             with: .color(Color.white.opacity(0.5)),
@@ -585,9 +642,9 @@ private struct InkJukeboxDrawing: View {
         )
 
         var needlePath = Path()
-        needlePath.move(to: CGPoint(x: needle.x - 5 + armJitter, y: needle.y - 2))
-        needlePath.addLine(to: CGPoint(x: needle.x + armJitter, y: needle.y + 8))
-        needlePath.addLine(to: CGPoint(x: needle.x + 6 + armJitter, y: needle.y - 2))
+        needlePath.move(to: CGPoint(x: armTarget.x - 5, y: armTarget.y - 2))
+        needlePath.addLine(to: CGPoint(x: armTarget.x, y: armTarget.y + 8))
+        needlePath.addLine(to: CGPoint(x: armTarget.x + 6, y: armTarget.y - 2))
         context.stroke(
             needlePath,
             with: .color(Color.white.opacity(0.86)),
@@ -600,13 +657,14 @@ private struct InkJukeboxDrawing: View {
                 guard ringProgress > 0 else { continue }
                 let diameter = platterDiameter * (0.38 + ringProgress * 0.82)
                 let opacity = Double((1 - ringProgress) * 0.28)
-                var pulse = Path()
-                pulse.addEllipse(in: CGRect(
-                    x: platterCenter.x - diameter / 2,
-                    y: platterCenter.y - diameter / 2,
-                    width: diameter,
-                    height: diameter
-                ))
+                let pulse = wobblyEllipsePath(
+                    center: platterCenter,
+                    radius: CGPoint(x: diameter / 2, y: diameter / 2),
+                    time: time + Double(index) * 0.21,
+                    seed: 44 + Double(index) * 6.1,
+                    amplitude: max(0.85, diameter * 0.009),
+                    steps: 88
+                )
                 context.stroke(
                     pulse,
                     with: .color(Color.white.opacity(opacity)),
@@ -617,25 +675,30 @@ private struct InkJukeboxDrawing: View {
     }
 
     private func drawSingleRecord(in context: inout GraphicsContext, center: CGPoint, diameter: CGFloat, spin: TimeInterval, opacity: Double) {
-        let rect = CGRect(x: center.x - diameter / 2, y: center.y - diameter / 2, width: diameter, height: diameter)
-        var outer = Path()
-        outer.addEllipse(in: rect)
-        context.fill(outer, with: .color(Color.black.opacity(opacity * 0.86)))
+        let outer = wobblyEllipsePath(
+            center: center,
+            radius: CGPoint(x: diameter / 2, y: diameter / 2),
+            time: spin,
+            seed: 5.4,
+            amplitude: max(0.9, diameter * 0.014),
+            steps: 112
+        )
         context.stroke(
             outer,
             with: .color(Color.white.opacity(opacity * 0.88)),
             style: StrokeStyle(lineWidth: max(1, diameter * 0.018), lineCap: .round, lineJoin: .round)
         )
 
-        for ring in [0.78, 0.62, 0.45] {
+        for (index, ring) in [0.78, 0.62, 0.45].enumerated() {
             let ringDiameter = diameter * CGFloat(ring)
-            var groove = Path()
-            groove.addEllipse(in: CGRect(
-                x: center.x - ringDiameter / 2,
-                y: center.y - ringDiameter / 2,
-                width: ringDiameter,
-                height: ringDiameter
-            ))
+            let groove = wobblyEllipsePath(
+                center: center,
+                radius: CGPoint(x: ringDiameter / 2, y: ringDiameter / 2),
+                time: spin * (0.82 + Double(index) * 0.09),
+                seed: 12.2 + Double(index) * 5.6,
+                amplitude: max(0.65, ringDiameter * 0.011),
+                steps: 88
+            )
             context.stroke(
                 groove,
                 with: .color(Color.white.opacity(opacity * 0.18)),
@@ -644,14 +707,14 @@ private struct InkJukeboxDrawing: View {
         }
 
         let labelDiameter = diameter * 0.36
-        var label = Path()
-        label.addEllipse(in: CGRect(
-            x: center.x - labelDiameter / 2,
-            y: center.y - labelDiameter / 2,
-            width: labelDiameter,
-            height: labelDiameter
-        ))
-        context.fill(label, with: .color(Color.black.opacity(opacity * 0.68)))
+        let label = wobblyEllipsePath(
+            center: center,
+            radius: CGPoint(x: labelDiameter / 2, y: labelDiameter / 2),
+            time: spin * 0.74,
+            seed: 28.3,
+            amplitude: max(0.52, labelDiameter * 0.014),
+            steps: 54
+        )
         context.stroke(
             label,
             with: .color(Color.white.opacity(opacity * 0.62)),
@@ -659,14 +722,14 @@ private struct InkJukeboxDrawing: View {
         )
 
         let holeDiameter = diameter * 0.18
-        var hole = Path()
-        hole.addEllipse(in: CGRect(
-            x: center.x - holeDiameter / 2,
-            y: center.y - holeDiameter / 2,
-            width: holeDiameter,
-            height: holeDiameter
-        ))
-        context.fill(hole, with: .color(Color.black.opacity(0.94)))
+        let hole = wobblyEllipsePath(
+            center: center,
+            radius: CGPoint(x: holeDiameter / 2, y: holeDiameter / 2),
+            time: spin * 1.11,
+            seed: 34.8,
+            amplitude: max(0.38, holeDiameter * 0.012),
+            steps: 36
+        )
         context.stroke(
             hole,
             with: .color(Color.white.opacity(opacity * 0.76)),
@@ -682,9 +745,14 @@ private struct InkJukeboxDrawing: View {
             x: center.x + CGFloat(cos(markerAngle)) * diameter * 0.43,
             y: center.y + CGFloat(sin(markerAngle)) * diameter * 0.43
         )
-        var marker = Path()
-        marker.move(to: markerStart)
-        marker.addLine(to: markerEnd)
+        let marker = wavyThreadPath(
+            from: markerStart,
+            to: markerEnd,
+            time: spin,
+            seed: 49.7,
+            amplitude: max(0.45, diameter * 0.006),
+            steps: 10
+        )
         context.stroke(
             marker,
             with: .color(Color.white.opacity(opacity * 0.54)),
@@ -744,7 +812,6 @@ private struct InkJukeboxDrawing: View {
             height: height
         )
         let window = Path(roundedRect: rect, cornerRadius: 8)
-        context.fill(window, with: .color(Color.black.opacity(0.72 + Double(easedProgress) * 0.18)))
         context.stroke(
             window,
             with: .color(Color.white.opacity(0.2 + Double(easedProgress) * 0.74)),
@@ -776,12 +843,113 @@ private struct InkJukeboxDrawing: View {
 
     private func jitteredPath(for normalizedPoints: [CGPoint], in size: CGSize, filmFrame: Double, seed: Double, jitter: CGFloat) -> Path {
         var path = Path()
+        guard let first = normalizedPoints.first else { return path }
 
-        for (index, normalized) in normalizedPoints.enumerated() {
-            let base = point(normalized, in: size)
-            let dx = sin(Double(normalized.x * 67 + normalized.y * 29) + seed * 2.17 + filmFrame * 0.83) * Double(jitter)
-            let dy = cos(Double(normalized.x * 31 - normalized.y * 73) + seed * 1.83 + filmFrame * 1.07) * Double(jitter)
-            let point = CGPoint(x: base.x + CGFloat(dx), y: base.y + CGFloat(dy))
+        let amplitude = jitter * 1.35
+        path.move(to: jitteredInkPoint(
+            first,
+            in: size,
+            filmFrame: filmFrame,
+            seed: seed,
+            amplitude: amplitude,
+            segmentNormal: .zero,
+            segmentProgress: 0,
+            segmentIndex: 0
+        ))
+
+        for index in 1..<normalizedPoints.count {
+            let previous = normalizedPoints[index - 1]
+            let current = normalizedPoints[index]
+            let previousBase = point(previous, in: size)
+            let currentBase = point(current, in: size)
+            let vector = CGPoint(x: currentBase.x - previousBase.x, y: currentBase.y - previousBase.y)
+            let length = max(hypot(vector.x, vector.y), 0.001)
+            let normal = CGPoint(x: -vector.y / length, y: vector.x / length)
+            let samples = 7
+
+            for sample in 1...samples {
+                let progress = CGFloat(sample) / CGFloat(samples)
+                let normalized = CGPoint(
+                    x: previous.x + (current.x - previous.x) * progress,
+                    y: previous.y + (current.y - previous.y) * progress
+                )
+                let point = jitteredInkPoint(
+                    normalized,
+                    in: size,
+                    filmFrame: filmFrame,
+                    seed: seed,
+                    amplitude: amplitude,
+                    segmentNormal: normal,
+                    segmentProgress: progress,
+                    segmentIndex: index
+                )
+                path.addLine(to: point)
+            }
+        }
+
+        return path
+    }
+
+    private func jitteredInkPoint(
+        _ normalized: CGPoint,
+        in size: CGSize,
+        filmFrame: Double,
+        seed: Double,
+        amplitude: CGFloat,
+        segmentNormal: CGPoint,
+        segmentProgress: CGFloat,
+        segmentIndex: Int
+    ) -> CGPoint {
+        let base = point(normalized, in: size)
+        let anchorPhase = Double(normalized.x * 67 + normalized.y * 29) + seed * 2.17 + filmFrame * 0.83
+        let crossPhase = Double(normalized.x * 31 - normalized.y * 73) + seed * 1.83 + filmFrame * 1.07
+        let dx = (sin(anchorPhase) + 0.48 * sin(anchorPhase * 2.31 + seed) + 0.22 * sin(anchorPhase * 3.74 - filmFrame * 0.41)) * Double(amplitude)
+        let dy = (cos(crossPhase) + 0.46 * sin(crossPhase * 2.17 + seed * 0.6) + 0.2 * cos(crossPhase * 4.12 + filmFrame * 0.37)) * Double(amplitude)
+        let envelope = sin(segmentProgress * .pi)
+        let stringWave = layeredStringWave(
+            position: segmentProgress,
+            time: filmFrame * 0.13 + Double(segmentIndex) * 0.19,
+            seed: seed + Double(segmentIndex) * 4.7,
+            amplitude: amplitude * 0.72
+        ) * envelope
+
+        return CGPoint(
+            x: base.x + CGFloat(dx) * 0.62 + segmentNormal.x * stringWave,
+            y: base.y + CGFloat(dy) * 0.62 + segmentNormal.y * stringWave
+        )
+    }
+
+    private func wavyThreadPath(from start: CGPoint, to end: CGPoint, time: TimeInterval, seed: Double, amplitude: CGFloat, steps: Int) -> Path {
+        let safeSteps = max(1, steps)
+        let vector = CGPoint(x: end.x - start.x, y: end.y - start.y)
+        let length = max(hypot(vector.x, vector.y), 0.001)
+        let tangent = CGPoint(x: vector.x / length, y: vector.y / length)
+        let normal = CGPoint(x: -tangent.y, y: tangent.x)
+        var path = Path()
+
+        for index in 0...safeSteps {
+            let progress = CGFloat(index) / CGFloat(safeSteps)
+            let envelope = sin(progress * .pi)
+            let base = CGPoint(
+                x: start.x + vector.x * progress,
+                y: start.y + vector.y * progress
+            )
+            let transverse = layeredStringWave(
+                position: progress,
+                time: time,
+                seed: seed,
+                amplitude: amplitude
+            ) * envelope
+            let longitudinal = layeredStringWave(
+                position: progress + 0.37,
+                time: time * 0.73,
+                seed: seed * 1.53,
+                amplitude: amplitude * 0.2
+            ) * envelope
+            let point = CGPoint(
+                x: base.x + normal.x * transverse + tangent.x * longitudinal,
+                y: base.y + normal.y * transverse + tangent.y * longitudinal
+            )
 
             if index == 0 {
                 path.move(to: point)
@@ -791,6 +959,52 @@ private struct InkJukeboxDrawing: View {
         }
 
         return path
+    }
+
+    private func wobblyEllipsePath(center: CGPoint, radius: CGPoint, time: TimeInterval, seed: Double, amplitude: CGFloat, steps: Int) -> Path {
+        let safeSteps = max(8, steps)
+        let arcPoints = Self.arc(center: center, radius: radius, start: 0, end: .pi * 2, steps: safeSteps)
+        var path = Path()
+
+        for (index, arcPoint) in arcPoints.enumerated() {
+            let progress = CGFloat(index) / CGFloat(safeSteps)
+            let angle = CGFloat.pi * 2 * progress
+            let radialVector = CGPoint(x: arcPoint.x - center.x, y: arcPoint.y - center.y)
+            let radialLength = max(hypot(radialVector.x, radialVector.y), 0.001)
+            let normal = CGPoint(x: radialVector.x / radialLength, y: radialVector.y / radialLength)
+            let tangent = CGPoint(x: -normal.y, y: normal.x)
+            let radial = circularStringWave(angle: angle, time: time, seed: seed, amplitude: amplitude)
+            let shear = circularStringWave(angle: angle, time: time * 0.81, seed: seed * 1.7, amplitude: amplitude * 0.16)
+            let point = CGPoint(
+                x: arcPoint.x + normal.x * radial + tangent.x * shear,
+                y: arcPoint.y + normal.y * radial + tangent.y * shear
+            )
+
+            if index == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
+        }
+
+        path.closeSubpath()
+        return path
+    }
+
+    private func layeredStringWave(position: CGFloat, time: TimeInterval, seed: Double, amplitude: CGFloat) -> CGFloat {
+        let position = Double(position)
+        let wave = sin(position * Double.pi * 2.7 + time * 7.1 + seed)
+            + 0.52 * sin(position * Double.pi * 6.3 - time * 11.8 + seed * 1.37)
+            + 0.28 * sin(position * Double.pi * 13.1 + time * 18.6 + seed * 0.63)
+        return CGFloat(wave) * amplitude
+    }
+
+    private func circularStringWave(angle: CGFloat, time: TimeInterval, seed: Double, amplitude: CGFloat) -> CGFloat {
+        let angle = Double(angle)
+        let wave = sin(angle * 3 + time * 5.8 + seed)
+            + 0.45 * sin(angle * 5 - time * 8.9 + seed * 1.53)
+            + 0.25 * sin(angle * 9 + time * 13.7 + seed * 0.79)
+        return CGFloat(wave) * amplitude
     }
 
     private func point(_ normalized: CGPoint, in size: CGSize) -> CGPoint {
