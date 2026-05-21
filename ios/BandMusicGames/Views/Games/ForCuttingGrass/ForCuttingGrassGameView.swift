@@ -52,65 +52,163 @@ struct ForCuttingGrassGameView: View {
     }
 
     private var hud: some View {
-        GeometryReader { geo in
-            let playfield = ForCuttingGrassPlayfieldLayout.swiftUIFrame(in: geo.size)
-
-            VStack {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("LEVEL \(scene.levelNum)")
-                            .font(.system(size: 12, weight: .bold, design: .monospaced))
-                            .foregroundColor(.white.opacity(0.6))
-                        Text(scene.config.sub)
-                            .font(.system(size: 18, weight: .black, design: .rounded))
-                            .foregroundColor(.white)
-                    }
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text("SCORE")
-                            .font(.system(size: 12, weight: .bold, design: .monospaced))
-                            .foregroundColor(.white.opacity(0.6))
-                        Text("\(scene.score)")
-                            .font(.system(size: 20, weight: .black, design: .monospaced))
-                            .foregroundColor(Color(hex: "#ffd27a"))
+        VStack(spacing: 0) {
+            // Reference Style Top Bar
+            HStack(spacing: 8) {
+                // Level Block
+                hudBlock {
+                    VStack(spacing: 2) {
+                        Text("LEVEL")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundColor(.white.opacity(0.5))
+                        HStack(spacing: 4) {
+                            Image(systemName: "laurel.leading")
+                                .font(.system(size: 14))
+                            Text("\(scene.levelNum)")
+                                .font(.system(size: 22, weight: .black, design: .rounded))
+                            Image(systemName: "laurel.trailing")
+                                .font(.system(size: 14))
+                        }
+                        .foregroundColor(Color(hex: "#ffd27a"))
                     }
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, playfield.minY + 12)
-
-                HStack(spacing: 10) {
-                    Text(gasLabel)
-                        .font(.system(size: 12, weight: .black, design: .monospaced))
-                        .foregroundColor(Color(hex: "#ffd27a"))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Capsule().fill(Color.black.opacity(0.35)))
-
-                    if scene.config.usesGas {
-                        GeometryReader { g in
-                            ZStack(alignment: .leading) {
-                                Capsule().fill(Color.black.opacity(0.35))
-                                Capsule()
-                                    .fill(gasColor)
-                                    .frame(width: g.size.width * gasRatio)
+                
+                // Progress Block
+                hudBlock {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text("PROGRESS")
+                                .font(.system(size: 8, weight: .bold))
+                                .foregroundColor(.white.opacity(0.5))
+                            Spacer()
+                            Text("\(Int(scene.grid.cutPercentage * 100))%")
+                                .font(.system(size: 18, weight: .black, design: .monospaced))
+                                .foregroundColor(Color(hex: "#8bc44a"))
+                                .shadow(color: Color(hex: "#8bc44a").opacity(0.5), radius: 4)
+                        }
+                        // Progress Bar (Segmented Look)
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(Color.black.opacity(0.4)).frame(height: 10)
+                            Capsule()
+                                .fill(
+                                    LinearGradient(colors: [Color(hex: "#8bc44a"), Color(hex: "#a6f0a6")],
+                                                   startPoint: .leading, endPoint: .trailing)
+                                )
+                                .frame(width: max(0, 100 * scene.grid.cutPercentage), height: 10)
+                                .shadow(color: Color(hex: "#8bc44a").opacity(0.4), radius: 5)
+                            
+                            // Segments
+                            HStack(spacing: 8) {
+                                ForEach(0..<10) { _ in
+                                    Rectangle().fill(Color.black.opacity(0.2)).frame(width: 2, height: 10)
+                                }
                             }
                         }
-                        .frame(height: 8)
+                        .frame(width: 100)
+                        .clipShape(Capsule())
                     }
-
-                    Text("TRIES \(scene.triesRemaining)")
-                        .font(.system(size: 12, weight: .black, design: .monospaced))
-                        .foregroundColor(Color(hex: "#ffd27a"))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(Capsule().fill(Color.black.opacity(0.35)))
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 4)
+                .frame(width: 130)
 
+                // Status Block (Gas & Tries)
+                hudBlock {
+                    HStack(spacing: 12) {
+                        if scene.config.usesGas || true { // Force showing for mockup parity if needed
+                            VStack(spacing: 2) {
+                                Image(systemName: "fuelpump.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.red)
+                                Text(scene.config.usesGas ? "GAS" : "GAS INF")
+                                    .font(.system(size: 7, weight: .bold))
+                                if scene.config.usesGas {
+                                    Text("\(Int(gasRatio * 100))%")
+                                        .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                        .foregroundColor(gasColor)
+                                } else {
+                                    Text("∞")
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundColor(.orange)
+                                }
+                            }
+                        }
+                        
+                        VStack(spacing: 2) {
+                            Image(systemName: "leaf.fill")
+                                .font(.system(size: 10))
+                                .foregroundColor(Color(hex: "#8bc44a"))
+                            Text("TRIES")
+                                .font(.system(size: 7, weight: .bold))
+                            Text("\(scene.triesRemaining)")
+                                .font(.system(size: 16, weight: .bold))
+                        }
+                    }
+                    .foregroundColor(.white)
+                }
+
+                // Controls Block
+                hudBlock {
+                    VStack(spacing: 4) {
+                        Text("CONTROLS ⌵")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundColor(.white.opacity(0.5))
+                        HStack(spacing: 6) {
+                            controlTab(icon: "dot.circle.and.hand.point.up.left.fill", label: "Stick", active: true)
+                            controlTab(icon: "plus.circle.fill", label: "D-Pad", active: false)
+                            controlTab(icon: "steeringwheel", label: "Wheel", active: false)
+                        }
+                    }
+                }
+                
                 Spacer()
+                
+                // Settings & New Level
+                HStack(spacing: 12) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "gearshape.fill")
+                        Text("SETTINGS").font(.system(size: 6, weight: .bold))
+                    }
+                    VStack(spacing: 4) {
+                        Image(systemName: "sun.max.fill")
+                        Text("NEW LEVEL").font(.system(size: 6, weight: .bold))
+                    }
+                }
+                .font(.system(size: 18))
+                .foregroundColor(Color(hex: "#ffd27a"))
+                .padding(.trailing, 8)
             }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.6))
+                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.1), lineWidth: 0.5))
+            )
+            .padding(.top, 44) // Basic top offset for now
+            
+            Spacer()
         }
+    }
+    
+    private func hudBlock<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color.black.opacity(0.3))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.05), lineWidth: 1))
+    }
+    
+    private func controlTab(icon: String, label: String, active: Bool) -> some View {
+        VStack(spacing: 2) {
+            Image(systemName: icon)
+                .font(.system(size: 12))
+            Text(label)
+                .font(.system(size: 6, weight: .bold))
+        }
+        .frame(width: 28, height: 28)
+        .background(active ? Color(hex: "#ffd27a") : Color.black.opacity(0.4))
+        .foregroundColor(active ? .black : .white.opacity(0.6))
+        .clipShape(RoundedRectangle(cornerRadius: 4))
     }
 
     private var gasLabel: String {

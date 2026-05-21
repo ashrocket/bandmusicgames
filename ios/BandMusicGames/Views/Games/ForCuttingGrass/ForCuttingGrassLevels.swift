@@ -93,6 +93,7 @@ enum ForCuttingGrassTile: UInt8 {
     case stump = 2     // impassable until dug
     case house = 3     // impassable, not mowable
     case garden = 4    // passable, not mowable
+    case birdbath = 5  // impassable, not mowable
 }
 
 struct ForCuttingGrassGrid {
@@ -132,23 +133,41 @@ struct ForCuttingGrassGrid {
     static func make(for config: ForCuttingGrassLevelConfig) -> ForCuttingGrassGrid {
         var cells = ContiguousArray<ForCuttingGrassTile>(repeating: .tall, count: width * height)
         if config.n == 1 {
-            // Portrait version of the web tutorial yard: house and flowers at
-            // the top, with a longer open lawn for steering practice below.
-            for y in 0...7 {
-                for x in 5..<width {
+            // High-Quality Garden Layout (Ref Image: ba.png)
+            
+            // 1. House at the top (2 tiles high)
+            for y in 0...1 {
+                for x in 0..<width {
                     cells[y * width + x] = .house
                 }
             }
-
-            for y in 0...8 {
-                for x in 0..<5 {
+            
+            // 2. Thick Flower beds on the sides (2 tiles wide)
+            for y in 2..<height {
+                // Left bed
+                for x in 0...1 {
+                    cells[y * width + x] = .garden
+                }
+                // Right bed
+                for x in (width - 2)..<width {
                     cells[y * width + x] = .garden
                 }
             }
-
-            for x in 5..<width {
-                cells[8 * width + x] = .garden
+            
+            // 3. Flower bed at the bottom (2 tiles high)
+            for y in (height - 3)..<(height - 1) {
+                for x in 0..<width {
+                    cells[y * width + x] = .garden
+                }
             }
+            
+            // 4. Stone path at the very bottom (1 tile high)
+            for x in 0..<width {
+                cells[(height - 1) * width + x] = .garden // Paving
+            }
+            
+            // 5. Birdbath obstacle (specifically on the left side of lawn)
+            cells[14 * width + 2] = .birdbath
         }
         return ForCuttingGrassGrid(cells: cells)
     }

@@ -53,12 +53,10 @@ struct ContentView: View {
             SpotifySheetView()
                 .environmentObject(auth)
         }
-        .alert(item: $auth.playbackError) { error in
-            Alert(
-                title: Text("Can't Play"),
-                message: Text(error.message),
-                dismissButton: .default(Text("OK"))
-            )
+        .overlay {
+            if let error = auth.playbackError {
+                spotifyErrorOverlay(error)
+            }
         }
         .onDisappear {
             launchTask?.cancel()
@@ -126,6 +124,64 @@ struct ContentView: View {
         }
 
         return nil
+    }
+
+    private func spotifyErrorOverlay(_ error: SpotifyAuthManager.PlaybackError) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 40))
+                .foregroundColor(.orange)
+            
+            Text("SPOTIFY ERROR")
+                .font(.system(size: 14, weight: .black, design: .monospaced))
+                .tracking(2)
+                .foregroundColor(.white)
+            
+            Text(error.message)
+                .font(.system(size: 12, weight: .medium, design: .monospaced))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+                .foregroundColor(.white.opacity(0.8))
+
+            HStack(spacing: 12) {
+                if case .noDevice = error {
+                    Button {
+                        auth.wakeSpotify()
+                        auth.playbackError = nil
+                    } label: {
+                        Text("WAKE SPOTIFY")
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color.green)
+                            .foregroundColor(.black)
+                            .clipShape(Capsule())
+                    }
+                }
+                
+                Button {
+                    auth.playbackError = nil
+                } label: {
+                    Text("DISMISS")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.1))
+                        .foregroundColor(.white)
+                        .clipShape(Capsule())
+                }
+            }
+        }
+        .padding(.vertical, 32)
+        .frame(maxWidth: 320)
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(Color(red: 0.1, green: 0.05, blue: 0.02))
+                .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.white.opacity(0.1), lineWidth: 1))
+        )
+        .shadow(color: .black.opacity(0.6), radius: 40)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .zIndex(999)
     }
 }
 

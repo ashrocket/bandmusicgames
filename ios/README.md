@@ -75,9 +75,38 @@ BandMusicGames/
 
 ## TestFlight automation
 
+### Local upload
+
+From the repo root:
+
+```sh
+npm run testflight
+```
+
+The local uploader defaults to:
+
+- key path: `~/.env/ashcode/apple/AuthKey_N89CARWD2R.p8`
+- key ID: `N89CARWD2R`
+- issuer ID: `69a6de77-108b-47e3-e053-5b8c7c11a4d1`
+- bundle ID: `party.bandmusicgames.app`
+
+It creates a timestamp build number, archives, uploads to App Store Connect, then
+polls TestFlight readiness and sets `usesNonExemptEncryption=false` if Apple
+asks for export compliance.
+
+Override defaults with environment variables:
+
+```sh
+ASC_KEY_PATH=/path/to/AuthKey_XXXX.p8 ASC_KEY_ID=XXXX npm run testflight
+```
+
+### GitHub Actions
+
 `.github/workflows/testflight.yml` archives and uploads the iOS app to App Store
 Connect on pushes to `main` that touch `ios/**`, and can also be run manually.
-It uses automatic signing plus an App Store Connect API key.
+It uses automatic signing plus an App Store Connect API key by running the same
+uploader script, then polls TestFlight readiness and applies the export
+compliance flag.
 
 Required repository secrets:
 

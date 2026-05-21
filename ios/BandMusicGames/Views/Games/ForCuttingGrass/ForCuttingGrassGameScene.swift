@@ -452,7 +452,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
 
         return probes.contains { probe in
             let tile = tile(atWorldPos: probe)
-            return tile == .house || tile == .stump
+            return tile == .house || tile == .stump || tile == .birdbath
         }
     }
 

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev":    "npx --yes vite@4 --host 127.0.0.1 --port 8081",
-    "deploy": "npx wrangler pages deploy . --project-name bandmusicgames"
+    "deploy": "npx wrangler pages deploy . --project-name bandmusicgames",
+    "testflight": "scripts/upload-testflight.sh"
   }
 }

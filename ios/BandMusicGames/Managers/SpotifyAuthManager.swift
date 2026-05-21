@@ -109,6 +109,12 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
 
     func handleCallback(url: URL) {}
 
+    func wakeSpotify() {
+        if let url = URL(string: "spotify:") {
+            UIApplication.shared.open(url)
+        }
+    }
+
     // MARK: - Playback
 
     func playTrack(_ uri: String) async {

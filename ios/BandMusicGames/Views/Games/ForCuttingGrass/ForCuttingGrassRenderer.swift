@@ -31,67 +31,53 @@ final class ForCuttingGrassRenderer {
         let node = SKNode()
         node.name = "push-mower"
 
+        // 1. Long Metal Handle
         let handlePath = CGMutablePath()
-        handlePath.move(to: CGPoint(x: -unit * 0.28, y: unit * 0.18))
-        handlePath.addLine(to: CGPoint(x: -unit * 0.82, y: unit * 0.54))
-        handlePath.addLine(to: CGPoint(x: -unit * 1.03, y: unit * 0.54))
-        handlePath.move(to: CGPoint(x: -unit * 0.28, y: -unit * 0.18))
-        handlePath.addLine(to: CGPoint(x: -unit * 0.82, y: -unit * 0.54))
-        handlePath.addLine(to: CGPoint(x: -unit * 1.03, y: -unit * 0.54))
+        handlePath.move(to: CGPoint(x: -unit * 0.15, y: 0))
+        handlePath.addLine(to: CGPoint(x: -unit * 1.2, y: 0))
         let handle = SKShapeNode(path: handlePath)
-        handle.strokeColor = SKColor(red: 0.72, green: 0.80, blue: 0.70, alpha: 1)
-        handle.lineWidth = max(2, unit * 0.07)
-        handle.lineCap = .round
-        handle.lineJoin = .round
+        handle.strokeColor = SKColor(red: 0.6, green: 0.6, blue: 0.65, alpha: 1)
+        handle.lineWidth = 3
         handle.zPosition = -1
         node.addChild(handle)
+        
+        // Wooden Grip
+        let grip = SKShapeNode(rectOf: CGSize(width: 6, height: unit * 0.6), cornerRadius: 2)
+        grip.fillColor = SKColor(red: 0.45, green: 0.3, blue: 0.2, alpha: 1)
+        grip.strokeColor = .clear
+        grip.position = CGPoint(x: -unit * 1.2, y: 0)
+        node.addChild(grip)
 
-        let deckSize = CGSize(width: unit * 0.98, height: unit * 0.60)
-        let deck = SKShapeNode(rectOf: deckSize, cornerRadius: unit * 0.12)
-        deck.fillColor = SKColor(red: 0.93, green: 0.72, blue: 0.18, alpha: 1)
-        deck.strokeColor = SKColor(red: 0.34, green: 0.22, blue: 0.04, alpha: 1)
-        deck.lineWidth = max(1, unit * 0.04)
-        deck.position = CGPoint(x: unit * 0.06, y: 0)
-        node.addChild(deck)
+        // 2. Main Cylinder Blades
+        let cylinder = SKShapeNode(rectOf: CGSize(width: unit * 0.5, height: unit * 0.8), cornerRadius: 4)
+        cylinder.fillColor = SKColor(red: 0.2, green: 0.2, blue: 0.25, alpha: 1)
+        cylinder.strokeColor = SKColor(red: 0.4, green: 0.4, blue: 0.45, alpha: 1)
+        cylinder.lineWidth = 1
+        node.addChild(cylinder)
+        
+        // Blade Lines
+        for i in -2...2 {
+            let line = SKShapeNode(rectOf: CGSize(width: 2, height: unit * 0.8))
+            line.fillColor = .white.withAlphaComponent(0.2)
+            line.strokeColor = .clear
+            line.position = CGPoint(x: CGFloat(i) * (unit * 0.1), y: 0)
+            node.addChild(line)
+        }
 
-        let cowling = SKShapeNode(rectOf: CGSize(width: unit * 0.44, height: unit * 0.34), cornerRadius: unit * 0.08)
-        cowling.fillColor = SKColor(red: 0.98, green: 0.86, blue: 0.30, alpha: 1)
-        cowling.strokeColor = SKColor(red: 0.42, green: 0.27, blue: 0.05, alpha: 1)
-        cowling.lineWidth = max(1, unit * 0.025)
-        cowling.position = CGPoint(x: unit * 0.16, y: 0)
-        node.addChild(cowling)
-
-        let vent = SKShapeNode(rectOf: CGSize(width: unit * 0.22, height: unit * 0.06), cornerRadius: unit * 0.02)
-        vent.fillColor = SKColor(red: 0.27, green: 0.22, blue: 0.10, alpha: 1)
-        vent.strokeColor = .clear
-        vent.position = CGPoint(x: unit * 0.17, y: 0)
-        node.addChild(vent)
-
-        let nose = SKShapeNode(rectOf: CGSize(width: unit * 0.22, height: unit * 0.42), cornerRadius: unit * 0.06)
-        nose.fillColor = SKColor(red: 0.28, green: 0.61, blue: 0.18, alpha: 1)
-        nose.strokeColor = SKColor(red: 0.08, green: 0.22, blue: 0.06, alpha: 1)
-        nose.lineWidth = max(1, unit * 0.025)
-        nose.position = CGPoint(x: unit * 0.47, y: 0)
-        node.addChild(nose)
-
-        let wheelPositions = [
-            CGPoint(x: -unit * 0.27, y: -unit * 0.36),
-            CGPoint(x: unit * 0.34, y: -unit * 0.36),
-            CGPoint(x: -unit * 0.27, y: unit * 0.36),
-            CGPoint(x: unit * 0.34, y: unit * 0.36),
-        ]
-        for position in wheelPositions {
-            let wheel = SKShapeNode(circleOfRadius: unit * 0.12)
-            wheel.fillColor = SKColor(red: 0.07, green: 0.08, blue: 0.06, alpha: 1)
-            wheel.strokeColor = SKColor(red: 0.65, green: 0.70, blue: 0.58, alpha: 1)
-            wheel.lineWidth = max(1, unit * 0.025)
-            wheel.position = position
+        // 3. Side Wheels
+        let wheelY: CGFloat = unit * 0.45
+        for side in [-1.0, 1.0] {
+            let wheel = SKShapeNode(circleOfRadius: unit * 0.22)
+            wheel.fillColor = SKColor(red: 0.1, green: 0.1, blue: 0.12, alpha: 1)
+            wheel.strokeColor = SKColor(red: 0.5, green: 0.5, blue: 0.55, alpha: 1)
+            wheel.lineWidth = 2
+            wheel.position = CGPoint(x: 0, y: side * wheelY)
             node.addChild(wheel)
-
-            let hub = SKShapeNode(circleOfRadius: unit * 0.045)
-            hub.fillColor = SKColor(red: 0.80, green: 0.78, blue: 0.58, alpha: 1)
+            
+            let hub = SKShapeNode(circleOfRadius: 4)
+            hub.fillColor = .gray
             hub.strokeColor = .clear
-            hub.position = position
+            hub.position = wheel.position
             node.addChild(hub)
         }
 
@@ -105,28 +91,58 @@ final class ForCuttingGrassRenderer {
 
     static func tileNode(for tile: ForCuttingGrassTile, size: CGSize) -> SKNode {
         switch tile {
-        case .tall:    return sprite(named: "tile-tall-1",    size: size, fallbackColor: SKColor(red: 0.18, green: 0.48, blue: 0.18, alpha: 1))
-        case .cut:     return sprite(named: "tile-cut-1",     size: size, fallbackColor: SKColor(red: 0.55, green: 0.77, blue: 0.29, alpha: 1))
-        case .stump:   return sprite(named: "stump-full",     size: size, fallbackColor: SKColor(red: 0.55, green: 0.27, blue: 0.07, alpha: 1))
+        case .tall:    return sprite(named: "tile-tall-1",    size: size, fallbackColor: SKColor(red: 0.15, green: 0.38, blue: 0.12, alpha: 1))
+        case .cut:     return sprite(named: "tile-cut-1",     size: size, fallbackColor: SKColor(red: 0.45, green: 0.65, blue: 0.25, alpha: 1))
+        case .stump:   return sprite(named: "stump-full",     size: size, fallbackColor: SKColor(red: 0.45, green: 0.22, blue: 0.05, alpha: 1))
         case .house:   return houseTileNode(size: size)
         case .garden:  return flowerGardenTileNode(size: size)
+        case .birdbath: return birdbathTileNode(size: size)
         }
+    }
+
+    private static func birdbathTileNode(size: CGSize) -> SKNode {
+        let node = SKNode()
+        let unit = min(size.width, size.height)
+        
+        // Base
+        let base = SKShapeNode(rectOf: CGSize(width: 8, height: unit * 0.8))
+        base.fillColor = SKColor(red: 0.6, green: 0.6, blue: 0.62, alpha: 1)
+        base.strokeColor = .clear
+        node.addChild(base)
+        
+        // Bowl
+        let bowl = SKShapeNode(ellipseIn: CGRect(x: -unit * 0.4, y: unit * 0.2, width: unit * 0.8, height: unit * 0.4))
+        bowl.fillColor = SKColor(red: 0.7, green: 0.7, blue: 0.72, alpha: 1)
+        bowl.strokeColor = SKColor(red: 0.4, green: 0.4, blue: 0.42, alpha: 1)
+        bowl.lineWidth = 1
+        node.addChild(bowl)
+        
+        // Water
+        let water = SKShapeNode(ellipseIn: CGRect(x: -unit * 0.3, y: unit * 0.25, width: unit * 0.6, height: unit * 0.25))
+        water.fillColor = SKColor(red: 0.4, green: 0.7, blue: 0.9, alpha: 0.8)
+        water.strokeColor = .clear
+        node.addChild(water)
+        
+        return node
     }
 
     private static func houseTileNode(size: CGSize) -> SKNode {
         let node = SKNode()
-
-        let roof = SKShapeNode(rectOf: size)
-        roof.fillColor = SKColor(red: 0.40, green: 0.09, blue: 0.08, alpha: 1)
-        roof.strokeColor = SKColor(red: 0.20, green: 0.04, blue: 0.03, alpha: 1)
-        roof.lineWidth = 1
-        node.addChild(roof)
-
-        let highlight = SKShapeNode(rectOf: CGSize(width: max(2, size.width - 6), height: max(2, size.height * 0.12)))
-        highlight.fillColor = SKColor(red: 0.64, green: 0.20, blue: 0.16, alpha: 0.75)
-        highlight.strokeColor = .clear
-        highlight.position = CGPoint(x: 0, y: size.height * 0.18)
-        node.addChild(highlight)
+        // Brick aesthetic
+        let wall = SKShapeNode(rectOf: size)
+        wall.fillColor = SKColor(red: 0.35, green: 0.22, blue: 0.18, alpha: 1)
+        wall.strokeColor = SKColor(red: 0.25, green: 0.15, blue: 0.1, alpha: 1)
+        wall.lineWidth = 1
+        node.addChild(wall)
+        
+        // Mortar lines
+        for i in 0...3 {
+            let line = SKShapeNode(rectOf: CGSize(width: size.width, height: 1))
+            line.fillColor = .white.withAlphaComponent(0.05)
+            line.strokeColor = .clear
+            line.position = CGPoint(x: 0, y: -size.height/2 + CGFloat(i) * (size.height/4))
+            node.addChild(line)
+        }
 
         return node
     }
@@ -134,42 +150,25 @@ final class ForCuttingGrassRenderer {
     private static func flowerGardenTileNode(size: CGSize) -> SKNode {
         let node = SKNode()
 
-        let soil = SKShapeNode(rectOf: size)
-        soil.fillColor = SKColor(red: 0.24, green: 0.12, blue: 0.04, alpha: 1)
-        soil.strokeColor = SKColor(red: 0.50, green: 0.32, blue: 0.10, alpha: 0.7)
-        soil.lineWidth = 1
-        node.addChild(soil)
+        let foliage = SKShapeNode(rectOf: size)
+        foliage.fillColor = SKColor(red: 0.08, green: 0.25, blue: 0.06, alpha: 1)
+        foliage.strokeColor = .clear
+        node.addChild(foliage)
 
         let flowerColors = [
-            SKColor(red: 1.00, green: 0.40, blue: 0.55, alpha: 1),
-            SKColor(red: 1.00, green: 0.88, blue: 0.20, alpha: 1),
-            SKColor(red: 0.42, green: 0.85, blue: 1.00, alpha: 1),
-            SKColor(red: 0.94, green: 0.48, blue: 1.00, alpha: 1),
+            SKColor(red: 1.00, green: 0.42, blue: 0.71, alpha: 1), // Pink
+            SKColor(red: 0.95, green: 0.82, blue: 0.15, alpha: 1), // Yellow
+            SKColor(red: 0.82, green: 0.45, blue: 0.95, alpha: 1), // Purple
         ]
-        let centers = [
-            CGPoint(x: -size.width * 0.24, y: -size.height * 0.22),
-            CGPoint(x: size.width * 0.22, y: -size.height * 0.12),
-            CGPoint(x: -size.width * 0.10, y: size.height * 0.22),
-        ]
-
-        for (index, center) in centers.enumerated() {
-            let stem = SKShapeNode(rectOf: CGSize(width: max(1, size.width * 0.07), height: max(4, size.height * 0.32)))
-            stem.fillColor = SKColor(red: 0.13, green: 0.52, blue: 0.13, alpha: 1)
-            stem.strokeColor = .clear
-            stem.position = CGPoint(x: center.x, y: center.y - size.height * 0.10)
-            node.addChild(stem)
-
-            let bloom = SKShapeNode(circleOfRadius: max(2, min(size.width, size.height) * 0.14))
-            bloom.fillColor = flowerColors[index % flowerColors.count]
+        
+        for _ in 0...5 {
+            let pos = CGPoint(x: CGFloat.random(in: -size.width/3...size.width/3),
+                             y: CGFloat.random(in: -size.height/3...size.height/3))
+            let bloom = SKShapeNode(circleOfRadius: 4)
+            bloom.fillColor = flowerColors.randomElement()!
             bloom.strokeColor = .clear
-            bloom.position = center
+            bloom.position = pos
             node.addChild(bloom)
-
-            let middle = SKShapeNode(circleOfRadius: max(0.8, min(size.width, size.height) * 0.05))
-            middle.fillColor = SKColor(red: 1.0, green: 0.92, blue: 0.15, alpha: 1)
-            middle.strokeColor = .clear
-            middle.position = center
-            node.addChild(middle)
         }
 
         return node
