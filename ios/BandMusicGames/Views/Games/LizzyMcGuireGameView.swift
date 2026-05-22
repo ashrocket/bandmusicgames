@@ -68,15 +68,11 @@ struct LizzyMcGuireGameView: View {
 
     private var titleOverlay: some View {
         GeometryReader { geo in
-            let usableHeight = geo.size.height - geo.safeAreaInsets.top - geo.safeAreaInsets.bottom
-            let compact = usableHeight < 760
-            let titleSize: CGFloat = compact ? 40 : 48
-            let topInset = max(geo.safeAreaInsets.top + 24, compact ? 86 : 142)
-            let bottomInset = max(geo.safeAreaInsets.bottom + 16, compact ? 18 : 30)
+            let compact = geo.size.height < 780
+            let titleSize: CGFloat = compact ? 42 : 50
 
-            VStack(spacing: compact ? 12 : 18) {
+            VStack(spacing: 0) {
                 Spacer()
-                    .frame(height: topInset)
 
                 VStack(spacing: compact ? 5 : 8) {
                     Text("NARA'S ROOM")
@@ -87,8 +83,7 @@ struct LizzyMcGuireGameView: View {
                     VStack(spacing: compact ? -5 : -2) {
                         Text("HALF")
                         Text("COURT")
-                        Text("HERO")
-                            .foregroundColor(.white)
+                        Text("HERO").foregroundColor(.white)
                     }
                     .font(.system(size: titleSize, weight: .black, design: .monospaced))
                     .foregroundColor(Color(hex: "#FF1493"))
@@ -96,7 +91,7 @@ struct LizzyMcGuireGameView: View {
                     .shadow(color: Color(hex: "#FF1493").opacity(0.5), radius: 12)
                 }
 
-                Spacer(minLength: compact ? 20 : 34)
+                Spacer()
 
                 Button {
                     HapticManager.impact(.medium)
@@ -118,9 +113,10 @@ struct LizzyMcGuireGameView: View {
                     .font(.system(size: compact ? 9 : 11, weight: .bold, design: .monospaced))
                     .tracking(2)
                     .foregroundColor(.white.opacity(0.42))
-                    .padding(.bottom, bottomInset)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
+                    .padding(.top, 10)
+                    .padding(.bottom, geo.safeAreaInsets.bottom + 20)
             }
             .frame(maxWidth: 430)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -130,35 +126,33 @@ struct LizzyMcGuireGameView: View {
 
     private var characterSelectOverlay: some View {
         GeometryReader { geo in
-            let usableHeight = geo.size.height - geo.safeAreaInsets.top - geo.safeAreaInsets.bottom
-            let compact = usableHeight < 760
-            let topInset = max(geo.safeAreaInsets.top + 18, compact ? 24 : 48)
-            let bottomInset = max(geo.safeAreaInsets.bottom + 18, compact ? 18 : 34)
-            let gridSpacing: CGFloat = compact ? 8 : 12
-            let cardHeight = max(compact ? 142 : 168, min(compact ? 168 : 196, (usableHeight - topInset - bottomInset - 118 - gridSpacing) / 2))
-            let badgeHeight = max(compact ? 58 : 70, min(compact ? 76 : 94, cardHeight * 0.5))
+            let topInset = geo.safeAreaInsets.top
+            let bottomInset = geo.safeAreaInsets.bottom
+            let compact = geo.size.height < 780
 
-            VStack(spacing: compact ? 8 : 14) {
-                Spacer()
-                    .frame(height: topInset)
+            VStack(spacing: 0) {
+                // Header
+                VStack(spacing: compact ? 3 : 5) {
+                    Text(selectStep == 1 ? "MEET THE TEAM" : "PICK TEAMMATE")
+                        .font(.system(size: compact ? 16 : 19, weight: .black, design: .monospaced))
+                        .tracking(2)
+                        .foregroundColor(selectStep == 1 ? Color(hex: "#FFD700") : selectedPlayer.character.hue)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.65)
+                    Text(selectStep == 1 ? "Choose your ball handler" : "\(selectedPlayer.character.fullName) is in")
+                        .font(.system(size: compact ? 9 : 11, weight: .semibold, design: .monospaced))
+                        .tracking(1.5)
+                        .foregroundColor(.white.opacity(0.55))
+                        .lineLimit(1)
+                }
+                .padding(.top, topInset + (compact ? 14 : 20))
+                .padding(.bottom, compact ? 12 : 16)
 
-                Text(selectStep == 1 ? "MEET THE TEAM" : "PICK TEAMMATE")
-                    .font(.system(size: compact ? 15 : 18, weight: .black, design: .monospaced))
-                    .tracking(2)
-                    .foregroundColor(selectStep == 1 ? Color(hex: "#FFD700") : selectedPlayer.character.hue)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.65)
-
-                Text(selectStep == 1 ? "Choose your ball handler" : "\(selectedPlayer.character.fullName) is in")
-                    .font(.system(size: compact ? 9 : 11, weight: .semibold, design: .monospaced))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.55))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-
-                Spacer(minLength: compact ? 8 : 14)
-
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2), spacing: gridSpacing) {
+                // Character grid
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2),
+                    spacing: compact ? 10 : 14
+                ) {
                     ForEach(HalfCourtHeroID.allCases) { hero in
                         let disabled = selectStep == 2 && hero == selectedPlayer
                         let isSelected = hero == selectedPlayer || hero == selectedTeammate
@@ -171,16 +165,14 @@ struct LizzyMcGuireGameView: View {
                                 selectedTeammate = hero
                             }
                         } label: {
-                            VStack(spacing: compact ? 5 : 9) {
+                            VStack(spacing: compact ? 6 : 8) {
                                 HalfCourtHeroBadge(hero: hero, selected: isSelected, dimmed: disabled)
-                                    .frame(height: badgeHeight)
-
+                                    .frame(height: compact ? 90 : 110)
                                 Text(hero.character.name)
-                                    .font(.system(size: compact ? 12 : 15, weight: .black, design: .monospaced))
+                                    .font(.system(size: compact ? 12 : 14, weight: .black, design: .monospaced))
                                     .foregroundColor(disabled ? .white.opacity(0.24) : hero.character.hue)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.7)
-
                                 Text(hero.character.ability)
                                     .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
                                     .tracking(1.2)
@@ -188,42 +180,42 @@ struct LizzyMcGuireGameView: View {
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.65)
                             }
-                            .padding(compact ? 8 : 12)
+                            .padding(compact ? 10 : 14)
                             .frame(maxWidth: .infinity)
-                            .frame(height: cardHeight)
                             .background(
-                                RoundedRectangle(cornerRadius: 10)
+                                RoundedRectangle(cornerRadius: 12)
                                     .fill(isSelected ? hero.character.hue.opacity(0.17) : Color.black.opacity(0.28))
                             )
                             .overlay(
-                                RoundedRectangle(cornerRadius: 10)
+                                RoundedRectangle(cornerRadius: 12)
                                     .stroke(isSelected ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: isSelected ? 2.5 : 1)
                             )
                         }
                         .disabled(disabled)
                     }
                 }
-                .padding(.horizontal, compact ? 16 : 20)
+                .padding(.horizontal, compact ? 16 : 22)
 
-                Spacer(minLength: compact ? 10 : 16)
+                Spacer(minLength: 12)
 
+                // Play button
                 Button {
                     HapticManager.impact(.heavy)
                     scene.startGame(playerID: selectedPlayer, teammateID: selectedTeammate ?? .ethan)
                 } label: {
                     Text("PLAY")
-                        .font(.system(size: compact ? 15 : 17, weight: .black, design: .monospaced))
+                        .font(.system(size: compact ? 16 : 18, weight: .black, design: .monospaced))
                         .tracking(4)
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, compact ? 11 : 13)
+                        .padding(.vertical, compact ? 12 : 14)
                         .background(Color(hex: "#FFD700"))
-                        .clipShape(RoundedRectangle(cornerRadius: 11))
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .opacity(selectedTeammate != nil ? 1 : 0.35)
                 .disabled(selectedTeammate == nil)
-                .padding(.horizontal, compact ? 28 : 32)
-                .padding(.bottom, bottomInset)
+                .padding(.horizontal, compact ? 28 : 34)
+                .padding(.bottom, bottomInset + (compact ? 14 : 20))
             }
             .frame(maxWidth: 430)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -238,13 +230,71 @@ private struct HalfCourtHeroBadge: View {
     let dimmed: Bool
 
     var body: some View {
-        // Placeholder for badge (could be a SpriteView or Image)
-        Image(systemName: "person.fill")
-            .font(.system(size: 40))
-            .foregroundColor(hero.character.hue)
-            .opacity(dimmed ? 0.35 : 1)
-            .overlay(
-                selected ? Circle().stroke(hero.character.hue, lineWidth: 2).padding(-10) : nil
-            )
+        let ch = hero.character
+        Canvas { ctx, size in
+            let cx = size.width / 2
+            let s = size.height / 120  // scale factor
+
+            // Shirt / shoulders
+            let shirtRect = CGRect(x: cx - 32*s, y: size.height - 50*s, width: 64*s, height: 58*s)
+            ctx.fill(Path(roundedRect: shirtRect, cornerRadius: 14*s), with: .color(ch.shirt))
+
+            // Neck
+            ctx.fill(Path(roundedRect: CGRect(x: cx - 7*s, y: size.height - 62*s, width: 14*s, height: 18*s), cornerRadius: 4*s),
+                     with: .color(ch.skin))
+
+            // Head
+            let headRect = CGRect(x: cx - 20*s, y: size.height - 98*s, width: 40*s, height: 44*s)
+            ctx.fill(Path(ellipseIn: headRect), with: .color(ch.skin))
+
+            // Hair (drawn before face features, behind on some styles)
+            drawHair(ctx: &ctx, size: size, cx: cx, s: s, ch: ch)
+
+            // Eyes
+            let eyeY = size.height - 82*s
+            ctx.fill(Path(ellipseIn: CGRect(x: cx - 11*s, y: eyeY, width: 6*s, height: 5*s)), with: .color(.black.opacity(0.85)))
+            ctx.fill(Path(ellipseIn: CGRect(x: cx + 5*s, y: eyeY, width: 6*s, height: 5*s)), with: .color(.black.opacity(0.85)))
+
+            // Mouth
+            var mouth = Path()
+            mouth.move(to: CGPoint(x: cx - 6*s, y: size.height - 68*s))
+            mouth.addQuadCurve(to: CGPoint(x: cx + 6*s, y: size.height - 68*s),
+                               control: CGPoint(x: cx, y: size.height - 63*s))
+            ctx.stroke(mouth, with: .color(.black.opacity(0.5)), lineWidth: 1.5*s)
+        }
+        .opacity(dimmed ? 0.35 : 1)
+        .overlay(alignment: .bottom) {
+            if selected {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(hero.character.hue)
+                    .frame(height: 3)
+                    .padding(.horizontal, 12)
+            }
+        }
+    }
+
+    private func drawHair(ctx: inout GraphicsContext, size: CGSize, cx: CGFloat, s: CGFloat, ch: HalfCourtHero) {
+        switch ch.hairStyle {
+        case .bob:
+            let r = CGRect(x: cx - 23*s, y: size.height - 102*s, width: 46*s, height: 50*s)
+            ctx.fill(Path(roundedRect: r, cornerRadius: 16*s), with: .color(ch.hair))
+        case .long:
+            let r = CGRect(x: cx - 25*s, y: size.height - 108*s, width: 50*s, height: 72*s)
+            ctx.fill(Path(roundedRect: r, cornerRadius: 16*s), with: .color(ch.hair))
+        case .beanie:
+            let r = CGRect(x: cx - 21*s, y: size.height - 106*s, width: 42*s, height: 26*s)
+            ctx.fill(Path(roundedRect: r, cornerRadius: 10*s), with: .color(.gray))
+            // beanie stripe
+            let stripe = CGRect(x: cx - 20*s, y: size.height - 83*s, width: 40*s, height: 5*s)
+            ctx.fill(Path(roundedRect: stripe, cornerRadius: 2*s), with: .color(.white.opacity(0.35)))
+        case .glasses:
+            let r = CGRect(x: cx - 20*s, y: size.height - 104*s, width: 40*s, height: 34*s)
+            ctx.fill(Path(ellipseIn: r), with: .color(ch.hair))
+            // glasses
+            var g = Path()
+            g.addEllipse(in: CGRect(x: cx - 14*s, y: size.height - 86*s, width: 12*s, height: 9*s))
+            g.addEllipse(in: CGRect(x: cx + 2*s, y: size.height - 86*s, width: 12*s, height: 9*s))
+            ctx.stroke(g, with: .color(.black.opacity(0.85)), lineWidth: 1.5*s)
+        }
     }
 }
