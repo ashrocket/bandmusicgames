@@ -17,9 +17,9 @@ struct ForCuttingGrassMower {
 
 enum ForCuttingGrassPlayfieldLayout {
     static func swiftUIFrame(in size: CGSize) -> CGRect {
-        let topReserved = max(124, min(size.height * 0.17, 152))
-        let bottomInset = max(18, min(size.height * 0.06, 52))
-        let availableHeight = max(420, size.height - topReserved - bottomInset)
+        let topReserved: CGFloat = 8
+        let bottomInset: CGFloat = 8
+        let availableHeight = max(200, size.height - topReserved - bottomInset)
         let aspect = CGFloat(ForCuttingGrassGrid.width) / CGFloat(ForCuttingGrassGrid.height)
         var width = size.width
         var height = width / aspect

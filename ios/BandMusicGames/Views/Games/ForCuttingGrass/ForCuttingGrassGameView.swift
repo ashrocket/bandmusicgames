@@ -8,29 +8,31 @@ struct ForCuttingGrassGameView: View {
     @State private var canvasZoom: CGFloat = 1
 
     var body: some View {
-        ZStack {
-            Color(hex: "#0a1a0a").ignoresSafeArea()
+        VStack(spacing: 0) {
+            if scene.phase == .playing {
+                hud
+            }
 
-            SpriteView(
-                scene: scene,
-                options: [.ignoresSiblingOrder, .shouldCullNonVisibleNodes]
-            )
-            .scaleEffect(canvasZoom, anchor: .center)
-            .gesture(canvasZoomGesture)
-            .ignoresSafeArea()
+            ZStack {
+                SpriteView(
+                    scene: scene,
+                    options: [.ignoresSiblingOrder, .shouldCullNonVisibleNodes]
+                )
+                .scaleEffect(canvasZoom, anchor: .center)
+                .gesture(canvasZoomGesture)
+
+                if scene.phase != .playing {
+                    phaseOverlay
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             if scene.phase == .playing {
                 ForCuttingGrassControlOverlay(input: scene.input)
-                    .ignoresSafeArea()
-
-                hud
-                    .allowsHitTesting(false)
-            } else {
-                phaseOverlay
             }
-
-            closeButton
         }
+        .background(Color(hex: "#0a1a0a").ignoresSafeArea())
+        .overlay(alignment: .topTrailing) { closeButton }
         .onAppear { scene.activate() }
         .onDisappear { scene.deactivate() }
     }
@@ -52,9 +54,7 @@ struct ForCuttingGrassGameView: View {
     }
 
     private var hud: some View {
-        VStack(spacing: 0) {
-            // Reference Style Top Bar
-            HStack(spacing: 8) {
+        HStack(spacing: 8) {
                 // Level Block
                 hudBlock {
                     VStack(spacing: 2) {
@@ -145,48 +145,14 @@ struct ForCuttingGrassGameView: View {
                     .foregroundColor(.white)
                 }
 
-                // Controls Block
-                hudBlock {
-                    VStack(spacing: 4) {
-                        Text("CONTROLS ⌵")
-                            .font(.system(size: 7, weight: .bold))
-                            .foregroundColor(.white.opacity(0.5))
-                        HStack(spacing: 6) {
-                            controlTab(icon: "dot.circle.and.hand.point.up.left.fill", label: "Stick", active: true)
-                            controlTab(icon: "plus.circle.fill", label: "D-Pad", active: false)
-                            controlTab(icon: "steeringwheel", label: "Wheel", active: false)
-                        }
-                    }
-                }
-                
                 Spacer()
-                
-                // Settings & New Level
-                HStack(spacing: 12) {
-                    VStack(spacing: 4) {
-                        Image(systemName: "gearshape.fill")
-                        Text("SETTINGS").font(.system(size: 6, weight: .bold))
-                    }
-                    VStack(spacing: 4) {
-                        Image(systemName: "sun.max.fill")
-                        Text("NEW LEVEL").font(.system(size: 6, weight: .bold))
-                    }
-                }
-                .font(.system(size: 18))
-                .foregroundColor(Color(hex: "#ffd27a"))
-                .padding(.trailing, 8)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 8)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.6))
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.1), lineWidth: 0.5))
+                Rectangle()
+                    .fill(Color.black.opacity(0.55))
             )
-            .padding(.top, 44) // Basic top offset for now
-            
-            Spacer()
-        }
     }
     
     private func hudBlock<Content: View>(@ViewBuilder content: () -> Content) -> some View {
@@ -198,20 +164,7 @@ struct ForCuttingGrassGameView: View {
             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.white.opacity(0.05), lineWidth: 1))
     }
     
-    private func controlTab(icon: String, label: String, active: Bool) -> some View {
-        VStack(spacing: 2) {
-            Image(systemName: icon)
-                .font(.system(size: 12))
-            Text(label)
-                .font(.system(size: 6, weight: .bold))
-        }
-        .frame(width: 28, height: 28)
-        .background(active ? Color(hex: "#ffd27a") : Color.black.opacity(0.4))
-        .foregroundColor(active ? .black : .white.opacity(0.6))
-        .clipShape(RoundedRectangle(cornerRadius: 4))
-    }
-
-    private var gasLabel: String {
+private var gasLabel: String {
         scene.config.usesGas ? "GAS \(Int(round(gasRatio * 100)))%" : "GAS INF"
     }
 
@@ -264,17 +217,13 @@ struct ForCuttingGrassGameView: View {
     }
 
     private var closeButton: some View {
-        GeometryReader { geo in
-            Button { dismiss() } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 28))
-                    .symbolRenderingMode(.palette)
-                    .foregroundStyle(Color.white, Color.black.opacity(0.5))
-                    .padding(12)
-            }
-            .position(x: geo.size.width - 32, y: geo.safeAreaInsets.top + 18)
+        Button { dismiss() } label: {
+            Image(systemName: "xmark.circle.fill")
+                .font(.system(size: 28))
+                .symbolRenderingMode(.palette)
+                .foregroundStyle(Color.white, Color.black.opacity(0.5))
+                .padding(10)
         }
-        .ignoresSafeArea()
     }
 }
 

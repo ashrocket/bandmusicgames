@@ -4,44 +4,23 @@ struct ForCuttingGrassControlOverlay: View {
     @ObservedObject var input: ForCuttingGrassInputController
 
     var body: some View {
-        GeometryReader { geo in
-            let bottomPadding = geo.safeAreaInsets.bottom + 18
-            let trailingPadding = max(10, geo.safeAreaInsets.trailing + 10)
-            let playfield = ForCuttingGrassPlayfieldLayout.swiftUIFrame(in: geo.size)
-            let selectorHeight: CGFloat = 54
-            let safeSelectorY = geo.safeAreaInsets.top + 42
-            let selectorY = max(
-                safeSelectorY,
-                playfield.minY - selectorHeight / 2 - 8
-            )
+        VStack(spacing: 6) {
+            ControlStyleSelector(style: $input.controlStyle)
 
-            ZStack {
-                VStack {
-                    Spacer()
-                    steeringControl
-                        .frame(width: controlSize.width, height: controlSize.height)
-                        .padding(.bottom, bottomPadding)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-                ControlStyleSelector(style: $input.controlStyle)
-                    .frame(height: selectorHeight)
-                    .position(x: geo.size.width / 2, y: selectorY)
+            HStack(alignment: .center, spacing: 16) {
+                steeringControl
+                    .frame(width: controlSize.width, height: controlSize.height)
 
                 if input.canDig {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            DigButton(isPressed: $input.digging)
-                                .frame(width: 82, height: 82)
-                                .padding(.trailing, trailingPadding + 4)
-                                .padding(.bottom, bottomPadding + 4)
-                        }
-                    }
+                    DigButton(isPressed: $input.digging)
+                        .frame(width: 76, height: 76)
                 }
             }
         }
+        .padding(.horizontal, 12)
+        .padding(.top, 8)
+        .padding(.bottom, 12)
+        .background(Color.black.opacity(0.55))
     }
 
     private var controlSize: CGSize {
