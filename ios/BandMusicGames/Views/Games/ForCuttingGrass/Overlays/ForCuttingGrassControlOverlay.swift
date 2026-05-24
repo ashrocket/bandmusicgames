@@ -4,7 +4,7 @@ struct ForCuttingGrassControlOverlay: View {
     @ObservedObject var input: ForCuttingGrassInputController
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
             ControlStyleSelector(style: $input.controlStyle)
 
             HStack(alignment: .center, spacing: 16) {
@@ -13,28 +13,28 @@ struct ForCuttingGrassControlOverlay: View {
 
                 if input.canDig {
                     DigButton(isPressed: $input.digging)
-                        .frame(width: 76, height: 76)
+                        .frame(width: 58, height: 58)
                 }
             }
         }
         .padding(.horizontal, 12)
-        .padding(.top, 8)
-        .padding(.bottom, 12)
+        .padding(.top, 4)
+        .padding(.bottom, 8)
         .background(Color.black.opacity(0.55))
     }
 
     private var controlSize: CGSize {
         switch input.controlStyle {
         case .joystick:
-            return CGSize(width: 174, height: 174)
+            return CGSize(width: 116, height: 116)
         case .dpad:
-            return CGSize(width: 230, height: 174)
+            return CGSize(width: 176, height: 116)
         case .wheel:
-            return CGSize(width: 230, height: 174)
+            return CGSize(width: 176, height: 116)
         case .trackpad:
-            return CGSize(width: 226, height: 150)
+            return CGSize(width: 174, height: 108)
         case .lean:
-            return CGSize(width: 230, height: 166)
+            return CGSize(width: 176, height: 116)
         }
     }
 
@@ -59,22 +59,22 @@ private struct ControlStyleSelector: View {
     @Binding var style: ForCuttingGrassControlStyle
 
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 4) {
             ForEach(ForCuttingGrassControlStyle.allCases) { candidate in
                 Button {
                     withAnimation(.easeOut(duration: 0.16)) {
                         style = candidate
                     }
                 } label: {
-                    VStack(spacing: 3) {
+                    VStack(spacing: 2) {
                         Image(systemName: candidate.symbolName)
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 11, weight: .bold))
                         Text(candidate.title)
-                            .font(.system(size: 8.5, weight: .black, design: .monospaced))
+                            .font(.system(size: 7.5, weight: .black, design: .monospaced))
                             .lineLimit(1)
                             .minimumScaleFactor(0.65)
                     }
-                    .frame(width: 54, height: 42)
+                    .frame(width: 46, height: 32)
                     .foregroundColor(style == candidate ? .black : .white.opacity(0.72))
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -107,7 +107,7 @@ private struct FloatingJoystickView: View {
     @State private var anchor: CGPoint?
     @State private var knob: CGPoint?
 
-    private let cap: CGFloat = 48
+    private let cap: CGFloat = 38
 
     var body: some View {
         ZStack {
@@ -218,7 +218,7 @@ private struct DirectionPadView: View {
             .aspectRatio(1, contentMode: .fit)
 
             ThrottleButton(throttle: $throttle)
-                .frame(width: 58, height: 112)
+                .frame(width: 44, height: 88)
         }
     }
 }
@@ -277,7 +277,7 @@ private struct SteeringWheelView: View {
             .aspectRatio(1, contentMode: .fit)
 
             ThrottleButton(throttle: $throttle)
-                .frame(width: 58, height: 112)
+                .frame(width: 44, height: 88)
         }
     }
 }
