@@ -28,7 +28,14 @@ targets:
         CFBundleName: $(PRODUCT_NAME)
         CFBundlePackageType: APPL
         CFBundleShortVersionString: "1.1"
-        CFBundleVersion: "20260520230000"
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - bandmusicgames
+            CFBundleURLName: party.bandmusicgames.app
+        LSApplicationQueriesSchemes:
+          - spotify
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: party.bandmusicgames.app
@@ -40,15 +47,6 @@ targets:
         CURRENT_PROJECT_VERSION: "20260520230000"
         ENABLE_PREVIEWS: "YES"
         SWIFT_EMIT_LOC_STRINGS: "YES"
-    info:
-      path: Info.plist
-      properties:
-        CFBundleURLTypes:
-          - CFBundleURLSchemes:
-              - bandmusicgames
-            CFBundleURLName: party.bandmusicgames.app
-        LSApplicationQueriesSchemes:
-          - spotify
     dependencies:
       - sdk: WebKit.framework
       - sdk: AuthenticationServices.framework
