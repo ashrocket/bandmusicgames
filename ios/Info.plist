@@ -35,5 +35,10 @@
 	<array>
 		<string>spotify</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<true/>
+	</dict>
 </dict>
 </plist>

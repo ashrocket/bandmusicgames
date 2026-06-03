@@ -36,6 +36,8 @@ targets:
             CFBundleURLName: party.bandmusicgames.app
         LSApplicationQueriesSchemes:
           - spotify
+        UILaunchScreen:
+          UIImageRespectsSafeAreaInsets: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: party.bandmusicgames.app
