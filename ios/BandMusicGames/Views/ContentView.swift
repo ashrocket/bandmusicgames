@@ -34,6 +34,7 @@ struct ContentView: View {
                 onSkip: { auth.skipSpotify() }
             )
         }
+        .ignoresSafeArea()
         .fullScreenCover(item: $launchingSong) { song in
             switch nativeGame(for: song) {
             case .francis:
@@ -79,16 +80,10 @@ struct ContentView: View {
             return
         }
 
-        // Toggle pause if this song is already playing
-        if auth.isPlaying && auth.currentTrackUri == song.trackUri {
-            Task { await auth.pausePlayback() }
-            return
-        }
-
         HapticManager.impact(.heavy)
         selectionTrigger &+= 1
 
-        // Kick off native Spotify playback (best effort — game handles its own if this fails)
+        // Kick off Spotify playback if available; the center action always cues the game launch.
         if auth.accessToken != nil {
             Task { await auth.playTrack(song.trackUri) }
         }
