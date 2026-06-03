@@ -145,14 +145,14 @@ struct LizzyMcGuireGameView: View {
     private var characterSelectOverlay: some View {
         GeometryReader { geo in
             let usableHeight = geo.size.height - geo.safeAreaInsets.top - geo.safeAreaInsets.bottom
-            let compact = usableHeight < 760
-            let topInset = max(geo.safeAreaInsets.top + 18, compact ? 24 : 48)
-            let bottomInset = max(geo.safeAreaInsets.bottom + 18, compact ? 18 : 34)
-            let gridSpacing: CGFloat = compact ? 8 : 12
-            let cardHeight = max(compact ? 142 : 168, min(compact ? 168 : 196, (usableHeight - topInset - bottomInset - 118 - gridSpacing) / 2))
-            let badgeHeight = max(compact ? 58 : 70, min(compact ? 76 : 94, cardHeight * 0.5))
+            let compact = usableHeight < 720
+            let topInset = max(geo.safeAreaInsets.top + 14, 40)
+            let bottomInset = max(geo.safeAreaInsets.bottom + 14, 24)
+            let gridSpacing: CGFloat = compact ? 10 : 14
+            let cardHeight: CGFloat = compact ? 150 : 178
+            let badgeHeight: CGFloat = compact ? 64 : 82
 
-            VStack(spacing: compact ? 8 : 14) {
+            VStack(spacing: compact ? 6 : 10) {
                 Spacer()
                     .frame(height: topInset)
 
@@ -170,8 +170,7 @@ struct LizzyMcGuireGameView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
-                Spacer(minLength: compact ? 8 : 14)
-
+                ScrollView(.vertical, showsIndicators: false) {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2), spacing: gridSpacing) {
                     ForEach(HalfCourtHeroID.allCases) { hero in
                         let disabled = game.selectStep == 2 && hero == game.selectedPlayer
@@ -212,8 +211,8 @@ struct LizzyMcGuireGameView: View {
                     }
                 }
                 .padding(.horizontal, compact ? 16 : 20)
-
-                Spacer(minLength: compact ? 10 : 16)
+                .padding(.top, compact ? 8 : 12)
+                }
 
                 Button {
                     HapticManager.impact(.heavy)
