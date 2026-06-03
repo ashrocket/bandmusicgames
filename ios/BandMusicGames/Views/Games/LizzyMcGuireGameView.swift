@@ -296,13 +296,14 @@ struct LizzyMcGuireGameView: View {
         let active = game.activeHuman.character
         let ready = game.specialReady
         let armed = game.armedSpecialGesture != nil
+        let steps = min(game.specialActions, Int((game.specialCharge / 100 * CGFloat(game.specialActions)).rounded()))
         HStack(spacing: 8) {
             Image(systemName: active.special.gesture.icon)
                 .font(.system(size: 13, weight: .bold))
                 .foregroundColor(armed ? active.hue : (ready ? active.hue.opacity(0.8) : .white.opacity(0.4)))
             VStack(alignment: .leading, spacing: 2) {
                 Text(armed ? "\(active.special.name) · \(active.special.gesture.label)"
-                           : (ready ? "\(active.special.name) READY" : "SPECIAL CHARGING"))
+                           : (ready ? "\(active.special.name) READY" : "POWER \(steps)/\(game.specialActions)"))
                     .font(.system(size: 8, weight: .heavy, design: .monospaced))
                     .tracking(1)
                     .foregroundColor(armed ? active.hue : .white.opacity(0.55))
@@ -317,12 +318,18 @@ struct LizzyMcGuireGameView: View {
                 }
                 .frame(height: 5)
             }
+            if game.makeStreak >= 2 {
+                Text("🔥\(game.makeStreak)")
+                    .font(.system(size: 10, weight: .black, design: .monospaced))
+                    .foregroundColor(Color(hex: "#FF6B35"))
+                    .fixedSize()
+            }
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(Capsule().fill(Color.black.opacity(0.34)))
         .overlay(Capsule().stroke(armed ? active.hue : Color.white.opacity(0.18), lineWidth: armed ? 1.5 : 1))
-        .frame(maxWidth: 230)
+        .frame(maxWidth: 250)
         .padding(.top, 8)
     }
 
@@ -835,6 +842,11 @@ private struct HeroDetailOverlay: View {
                     .font(.system(size: 9, weight: .semibold, design: .monospaced))
                     .foregroundColor(.white.opacity(0.45))
                     .fixedSize(horizontal: false, vertical: true)
+                Label("Charge with 8 good plays — 2 makes in a row = halfway. Opponent buckets cost you.",
+                      systemImage: "bolt.fill")
+                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                    .foregroundColor(ch.hue.opacity(0.9))
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -933,12 +945,40 @@ private final class HalfCourtHeroGame: ObservableObject {
     // Team builder (checkbox selection): ordered, [0] = ball handler, [1] = teammate.
     @Published var picks: [HalfCourtHeroID] = []
     // Special move: a meter that charges with play and fires on the player's gesture.
+    // Special meter is earned by good plays (made shot / block / steal / rebound),
+    // not by time. It takes `specialActions` positive actions to fully charge;
+    // two made shots in a row jump it to at least half; opponent buckets drop it.
     @Published var specialCharge: CGFloat = 0
     @Published var specialFlashID: HalfCourtHeroID?
+    @Published var makeStreak = 0
+    let specialActions = 8
     private var specialFlashFrames = 0
     private var nextShotAutomatic = false
     private var nextShotBonusPoint = false
     private var nextShotForceDunk = false
+
+    private var specialUnit: CGFloat { 100.0 / CGFloat(specialActions) }   // charge per action (12.5%)
+
+    /// Add (or remove, when negative) `n` action-units of special charge.
+    private func chargeActions(_ n: Int) {
+        specialCharge = min(100, max(0, specialCharge + CGFloat(n) * specialUnit))
+    }
+
+    /// A made home shot: builds the streak. Two in a row = automatic half charge.
+    private func registerMake() {
+        makeStreak += 1
+        if makeStreak >= 2 {
+            specialCharge = min(100, max(specialCharge + specialUnit, 50))
+        } else {
+            chargeActions(1)
+        }
+    }
+
+    /// An opponent bucket: breaks the streak and detracts from the meter.
+    private func opponentScored() {
+        makeStreak = 0
+        chargeActions(-2)
+    }
 
     private var timer: Timer?
     private var pauseFrames = 0
@@ -1033,6 +1073,7 @@ private final class HalfCourtHeroGame: ObservableObject {
         specialCharge = 0
         specialFlashID = nil
         specialFlashFrames = 0
+        makeStreak = 0
         nextShotAutomatic = false
         nextShotBonusPoint = false
         nextShotForceDunk = false
@@ -1166,9 +1207,8 @@ private final class HalfCourtHeroGame: ObservableObject {
     }
 
     private func updateSpecial() {
-        if specialCharge < 100 {
-            specialCharge = min(100, specialCharge + 0.34)
-        }
+        // Charge is driven by gameplay actions (see registerMake / chargeActions),
+        // not by elapsed time.
         if specialFlashFrames > 0 {
             specialFlashFrames -= 1
             if specialFlashFrames == 0 { specialFlashID = nil }
@@ -1505,6 +1545,9 @@ private final class HalfCourtHeroGame: ObservableObject {
             }
         }
 
+        // A miss breaks the made-shot streak (a make is credited in scorePoint).
+        if !made { makeStreak = 0 }
+
         shooter.hasBall = false
         shooter.animation = .shoot
         shooter.landFrame = frame
@@ -1541,6 +1584,7 @@ private final class HalfCourtHeroGame: ObservableObject {
                 ball.made = false
                 mutate(shooter) { $0.animation = .sad }
                 stats.blocks += 1
+                chargeActions(1)
                 show("BLOCKED", color: activeHuman.character.hue, frames: 54)
                 HapticManager.notification(.success)
             }
@@ -1599,6 +1643,7 @@ private final class HalfCourtHeroGame: ObservableObject {
             ball.carrier = activeHuman
             possession = .home
             stats.steals += 1
+            chargeActions(1)
             show("STEAL", color: activeHuman.character.hue, frames: 48)
             HapticManager.notification(.success)
         } else {
@@ -1678,8 +1723,10 @@ private final class HalfCourtHeroGame: ObservableObject {
             homeScore += points
             stats.made += 1
             if points == 3 { stats.threes += 1 }
+            registerMake()
         } else {
             awayScore += points
+            opponentScored()
         }
 
         let scorer = ball.shotBy ?? (scoringTeam == .home ? activeHuman : awayIDs[0])
@@ -1749,6 +1796,7 @@ private final class HalfCourtHeroGame: ObservableObject {
         possession = player(nearest.0).team
         if possession == .home {
             activeHuman = nearest.0
+            chargeActions(1)
             show("REBOUND", color: nearest.0.character.hue, frames: 36)
         }
     }
