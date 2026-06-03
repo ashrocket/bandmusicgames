@@ -19,6 +19,7 @@ struct LizzyMcGuireGameView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var auth: SpotifyAuthManager
     @StateObject private var game = HalfCourtHeroGame()
+    @State private var expandedHero: HalfCourtHeroID?
 
     var body: some View {
         ZStack {
@@ -37,6 +38,21 @@ struct LizzyMcGuireGameView: View {
                 resultOverlay
             }
 
+            if game.phase == .characterSelect, let hero = expandedHero {
+                HeroDetailOverlay(
+                    hero: hero,
+                    role: game.pickRole(hero),
+                    isChecked: game.isChecked(hero),
+                    canCheck: game.isChecked(hero) || game.picks.count < 2,
+                    onToggle: {
+                        HapticManager.selection()
+                        game.toggle(hero)
+                    },
+                    onClose: { closeDetail() }
+                )
+                .zIndex(20)
+            }
+
             closeButton
         }
         .background(Color(hex: "#1a0a3e"))
@@ -48,6 +64,9 @@ struct LizzyMcGuireGameView: View {
                 game.debugStartGameplay()
             } else if args.contains("-bmg-lizzy-teammate-picker") {
                 game.debugOpenTeammatePicker()
+            } else if args.contains("-bmg-lizzy-detail") {
+                game.debugOpenTeammatePicker()
+                expandedHero = .brendan
             }
 #endif
             if auth.accessToken != nil {
@@ -55,6 +74,19 @@ struct LizzyMcGuireGameView: View {
             }
         }
         .onDisappear { game.stop() }
+    }
+
+    private func openDetail(_ hero: HalfCourtHeroID) {
+        HapticManager.selection()
+        withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+            expandedHero = hero
+        }
+    }
+
+    private func closeDetail() {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+            expandedHero = nil
+        }
     }
 
     private var closeButton: some View {
@@ -149,76 +181,57 @@ struct LizzyMcGuireGameView: View {
             let topInset = max(geo.safeAreaInsets.top + 14, 40)
             let bottomInset = max(geo.safeAreaInsets.bottom + 14, 24)
             let gridSpacing: CGFloat = compact ? 10 : 14
-            let cardHeight: CGFloat = compact ? 150 : 178
-            let badgeHeight: CGFloat = compact ? 64 : 82
+            let cardHeight: CGFloat = compact ? 168 : 196
+            let badgeHeight: CGFloat = compact ? 62 : 80
+            let count = game.picks.count
 
             VStack(spacing: compact ? 6 : 10) {
                 Spacer()
                     .frame(height: topInset)
 
-                Text(game.selectStep == 1 ? "MEET THE TEAM" : "PICK TEAMMATE")
+                Text("BUILD YOUR TEAM")
                     .font(.system(size: compact ? 15 : 18, weight: .black, design: .monospaced))
                     .tracking(2)
-                    .foregroundColor(game.selectStep == 1 ? Color(hex: "#FFD700") : game.selectedPlayer.character.hue)
+                    .foregroundColor(Color(hex: "#FFD700"))
                     .lineLimit(1)
                     .minimumScaleFactor(0.65)
 
-                Text(game.selectStep == 1 ? "Choose your ball handler" : "\(game.selectedPlayer.character.fullName) is in")
+                Text(count == 2
+                     ? "\(game.selectedPlayer.character.name) + \(game.selectedTeammate?.character.name ?? "")  ·  tap PLAY"
+                     : "Check \(2 - count) more · tap a card for the scouting report")
                     .font(.system(size: compact ? 9 : 11, weight: .semibold, design: .monospaced))
-                    .tracking(1.5)
-                    .foregroundColor(.white.opacity(0.55))
+                    .tracking(1.2)
+                    .foregroundColor(.white.opacity(0.6))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    .minimumScaleFactor(0.6)
 
                 ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2), spacing: gridSpacing) {
-                    ForEach(HalfCourtHeroID.allCases) { hero in
-                        let disabled = game.selectStep == 2 && hero == game.selectedPlayer
-                        Button {
-                            HapticManager.selection()
-                            game.choose(hero)
-                        } label: {
-                            VStack(spacing: compact ? 5 : 9) {
-                                HalfCourtHeroBadge(hero: hero, selected: game.isSelected(hero), dimmed: disabled)
-                                    .frame(height: badgeHeight)
-
-                                Text(hero.character.name)
-                                    .font(.system(size: compact ? 12 : 15, weight: .black, design: .monospaced))
-                                    .foregroundColor(disabled ? .white.opacity(0.24) : hero.character.hue)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.7)
-
-                                Text(hero.character.ability)
-                                    .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
-                                    .tracking(1.2)
-                                    .foregroundColor(disabled ? .white.opacity(0.2) : .white.opacity(0.58))
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.65)
-                            }
-                            .padding(compact ? 8 : 12)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: cardHeight)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(game.isSelected(hero) ? hero.character.hue.opacity(0.17) : Color.black.opacity(0.28))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(game.isSelected(hero) ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: game.isSelected(hero) ? 2.5 : 1)
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 2), spacing: gridSpacing) {
+                        ForEach(HalfCourtHeroID.allCases) { hero in
+                            TeamSelectCard(
+                                hero: hero,
+                                role: game.pickRole(hero),
+                                checked: game.isChecked(hero),
+                                compact: compact,
+                                badgeHeight: badgeHeight,
+                                cardHeight: cardHeight,
+                                onTapCard: { openDetail(hero) },
+                                onToggle: {
+                                    HapticManager.selection()
+                                    game.toggle(hero)
+                                }
                             )
                         }
-                        .disabled(disabled)
                     }
-                }
-                .padding(.horizontal, compact ? 16 : 20)
-                .padding(.top, compact ? 8 : 12)
+                    .padding(.horizontal, compact ? 16 : 20)
+                    .padding(.top, compact ? 8 : 12)
                 }
 
                 Button {
                     HapticManager.impact(.heavy)
                     game.startGame()
                 } label: {
-                    Text("PLAY")
+                    Text(game.readyToStart ? "PLAY" : "PICK \(2 - count) MORE")
                         .font(.system(size: compact ? 15 : 17, weight: .black, design: .monospaced))
                         .tracking(4)
                         .foregroundColor(.black)
@@ -238,12 +251,79 @@ struct LizzyMcGuireGameView: View {
     }
 
     private var gameOverlay: some View {
-        VStack {
-            hud
-            Spacer()
-            controls
+        ZStack {
+            // Special-move gesture surface — sits behind the HUD/controls and only
+            // intercepts touches while the controlled player's special is armed.
+            if let gesture = game.armedSpecialGesture {
+                specialSurface(gesture)
+            }
+
+            VStack {
+                hud
+                specialMeter
+                Spacer()
+                controls
+            }
         }
         .allowsHitTesting(true)
+    }
+
+    @ViewBuilder
+    private func specialSurface(_ gesture: SpecialGesture) -> some View {
+        let base = Color.clear.contentShape(Rectangle())
+        switch gesture {
+        case .swipeUp:
+            base.gesture(
+                DragGesture(minimumDistance: 30).onEnded { v in
+                    if v.translation.height < -44 && abs(v.translation.width) < 90 { game.activateSpecial() }
+                }
+            )
+        case .swipeDown:
+            base.gesture(
+                DragGesture(minimumDistance: 30).onEnded { v in
+                    if v.translation.height > 44 && abs(v.translation.width) < 90 { game.activateSpecial() }
+                }
+            )
+        case .doubleTap:
+            base.onTapGesture(count: 2) { game.activateSpecial() }
+        case .longPress:
+            base.onLongPressGesture(minimumDuration: 0.45) { game.activateSpecial() }
+        }
+    }
+
+    @ViewBuilder
+    private var specialMeter: some View {
+        let active = game.activeHuman.character
+        let ready = game.specialReady
+        let armed = game.armedSpecialGesture != nil
+        HStack(spacing: 8) {
+            Image(systemName: active.special.gesture.icon)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(armed ? active.hue : (ready ? active.hue.opacity(0.8) : .white.opacity(0.4)))
+            VStack(alignment: .leading, spacing: 2) {
+                Text(armed ? "\(active.special.name) · \(active.special.gesture.label)"
+                           : (ready ? "\(active.special.name) READY" : "SPECIAL CHARGING"))
+                    .font(.system(size: 8, weight: .heavy, design: .monospaced))
+                    .tracking(1)
+                    .foregroundColor(armed ? active.hue : .white.opacity(0.55))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.55)
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Color.white.opacity(0.14))
+                        Capsule().fill(ready ? active.hue : Color.white.opacity(0.5))
+                            .frame(width: geo.size.width * min(1, game.specialCharge / 100))
+                    }
+                }
+                .frame(height: 5)
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Capsule().fill(Color.black.opacity(0.34)))
+        .overlay(Capsule().stroke(armed ? active.hue : Color.white.opacity(0.18), lineWidth: armed ? 1.5 : 1))
+        .frame(maxWidth: 230)
+        .padding(.top, 8)
     }
 
     private var hud: some View {
@@ -312,6 +392,23 @@ struct LizzyMcGuireGameView: View {
             Spacer()
 
             VStack(spacing: 13) {
+                if let gesture = game.armedSpecialGesture {
+                    Button { game.activateSpecial() } label: {
+                        VStack(spacing: 1) {
+                            Image(systemName: gesture.icon)
+                                .font(.system(size: 15, weight: .bold))
+                            Text("SPECIAL")
+                                .font(.system(size: 8, weight: .black, design: .monospaced))
+                                .tracking(0.8)
+                        }
+                        .foregroundColor(.black)
+                        .frame(width: 64, height: 48)
+                        .background(game.activeHuman.character.hue)
+                        .clipShape(RoundedRectangle(cornerRadius: 13))
+                        .overlay(RoundedRectangle(cornerRadius: 13).stroke(.white.opacity(0.8), lineWidth: 1.5))
+                    }
+                }
+
                 if game.possession == .away {
                     Button { game.switchDefender() } label: {
                         Text("SWITCH")
@@ -537,6 +634,266 @@ private struct HalfCourtHoldButton: View {
     }
 }
 
+// MARK: - Team builder card + checkbox
+
+private struct TeamSelectCard: View {
+    let hero: HalfCourtHeroID
+    let role: Int?            // 1 = ball handler, 2 = teammate, nil = unpicked
+    let checked: Bool
+    let compact: Bool
+    let badgeHeight: CGFloat
+    let cardHeight: CGFloat
+    let onTapCard: () -> Void
+    let onToggle: () -> Void
+
+    var body: some View {
+        let ch = hero.character
+        VStack(spacing: compact ? 4 : 6) {
+            HalfCourtHeroBadge(hero: hero, selected: checked, dimmed: false)
+                .frame(height: badgeHeight)
+
+            Text(ch.name)
+                .font(.system(size: compact ? 12 : 15, weight: .black, design: .monospaced))
+                .foregroundColor(ch.hue)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Text(ch.ability)
+                .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
+                .tracking(1.1)
+                .foregroundColor(.white.opacity(0.58))
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
+
+            HStack(spacing: 3) {
+                Image(systemName: ch.special.gesture.icon)
+                    .font(.system(size: compact ? 8 : 9, weight: .bold))
+                Text(ch.special.name)
+                    .font(.system(size: compact ? 7 : 8, weight: .heavy, design: .monospaced))
+                    .tracking(0.7)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
+            .foregroundColor(ch.hue.opacity(0.95))
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background(Capsule().fill(ch.hue.opacity(0.16)))
+
+            Text("TAP FOR DETAILS")
+                .font(.system(size: compact ? 6 : 7, weight: .bold, design: .monospaced))
+                .tracking(1.2)
+                .foregroundColor(.white.opacity(0.34))
+        }
+        .padding(compact ? 8 : 11)
+        .frame(maxWidth: .infinity)
+        .frame(height: cardHeight)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(checked ? ch.hue.opacity(0.18) : Color.black.opacity(0.3))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(checked ? ch.hue : ch.hue.opacity(0.32), lineWidth: checked ? 2.5 : 1)
+        )
+        .contentShape(RoundedRectangle(cornerRadius: 12))
+        .onTapGesture { onTapCard() }
+        .overlay(alignment: .topTrailing) {
+            SelectCheckbox(checked: checked, role: role, hue: ch.hue, action: onToggle)
+                .padding(7)
+        }
+    }
+}
+
+private struct SelectCheckbox: View {
+    let checked: Bool
+    let role: Int?
+    let hue: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 7)
+                    .fill(checked ? hue : Color.black.opacity(0.45))
+                RoundedRectangle(cornerRadius: 7)
+                    .stroke(checked ? hue : Color.white.opacity(0.55), lineWidth: 2)
+                if checked {
+                    if let role {
+                        Text("\(role)")
+                            .font(.system(size: 13, weight: .black, design: .monospaced))
+                            .foregroundColor(.black)
+                    } else {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 12, weight: .black))
+                            .foregroundColor(.black)
+                    }
+                }
+            }
+            .frame(width: 26, height: 26)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Flip / expand player detail (scouting report)
+
+private struct HeroDetailOverlay: View {
+    let hero: HalfCourtHeroID
+    let role: Int?
+    let isChecked: Bool
+    let canCheck: Bool
+    let onToggle: () -> Void
+    let onClose: () -> Void
+
+    @State private var appeared = false
+
+    var body: some View {
+        let ch = hero.character
+        ZStack {
+            Color.black.opacity(appeared ? 0.66 : 0)
+                .ignoresSafeArea()
+                .onTapGesture { onClose() }
+
+            detailCard(ch)
+                .rotation3DEffect(.degrees(appeared ? 0 : -82),
+                                  axis: (x: 0, y: 1, z: 0), perspective: 0.55)
+                .scaleEffect(appeared ? 1 : 0.82)
+                .opacity(appeared ? 1 : 0)
+                .padding(.horizontal, 26)
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true }
+        }
+    }
+
+    private func detailCard(_ ch: HalfCourtHero) -> some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 14) {
+                HalfCourtHeroBadge(hero: hero, selected: true, dimmed: false)
+                    .frame(width: 78, height: 100)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(ch.name)
+                        .font(.system(size: 26, weight: .black, design: .monospaced))
+                        .foregroundColor(ch.hue)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    Text(ch.fullName)
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.55))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    Text("\(ch.role)  ·  \(Int(ch.height))CM")
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .tracking(1)
+                        .foregroundColor(.white.opacity(0.45))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    if let role {
+                        Text(role == 1 ? "BALL HANDLER" : "TEAMMATE")
+                            .font(.system(size: 8, weight: .black, design: .monospaced))
+                            .tracking(1)
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Capsule().fill(ch.hue))
+                            .padding(.top, 2)
+                    }
+                }
+                Spacer(minLength: 0)
+            }
+
+            VStack(spacing: 7) {
+                StatBar(label: "SHOOTING", value: min(1, 0.5 + ch.threeBonus * 4), hue: ch.hue)
+                StatBar(label: "DEFENSE", value: min(1, 0.42 + ch.stealBonus * 2.6), hue: ch.hue)
+                StatBar(label: "SPEED", value: min(1, ch.speed * 0.78), hue: ch.hue)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Image(systemName: ch.special.gesture.icon)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(ch.hue)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("SPECIAL · \(ch.special.name)")
+                            .font(.system(size: 13, weight: .black, design: .monospaced))
+                            .foregroundColor(ch.hue)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                        Text(ch.special.gesture.label)
+                            .font(.system(size: 9, weight: .heavy, design: .monospaced))
+                            .tracking(1.5)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    Spacer(minLength: 0)
+                }
+                Text(ch.special.effect)
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.8))
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(ch.special.gesture.hint)
+                    .font(.system(size: 9, weight: .semibold, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.45))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: 12).fill(ch.hue.opacity(0.12)))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(ch.hue.opacity(0.4), lineWidth: 1))
+
+            Button(action: onToggle) {
+                Text(isChecked ? "REMOVE FROM TEAM" : (canCheck ? "ADD TO TEAM" : "TEAM FULL"))
+                    .font(.system(size: 13, weight: .black, design: .monospaced))
+                    .tracking(2)
+                    .foregroundColor(isChecked ? .white : (canCheck ? .black : .white.opacity(0.4)))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(isChecked ? Color.white.opacity(0.14) : (canCheck ? ch.hue : Color.white.opacity(0.07)))
+                    .clipShape(RoundedRectangle(cornerRadius: 11))
+            }
+            .disabled(!isChecked && !canCheck)
+        }
+        .padding(20)
+        .frame(maxWidth: 360)
+        .background(RoundedRectangle(cornerRadius: 22).fill(Color(hex: "#160833")))
+        .overlay(RoundedRectangle(cornerRadius: 22).stroke(ch.hue, lineWidth: 2))
+        .overlay(alignment: .topTrailing) {
+            Button(action: onClose) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 26))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.white, Color.black.opacity(0.5))
+            }
+            .padding(10)
+        }
+        .shadow(color: .black.opacity(0.5), radius: 24, y: 10)
+    }
+}
+
+private struct StatBar: View {
+    let label: String
+    let value: CGFloat
+    let hue: Color
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(label)
+                .font(.system(size: 9, weight: .black, design: .monospaced))
+                .tracking(1)
+                .foregroundColor(.white.opacity(0.6))
+                .frame(width: 74, alignment: .leading)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.white.opacity(0.12))
+                    Capsule().fill(hue)
+                        .frame(width: max(6, geo.size.width * min(1, max(0, value))))
+                }
+            }
+            .frame(height: 7)
+        }
+    }
+}
+
 private struct HalfCourtHeroBadge: View {
     let hero: HalfCourtHeroID
     let selected: Bool
@@ -573,13 +930,24 @@ private final class HalfCourtHeroGame: ObservableObject {
     @Published var stats = HalfCourtStats()
     @Published var joystick = CGVector.zero
 
+    // Team builder (checkbox selection): ordered, [0] = ball handler, [1] = teammate.
+    @Published var picks: [HalfCourtHeroID] = []
+    // Special move: a meter that charges with play and fires on the player's gesture.
+    @Published var specialCharge: CGFloat = 0
+    @Published var specialFlashID: HalfCourtHeroID?
+    private var specialFlashFrames = 0
+    private var nextShotAutomatic = false
+    private var nextShotBonusPoint = false
+    private var nextShotForceDunk = false
+
     private var timer: Timer?
     private var pauseFrames = 0
     private var calloutFrames = 0
     private var homeIDs: [HalfCourtHeroID] = [.nara, .ethan]
     private var awayIDs: [HalfCourtHeroID] = [.brendan, .will]
 
-    var readyToStart: Bool { selectedTeammate != nil && selectedTeammate != selectedPlayer }
+    var readyToStart: Bool { picks.count == 2 }
+    var specialReady: Bool { specialCharge >= 100 }
 
     func prepare() {
         if players.isEmpty {
@@ -590,18 +958,38 @@ private final class HalfCourtHeroGame: ObservableObject {
     func beginCharacterSelect() {
         phase = .characterSelect
         selectStep = 1
-        selectedTeammate = nil
+        picks = []
+        syncPicks()
     }
 
-    func choose(_ hero: HalfCourtHeroID) {
-        if selectStep == 1 {
-            selectedPlayer = hero
-            selectedTeammate = nil
-            selectStep = 2
-        } else if hero != selectedPlayer {
-            selectedTeammate = hero
+    /// Checkbox toggle: maintains an ordered team of up to two players.
+    /// First pick is the ball handler, second is the teammate; a third tap
+    /// replaces the teammate.
+    func toggle(_ hero: HalfCourtHeroID) {
+        if let i = picks.firstIndex(of: hero) {
+            picks.remove(at: i)
+        } else if picks.count < 2 {
+            picks.append(hero)
+        } else {
+            picks[1] = hero
         }
+        syncPicks()
     }
+
+    func isChecked(_ hero: HalfCourtHeroID) -> Bool { picks.contains(hero) }
+
+    /// 1 = ball handler, 2 = teammate, nil = unpicked.
+    func pickRole(_ hero: HalfCourtHeroID) -> Int? {
+        guard let i = picks.firstIndex(of: hero) else { return nil }
+        return i + 1
+    }
+
+    private func syncPicks() {
+        selectedPlayer = picks.first ?? .nara
+        selectedTeammate = picks.count > 1 ? picks[1] : nil
+    }
+
+    func choose(_ hero: HalfCourtHeroID) { toggle(hero) }
 
     func isSelected(_ hero: HalfCourtHeroID) -> Bool {
         hero == selectedPlayer || hero == selectedTeammate
@@ -610,14 +998,14 @@ private final class HalfCourtHeroGame: ObservableObject {
 #if DEBUG
     func debugOpenTeammatePicker() {
         phase = .characterSelect
-        selectedPlayer = .nara
-        selectedTeammate = .ethan
-        selectStep = 2
+        selectStep = 1
+        picks = [.nara, .ethan]
+        syncPicks()
     }
 
     func debugStartGameplay() {
-        selectedPlayer = .nara
-        selectedTeammate = .ethan
+        picks = [.nara, .ethan]
+        syncPicks()
         startGame()
     }
 #endif
@@ -642,6 +1030,12 @@ private final class HalfCourtHeroGame: ObservableObject {
         possession = .home
         activeHuman = selectedPlayer
         joystick = .zero
+        specialCharge = 0
+        specialFlashID = nil
+        specialFlashFrames = 0
+        nextShotAutomatic = false
+        nextShotBonusPoint = false
+        nextShotForceDunk = false
         resetRoster()
         resetBall(nextPossession: .home)
         phase = .playing
@@ -694,6 +1088,58 @@ private final class HalfCourtHeroGame: ObservableObject {
         HapticManager.selection()
     }
 
+    /// The gesture for the currently controlled player's special move, if it is
+    /// usable right now (correct phase + meter charged). Drives the in-game
+    /// gesture layer so only the relevant gesture is armed.
+    var armedSpecialGesture: SpecialGesture? {
+        guard phase == .playing, specialReady else { return nil }
+        let gesture = activeHuman.character.special.gesture
+        if gesture.isDefensive {
+            return possession == .away ? gesture : nil
+        } else {
+            return possession == .home && player(activeHuman).hasBall ? gesture : nil
+        }
+    }
+
+    /// Fires the controlled player's special move (called by the gesture layer
+    /// or the on-screen SPECIAL button).
+    func activateSpecial() {
+        guard armedSpecialGesture != nil else { return }
+        let hero = activeHuman.character
+
+        specialCharge = 0
+        specialFlashID = activeHuman
+        specialFlashFrames = 50
+        HapticManager.notification(.success)
+        show(hero.special.name + "!", color: hero.hue, frames: 54)
+
+        switch activeHuman {
+        case .nara:
+            nextShotAutomatic = true
+        case .will:
+            nextShotAutomatic = true
+            nextShotBonusPoint = true
+        case .brendan:
+            nextShotAutomatic = true
+            nextShotForceDunk = true
+        case .ethan:
+            clampSteal()
+        }
+    }
+
+    /// Ethan's CLAMP GOD: guaranteed steal to the controlled defender.
+    private func clampSteal() {
+        guard possession == .away,
+              let carrierID = awayIDs.first(where: { player($0).hasBall }) else { return }
+        mutate(carrierID) { $0.hasBall = false; $0.animation = .sad }
+        mutate(activeHuman) { $0.hasBall = true; $0.animation = .celebrate; $0.stealCooldown = 30 }
+        ball.carrier = activeHuman
+        ball.inAir = false
+        ball.isPass = false
+        possession = .home
+        stats.steals += 1
+    }
+
     private func startTimer() {
         stop()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
@@ -704,6 +1150,7 @@ private final class HalfCourtHeroGame: ObservableObject {
     private func tick() {
         guard phase == .playing else { return }
         frame += 1
+        updateSpecial()
         updateCallout()
         updatePower()
         updateJumping()
@@ -716,6 +1163,16 @@ private final class HalfCourtHeroGame: ObservableObject {
 
         updatePlayers()
         updateShotClock()
+    }
+
+    private func updateSpecial() {
+        if specialCharge < 100 {
+            specialCharge = min(100, specialCharge + 0.34)
+        }
+        if specialFlashFrames > 0 {
+            specialFlashFrames -= 1
+            if specialFlashFrames == 0 { specialFlashID = nil }
+        }
     }
 
     private func updatePower() {
@@ -1035,7 +1492,19 @@ private final class HalfCourtHeroGame: ObservableObject {
             accuracy = min(0.99, accuracy + shooter.id.character.threeBonus)
         }
 
-        let made = CGFloat.random(in: 0...1) < accuracy
+        var made = CGFloat.random(in: 0...1) < accuracy
+        let special = nextShotAutomatic
+        if special {
+            made = true
+            if nextShotForceDunk {
+                text = "BULLDOZE!"
+                shooter.jumpVelocity = -12
+                shooter.animation = .jump
+            } else {
+                text = shooter.id.character.special.name + "!"
+            }
+        }
+
         shooter.hasBall = false
         shooter.animation = .shoot
         shooter.landFrame = frame
@@ -1043,8 +1512,12 @@ private final class HalfCourtHeroGame: ObservableObject {
 
         ball.carrier = nil
         fireShot(from: CGPoint(x: shooter.position.x, y: shooter.position.y + shooter.jump - 55), made: made, dist: dist, team: .home, shooter: shooter.id)
+        ball.bonusPoint = special && nextShotBonusPoint && made
+        nextShotAutomatic = false
+        nextShotBonusPoint = false
+        nextShotForceDunk = false
         stats.shots += 1
-        show(text, color: (perfect || inGreen) ? Color(hex: "#00FF88") : shooter.id.character.hue, frames: 48)
+        show(text, color: special ? shooter.id.character.hue : ((perfect || inGreen) ? Color(hex: "#00FF88") : shooter.id.character.hue), frames: 48)
         HapticManager.impact(made ? .heavy : .light)
     }
 
@@ -1195,7 +1668,11 @@ private final class HalfCourtHeroGame: ObservableObject {
     }
 
     private func scorePoint() {
-        let points = abs(ball.fromX - hchHoopX) > hchRange2 ? 3 : 2
+        var points = abs(ball.fromX - hchHoopX) > hchRange2 ? 3 : 2
+        if ball.bonusPoint && ball.shotTeam == .home {
+            points += 1
+        }
+        ball.bonusPoint = false
         let scoringTeam = ball.shotTeam
         if scoringTeam == .home {
             homeScore += points
@@ -1813,7 +2290,12 @@ private enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 stealBonus: 0,
                 speed: 1.0,
                 height: 175,
-                quip: "MONEY"
+                quip: "MONEY",
+                special: SpecialMove(
+                    name: "RAINMAKER",
+                    effect: "Your next shot is automatic — splash it from anywhere downtown.",
+                    gesture: .swipeUp
+                )
             )
         case .ethan:
             return HalfCourtHero(
@@ -1834,7 +2316,12 @@ private enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 stealBonus: 0.20,
                 speed: 1.05,
                 height: 180,
-                quip: "FIRE"
+                quip: "FIRE",
+                special: SpecialMove(
+                    name: "CLAMP GOD",
+                    effect: "On defense, smother the ball-handler for an instant steal.",
+                    gesture: .longPress
+                )
             )
         case .brendan:
             return HalfCourtHero(
@@ -1855,7 +2342,12 @@ private enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 stealBonus: 0,
                 speed: 1.0,
                 height: 185,
-                quip: "BOOM"
+                quip: "BOOM",
+                special: SpecialMove(
+                    name: "BULLDOZE",
+                    effect: "Barrel through the paint for a guaranteed contact dunk.",
+                    gesture: .doubleTap
+                )
             )
         case .will:
             return HalfCourtHero(
@@ -1876,10 +2368,57 @@ private enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 stealBonus: 0,
                 speed: 0.95,
                 height: 174,
-                quip: "PERFECT"
+                quip: "PERFECT",
+                special: SpecialMove(
+                    name: "LOGO BOMB",
+                    effect: "Launch a deep logo three — bury it for a bonus point.",
+                    gesture: .swipeDown
+                )
             )
         }
     }
+}
+
+private enum SpecialGesture {
+    case swipeUp
+    case swipeDown
+    case doubleTap
+    case longPress
+
+    var label: String {
+        switch self {
+        case .swipeUp: return "SWIPE UP"
+        case .swipeDown: return "SWIPE DOWN"
+        case .doubleTap: return "DOUBLE TAP"
+        case .longPress: return "PRESS & HOLD"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .swipeUp: return "arrow.up.circle.fill"
+        case .swipeDown: return "arrow.down.circle.fill"
+        case .doubleTap: return "hand.tap.fill"
+        case .longPress: return "hand.point.up.left.fill"
+        }
+    }
+
+    var hint: String {
+        switch self {
+        case .swipeUp: return "Flick up on the court during your turn"
+        case .swipeDown: return "Flick down on the court during your turn"
+        case .doubleTap: return "Double-tap the court during your turn"
+        case .longPress: return "Press & hold the court while on defense"
+        }
+    }
+
+    var isDefensive: Bool { self == .longPress }
+}
+
+private struct SpecialMove {
+    let name: String
+    let effect: String
+    let gesture: SpecialGesture
 }
 
 private struct HalfCourtHero {
@@ -1901,6 +2440,7 @@ private struct HalfCourtHero {
     let speed: CGFloat
     let height: CGFloat
     let quip: String
+    let special: SpecialMove
 
     enum HairStyle {
         case bob
@@ -1947,6 +2487,7 @@ private struct HalfCourtBall {
     var shotBy: HalfCourtHeroID?
     var isPass = false
     var passTarget: HalfCourtHeroID?
+    var bonusPoint = false
 }
 
 private struct HalfCourtStats {
