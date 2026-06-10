@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>10 Alternate App Icon Directions</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08070d;
+      --panel: #16111e;
+      --panel-2: #21172b;
+      --text: #fff7e4;
+      --muted: #c9b9af;
+      --line: rgba(255, 244, 199, 0.18);
+      --cream: #fff4c7;
+      --amber: #ffc45f;
+      --pink: #ff1493;
+      --green: #39ff14;
+      --cyan: #1bd7ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(27, 215, 255, 0.18), transparent 30rem),
+        radial-gradient(circle at 86% 10%, rgba(255, 20, 147, 0.16), transparent 28rem),
+        linear-gradient(135deg, #08070d 0%, #17101f 56%, #2b1724 100%);
+      color: var(--text);
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      padding: 28px;
+    }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      padding: 28px 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0;
+      color: var(--amber);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    h1 {
+      margin: 0;
+      max-width: 920px;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      max-width: 840px;
+      color: var(--muted);
+      margin: 0;
+      font-size: clamp(17px, 2.2vw, 23px);
+    }
+    .brief {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 18px;
+      margin: 24px 0 28px;
+    }
+    .note {
+      background: rgba(255, 244, 199, 0.08);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .note h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      color: var(--cream);
+    }
+    .note p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin: 28px 0 42px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      min-height: 238px;
+    }
+    .icon-frame {
+      padding: 18px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+        rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--line);
+    }
+    .icon-svg {
+      width: 100%;
+      aspect-ratio: 1;
+      display: block;
+      border-radius: 22.37%;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.38);
+      overflow: hidden;
+    }
+    .card-copy {
+      padding: 18px 18px 20px;
+    }
+    .number {
+      margin: 0 0 7px;
+      color: var(--amber);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1.08;
+    }
+    .card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .card .thesis {
+      color: var(--text);
+      font-size: 15px;
+    }
+    strong {
+      color: var(--cream);
+    }
+    footer {
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding: 18px 0 8px;
+      font-size: 13px;
+    }
+    @media (max-width: 900px) {
+      body { padding: 18px; }
+      .brief { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .card {
+        grid-template-columns: 1fr;
+      }
+      .icon-frame {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .icon-svg {
+        max-width: 240px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">Band Music Games Party · App Icon Exploration · June 3, 2026</p>
+      <h1>10 Alternate App Icon Directions</h1>
+      <p class="subtitle">Non-record-player ideas built around the premise: band songs become games you play with other people.</p>
+    </header>
+    <section class="brief" aria-label="Creative brief">
+      <div class="note">
+        <h2>Creative Direction</h2>
+        <p>These directions drop the turntable constraint and explore more direct hybrids of music, games, party play, and the current song-color palette. They are intentionally broader so the next brand decision is not trapped inside vinyl metaphors.</p>
+      </div>
+      <div class="note">
+        <h2>Prototype First</h2>
+        <p>Prototype Cassette Controller, Arcade Stage, and Drum Pad Grid first. They are the clearest at icon size and give three distinct brand positions: retro-playful, premise-literal, and modern music-tech.</p>
+      </div>
+    </section>
+    <section class="grid" aria-label="Icon concepts">
+      
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-1-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-1-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-1-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-1-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-1-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-1-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#1bd7ff" />
+      </linearGradient>
+      <filter id="alt-1-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-1-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-1-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#1bd7ff" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <rect x="188" y="312" width="648" height="398" rx="82" fill="#f2ede2" filter="url(#alt-1-soft)" />
+        <rect x="242" y="380" width="540" height="158" rx="40" fill="#21162c" />
+        <circle cx="384" cy="618" r="58" fill="#21162c" />
+        <circle cx="640" cy="618" r="58" fill="#21162c" />
+        <circle cx="384" cy="618" r="26" fill="#ffc45f" />
+        <circle cx="640" cy="618" r="26" fill="#7b68ee" />
+        <circle cx="512" cy="458" r="42" fill="none" stroke="#fff4c7" stroke-width="20" />
+        <rect x="688" y="583" width="38" height="38" rx="12" fill="#39ff14" />
+        <rect x="736" y="631" width="38" height="38" rx="12" fill="#ff1493" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">01</p>
+        <h2>Cassette Controller</h2>
+        <p class="thesis">A cassette shell doubles as a game controller, with tape reels as thumbsticks and song colors as buttons.</p>
+        <p><strong>Build note:</strong> Strongest direct blend of music plus play; instantly reads as retro without using the record player.</p>
+        <p><strong>Best for:</strong> A broad, approachable icon for the app premise.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-2-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-2-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-2-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-2-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-2-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-2-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#ff1493" />
+      </linearGradient>
+      <filter id="alt-2-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-2-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-2-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#ff1493" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <path d="M270 208 H754 Q812 208 824 266 L884 812 H140 L200 266 Q212 208 270 208 Z" fill="#11101c" stroke="#ffc45f" stroke-width="20" filter="url(#alt-2-soft)" />
+        <rect x="268" y="298" width="488" height="274" rx="44" fill="#201332" stroke="#1bd7ff" stroke-width="14" />
+        <path d="M331 518 V412 M412 518 V360 M493 518 V436 M574 518 V386 M655 518 V333" stroke="#fff4c7" stroke-width="28" stroke-linecap="round" />
+        <circle cx="388" cy="697" r="48" fill="#39ff14" />
+        <circle cx="512" cy="697" r="48" fill="#ffc45f" />
+        <circle cx="636" cy="697" r="48" fill="#ff1493" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">02</p>
+        <h2>Arcade Stage</h2>
+        <p class="thesis">An arcade cabinet becomes a tiny stage, with equalizer bars and spotlight beams inside the screen.</p>
+        <p><strong>Build note:</strong> Communicates band songs becoming playable mini-games.</p>
+        <p><strong>Best for:</strong> Most explicit 'songs to play games to' idea.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-3-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-3-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-3-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-3-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-3-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-3-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#39ff14" />
+      </linearGradient>
+      <filter id="alt-3-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-3-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-3-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#39ff14" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <rect x="244" y="236" width="536" height="536" rx="126" fill="#f6eedc" filter="url(#alt-3-soft)" />
+        <rect x="318" y="310" width="160" height="160" rx="38" fill="#ff1493" />
+        <rect x="546" y="310" width="160" height="160" rx="38" fill="#1bd7ff" />
+        <rect x="318" y="538" width="160" height="160" rx="38" fill="#ffc45f" />
+        <rect x="546" y="538" width="160" height="160" rx="38" fill="#39ff14" />
+        <path d="M399 390 V342 M626 582 V650 M366 618 H432 M590 390 H662" stroke="#19111f" stroke-width="22" stroke-linecap="round" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">03</p>
+        <h2>Drum Pad Grid</h2>
+        <p class="thesis">A compact drum-pad controller turns into a four-button game board using the app song colors.</p>
+        <p><strong>Build note:</strong> Simple geometry, strong small-size read, and very easy to implement natively.</p>
+        <p><strong>Best for:</strong> Modern, music-tech, highly scalable icon direction.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-4-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-4-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-4-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-4-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-4-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-4-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#f08338" />
+      </linearGradient>
+      <filter id="alt-4-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-4-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-4-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#f08338" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <path d="M512 146 C705 146 848 302 848 510 C848 727 690 878 512 878 C334 878 176 727 176 510 C176 302 319 146 512 146 Z" fill="#f5ead6" filter="url(#alt-4-soft)" />
+        <path d="M512 228 C665 228 766 346 766 509 C766 676 653 794 512 794 C371 794 258 676 258 509 C258 346 359 228 512 228 Z" fill="#20132c" />
+        <path d="M360 578 C434 540 447 478 405 430 C500 422 578 378 642 316 C668 412 632 509 543 575 C483 619 416 626 360 578 Z" fill="#fff4c7" />
+        <path d="M398 612 C478 548 548 548 626 613" fill="none" stroke="#39ff14" stroke-width="24" stroke-linecap="round" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">04</p>
+        <h2>Guitar Pick Maze</h2>
+        <p class="thesis">A guitar pick contains a tiny maze path and a glowing play target.</p>
+        <p><strong>Build note:</strong> It avoids generic music-note branding while staying close to band culture.</p>
+        <p><strong>Best for:</strong> A cleaner, less arcade-specific brand mark.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-5-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-5-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-5-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-5-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-5-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-5-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#ffc45f" />
+      </linearGradient>
+      <filter id="alt-5-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-5-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-5-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#ffc45f" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <rect x="260" y="228" width="286" height="286" rx="72" fill="#f6eedc" filter="url(#alt-5-soft)" />
+        <rect x="478" y="448" width="286" height="286" rx="72" fill="#f6eedc" filter="url(#alt-5-soft)" />
+        <circle cx="356" cy="326" r="24" fill="#ff1493" />
+        <circle cx="450" cy="420" r="24" fill="#1bd7ff" />
+        <path d="M380 428 C430 378 433 322 388 286" fill="none" stroke="#22152a" stroke-width="20" stroke-linecap="round" />
+        <circle cx="574" cy="548" r="24" fill="#39ff14" />
+        <circle cx="622" cy="592" r="24" fill="#ffc45f" />
+        <circle cx="670" cy="638" r="24" fill="#7b68ee" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">05</p>
+        <h2>Song Dice</h2>
+        <p class="thesis">Two rounded dice use music/game symbols as pips, suggesting random party challenges from songs.</p>
+        <p><strong>Build note:</strong> Clear party-game energy, but risks feeling tabletop if not paired with song colors.</p>
+        <p><strong>Best for:</strong> Emphasizing group play and replayability.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-6-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-6-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-6-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-6-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-6-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-6-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#39ff14" />
+      </linearGradient>
+      <filter id="alt-6-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-6-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-6-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#39ff14" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <path d="M322 258 H702 V420 Q702 566 564 604 V704 H664 V776 H360 V704 H460 V604 Q322 566 322 420 Z" fill="#fff4c7" filter="url(#alt-6-soft)" />
+        <path d="M322 338 H238 Q212 338 206 366 C190 462 227 540 326 548" fill="none" stroke="#fff4c7" stroke-width="48" stroke-linecap="round" />
+        <path d="M702 338 H786 Q812 338 818 366 C834 462 797 540 698 548" fill="none" stroke="#fff4c7" stroke-width="48" stroke-linecap="round" />
+        <rect x="404" y="342" width="216" height="34" rx="17" fill="#ff1493" />
+        <rect x="376" y="420" width="272" height="34" rx="17" fill="#1bd7ff" />
+        <rect x="420" y="498" width="184" height="34" rx="17" fill="#ffc45f" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">06</p>
+        <h2>Playlist Trophy</h2>
+        <p class="thesis">A trophy cup is built from stacked playlist bars, making winning feel tied to music selection.</p>
+        <p><strong>Build note:</strong> Good for the competitive game layer; less obvious as music at very small sizes.</p>
+        <p><strong>Best for:</strong> A game-achievement direction.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-7-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-7-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-7-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-7-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-7-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-7-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#ffc45f" />
+      </linearGradient>
+      <filter id="alt-7-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-7-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-7-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#ffc45f" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <circle cx="512" cy="512" r="314" fill="#f6ead4" filter="url(#alt-7-soft)" />
+        <circle cx="512" cy="512" r="242" fill="#21152c" />
+        <path d="M392 584 V424 Q392 376 440 376 H584 Q632 376 632 424 V584" fill="none" stroke="#fff4c7" stroke-width="36" stroke-linecap="round" />
+        <path d="M392 462 H632 M430 540 H594" stroke="#1bd7ff" stroke-width="24" stroke-linecap="round" />
+        <path d="M452 674 H572" stroke="#ff1493" stroke-width="34" stroke-linecap="round" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">07</p>
+        <h2>Jukebox Token</h2>
+        <p class="thesis">A token/coin bears a simplified jukebox arch and colored track lanes.</p>
+        <p><strong>Build note:</strong> Premium, simple, and app-icon-friendly while remaining music-first.</p>
+        <p><strong>Best for:</strong> A more mature icon that still has party-game warmth.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-8-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-8-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-8-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-8-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-8-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-8-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#7b68ee" />
+      </linearGradient>
+      <filter id="alt-8-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-8-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-8-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#7b68ee" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <path d="M568 220 V642 C568 744 488 810 394 792 C304 775 254 698 288 627 C321 556 410 542 462 594 V282 Z" fill="#fff4c7" filter="url(#alt-8-soft)" />
+        <path d="M568 284 C656 310 720 380 744 470" fill="none" stroke="#fff4c7" stroke-width="54" stroke-linecap="round" filter="url(#alt-8-soft)" />
+        <circle cx="396" cy="682" r="56" fill="#ff1493" />
+        <circle cx="630" cy="512" r="42" fill="#39ff14" />
+        <circle cx="704" cy="438" r="32" fill="#ffc45f" />
+        <path d="M370 682 H422 M396 656 V708" stroke="#1d1326" stroke-width="16" stroke-linecap="round" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">08</p>
+        <h2>Pinball Note</h2>
+        <p class="thesis">A music note becomes a pinball lane with bumpers and a bright ball.</p>
+        <p><strong>Build note:</strong> High-energy and game-specific without relying on controllers.</p>
+        <p><strong>Best for:</strong> A kinetic icon that can become animation in the app.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-9-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-9-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-9-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-9-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-9-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-9-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#1bd7ff" />
+      </linearGradient>
+      <filter id="alt-9-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-9-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-9-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#1bd7ff" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <rect x="224" y="224" width="576" height="576" rx="118" fill="#f5ecd8" filter="url(#alt-9-soft)" />
+        <path d="M330 362 H694 M330 512 H694 M330 662 H694" stroke="#20142c" stroke-width="34" stroke-linecap="round" />
+        <path d="M380 664 C462 564 560 462 648 362" fill="none" stroke="#ff1493" stroke-width="28" stroke-linecap="round" />
+        <circle cx="380" cy="664" r="36" fill="#39ff14" />
+        <circle cx="648" cy="362" r="36" fill="#ffc45f" />
+        <circle cx="512" cy="512" r="44" fill="#1bd7ff" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">09</p>
+        <h2>Band Board</h2>
+        <p class="thesis">A square board-game tile contains four instrument/player lanes converging on a center play button.</p>
+        <p><strong>Build note:</strong> Represents multiple bands/songs/games in one modular mark.</p>
+        <p><strong>Best for:</strong> A system icon that can scale as the catalog grows.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="alt-10-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-10-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="alt-10-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-10-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    <defs>
+      <radialGradient id="alt-10-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="alt-10-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#ff1493" />
+      </linearGradient>
+      <filter id="alt-10-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="alt-10-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#alt-10-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#ff1493" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+        <path d="M298 480 C298 340 394 248 512 248 C630 248 726 340 726 480" fill="none" stroke="#fff4c7" stroke-width="56" stroke-linecap="round" filter="url(#alt-10-soft)" />
+        <rect x="236" y="448" width="112" height="210" rx="48" fill="#fff4c7" filter="url(#alt-10-soft)" />
+        <rect x="676" y="448" width="112" height="210" rx="48" fill="#fff4c7" filter="url(#alt-10-soft)" />
+        <path d="M512 420 L566 524 L682 540 L598 618 L620 730 L512 674 L404 730 L426 618 L342 540 L458 524 Z" fill="#ffc45f" />
+        <circle cx="512" cy="574" r="44" fill="#39ff14" />
+        <circle cx="436" cy="608" r="34" fill="#1bd7ff" />
+        <circle cx="588" cy="608" r="34" fill="#ff1493" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">10</p>
+        <h2>Headphone Crown</h2>
+        <p class="thesis">Headphones form a crown over three game gems, making the player the party DJ.</p>
+        <p><strong>Build note:</strong> More abstract and brandable, but less literal about gameplay.</p>
+        <p><strong>Best for:</strong> A consumer-app direction with stronger personality.</p>
+      </div>
+    </article>
+  
+    </section>
+    <footer>
+      Generated as a self-contained Pidgin-ready design document. Preview icons use the iOS mask in the document; final exported PNGs should remain square so iOS applies its own mask.
+    </footer>
+  </main>
+</body>
+</html>

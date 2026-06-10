@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>10 Cassette Controller Icon Variations</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08070d;
+      --panel: #16111e;
+      --panel-2: #21172b;
+      --text: #fff7e4;
+      --muted: #c9b9af;
+      --line: rgba(255, 244, 199, 0.18);
+      --cream: #fff4c7;
+      --amber: #ffc45f;
+      --pink: #ff1493;
+      --green: #39ff14;
+      --cyan: #1bd7ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(27, 215, 255, 0.18), transparent 30rem),
+        radial-gradient(circle at 86% 10%, rgba(255, 20, 147, 0.16), transparent 28rem),
+        linear-gradient(135deg, #08070d 0%, #17101f 56%, #2b1724 100%);
+      color: var(--text);
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      padding: 28px;
+    }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      padding: 28px 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0;
+      color: var(--amber);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    h1 {
+      margin: 0;
+      max-width: 920px;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      max-width: 840px;
+      color: var(--muted);
+      margin: 0;
+      font-size: clamp(17px, 2.2vw, 23px);
+    }
+    .brief {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 18px;
+      margin: 24px 0 28px;
+    }
+    .note {
+      background: rgba(255, 244, 199, 0.08);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .note h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      color: var(--cream);
+    }
+    .note p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin: 28px 0 42px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      min-height: 238px;
+    }
+    .icon-frame {
+      padding: 18px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+        rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--line);
+    }
+    .icon-svg {
+      width: 100%;
+      aspect-ratio: 1;
+      display: block;
+      border-radius: 22.37%;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.38);
+      overflow: hidden;
+    }
+    .card-copy {
+      padding: 18px 18px 20px;
+    }
+    .number {
+      margin: 0 0 7px;
+      color: var(--amber);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1.08;
+    }
+    .card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .card .thesis {
+      color: var(--text);
+      font-size: 15px;
+    }
+    strong {
+      color: var(--cream);
+    }
+    footer {
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding: 18px 0 8px;
+      font-size: 13px;
+    }
+    @media (max-width: 900px) {
+      body { padding: 18px; }
+      .brief { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .card {
+        grid-template-columns: 1fr;
+      }
+      .icon-frame {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .icon-svg {
+        max-width: 240px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">Band Music Games Party · App Icon Exploration · June 3, 2026</p>
+      <h1>10 Cassette Controller Icon Variations</h1>
+      <p class="subtitle">Focused iterations on the cassette-plus-game-controller direction: music source, game input, and party-song palette in one icon.</p>
+    </header>
+    <section class="brief" aria-label="Creative brief">
+      <div class="note">
+        <h2>Creative Direction</h2>
+        <p>These options stay inside the cassette/controller hybrid and test which visual hierarchy should lead: cassette shell, handheld player, thumbsticks, d-pad, arcade deck, co-op play, or neon mixpad.</p>
+      </div>
+      <div class="note">
+        <h2>Prototype First</h2>
+        <p>Prototype Classic Joycassette first for the iOS app icon, then compare Pocket Player and Minimal Tapepad if the first pass feels too retro or too detailed on-device.</p>
+      </div>
+    </section>
+    <section class="grid" aria-label="Icon concepts">
+      
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-1-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-1-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-1-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-1-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-1-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-1-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#1bd7ff" />
+      </linearGradient>
+      <filter id="cassette-1-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-1-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-1-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#1bd7ff" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        
+    <rect x="190" y="316" width="644" height="390" rx="82" fill="#f6eedc" filter="url(#cassette-1-soft)" />
+    <rect x="267.28" y="386.2" width="489.44" height="128.70000000000002" rx="42" fill="#21152c" />
+  
+        
+    <g class="reel-spin">
+      <animateTransform attributeName="transform" type="rotate" from="0 390 614" to="360 390 614" dur="1.18s" repeatCount="indefinite" />
+      <circle cx="390" cy="614" r="58" fill="#21152c" />
+      <circle cx="390" cy="614" r="25.52" fill="#ffc45f" />
+      <circle cx="365.64" cy="607.04" r="8.120000000000001" fill="#fff4c7" opacity="0.88" />
+      <circle cx="406.24" cy="593.12" r="8.120000000000001" fill="#fff4c7" opacity="0.88" />
+      <circle cx="402.76" cy="637.2" r="8.120000000000001" fill="#fff4c7" opacity="0.88" />
+      <path d="M378.4 614 H401.6 M390 602.4 V625.6" stroke="#fff4c7" stroke-width="5.800000000000001" stroke-linecap="round" opacity="0.56" />
+    </g>
+  
+        
+    <g class="reel-spin">
+      <animateTransform attributeName="transform" type="rotate" from="360 642 614" to="0 642 614" dur="1.42s" repeatCount="indefinite" />
+      <circle cx="642" cy="614" r="58" fill="#21152c" />
+      <circle cx="642" cy="614" r="25.52" fill="#7b68ee" />
+      <circle cx="617.64" cy="607.04" r="8.120000000000001" fill="#fff4c7" opacity="0.88" />
+      <circle cx="658.24" cy="593.12" r="8.120000000000001" fill="#fff4c7" opacity="0.88" />
+      <circle cx="654.76" cy="637.2" r="8.120000000000001" fill="#fff4c7" opacity="0.88" />
+      <path d="M630.4 614 H653.6 M642 602.4 V625.6" stroke="#fff4c7" stroke-width="5.800000000000001" stroke-linecap="round" opacity="0.56" />
+    </g>
+  
+        <circle cx="512" cy="446" r="42" fill="none" stroke="#fff4c7" stroke-width="20" />
+        
+    <rect x="271.96" y="570.46" width="24.080000000000002" height="67.08" rx="12.040000000000001" fill="#21152c" />
+    <rect x="250.46" y="591.96" width="67.08" height="24.080000000000002" rx="12.040000000000001" fill="#21152c" />
+  
+        
+    <circle cx="704" cy="590" r="18" fill="#39ff14" />
+    <circle cx="744.5" cy="574.7" r="18" fill="#1bd7ff" />
+    <circle cx="785" cy="590" r="18" fill="#ff1493" />
+    <circle cx="744.5" cy="607.1" r="18" fill="#ffc45f" />
+  
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">01</p>
+        <h2>Classic Joycassette</h2>
+        <p class="thesis">A clean cassette shell turns directly into a gamepad: reels as sticks, small song-color buttons on the right.</p>
+        <p><strong>Build note:</strong> This is the safest refinement of the original combo idea, with fewer parts and stronger icon readability.</p>
+        <p><strong>Best for:</strong> Primary candidate if we want the cassette/controller direction to feel broad and friendly.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-2-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-2-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-2-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-2-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-2-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-2-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#ffc45f" />
+      </linearGradient>
+      <filter id="cassette-2-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-2-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-2-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#ffc45f" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        <rect x="168" y="260" width="688" height="472" rx="90" fill="#fff4c7" filter="url(#cassette-2-soft)" />
+        <rect x="246" y="332" width="532" height="176" rx="42" fill="#21152c" />
+        <circle cx="306" cy="600" r="78" fill="#21152c" />
+        <circle cx="718" cy="600" r="78" fill="#21152c" />
+        
+    <rect x="294.52" y="568.02" width="22.96" height="63.96" rx="11.48" fill="#1bd7ff" />
+    <rect x="274.02" y="588.52" width="63.96" height="22.96" rx="11.48" fill="#1bd7ff" />
+  
+        
+    <circle cx="662" cy="584" r="20" fill="#39ff14" />
+    <circle cx="707" cy="567" r="20" fill="#1bd7ff" />
+    <circle cx="752" cy="584" r="20" fill="#ff1493" />
+    <circle cx="707" cy="603" r="20" fill="#ffc45f" />
+  
+        <path d="M400 420 H624" stroke="#fff4c7" stroke-width="24" stroke-linecap="round" />
+        <circle cx="448" cy="420" r="24" fill="none" stroke="#ffc45f" stroke-width="14" />
+        <circle cx="576" cy="420" r="24" fill="none" stroke="#ff1493" stroke-width="14" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">02</p>
+        <h2>Boombox Pad</h2>
+        <p class="thesis">The cassette sits inside a tiny boombox face, while the speaker circles become controller pads.</p>
+        <p><strong>Build note:</strong> Adds band-room energy without requiring a literal instrument or record player.</p>
+        <p><strong>Best for:</strong> A warmer, more music-first version of the concept.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-3-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-3-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-3-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-3-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-3-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-3-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#39ff14" />
+      </linearGradient>
+      <filter id="cassette-3-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-3-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-3-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#39ff14" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        <rect x="230" y="340" width="564" height="310" rx="76" fill="#fff4c7" filter="url(#cassette-3-soft)" />
+        <rect x="332" y="404" width="360" height="98" rx="32" fill="#21152c" />
+        <circle cx="346" cy="624" r="96" fill="#21152c" stroke="#fff4c7" stroke-width="18" />
+        <circle cx="678" cy="624" r="96" fill="#21152c" stroke="#fff4c7" stroke-width="18" />
+        <circle cx="346" cy="624" r="34" fill="#39ff14" />
+        <circle cx="678" cy="624" r="34" fill="#ff1493" />
+        <path d="M434 606 H590" stroke="#1bd7ff" stroke-width="28" stroke-linecap="round" />
+        <path d="M454 444 H570" stroke="#ffc45f" stroke-width="20" stroke-linecap="round" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">03</p>
+        <h2>Twin Reel Sticks</h2>
+        <p class="thesis">The two tape reels become oversized thumbsticks, with a minimal cassette window connecting them.</p>
+        <p><strong>Build note:</strong> Leans harder into controller ergonomics while keeping the tape read intact.</p>
+        <p><strong>Best for:</strong> A modern game-controller read at small sizes.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-4-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-4-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-4-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-4-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-4-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-4-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#7b68ee" />
+      </linearGradient>
+      <filter id="cassette-4-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-4-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-4-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#7b68ee" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        <rect x="236" y="192" width="552" height="652" rx="126" fill="#fff4c7" filter="url(#cassette-4-soft)" />
+        <rect x="318" y="288" width="388" height="168" rx="42" fill="#21152c" />
+        
+    <circle cx="420" cy="372" r="34" fill="#3a2747" />
+    <circle cx="420" cy="372" r="14.28" fill="#1bd7ff" />
+  
+        
+    <circle cx="604" cy="372" r="34" fill="#3a2747" />
+    <circle cx="604" cy="372" r="14.28" fill="#ffc45f" />
+  
+        <rect x="330" y="540" width="152" height="152" rx="42" fill="#21152c" />
+        
+    <rect x="392.56" y="578.56" width="26.880000000000003" height="74.88" rx="13.440000000000001" fill="#fff4c7" />
+    <rect x="368.56" y="602.56" width="74.88" height="26.880000000000003" rx="13.440000000000001" fill="#fff4c7" />
+  
+        
+    <circle cx="560" cy="596" r="22" fill="#39ff14" />
+    <circle cx="609.5" cy="577.3" r="22" fill="#1bd7ff" />
+    <circle cx="659" cy="596" r="22" fill="#ff1493" />
+    <circle cx="609.5" cy="616.9" r="22" fill="#ffc45f" />
+  
+        <path d="M408 766 H616" stroke="#21152c" stroke-width="28" stroke-linecap="round" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">04</p>
+        <h2>Pocket Player</h2>
+        <p class="thesis">A portable cassette player becomes the controller, with a d-pad and buttons built into the lower face.</p>
+        <p><strong>Build note:</strong> The strongest nostalgic object direction; it feels like a playable music device.</p>
+        <p><strong>Best for:</strong> A retro consumer-app icon with personality.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-5-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-5-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-5-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-5-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-5-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-5-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#ff1493" />
+      </linearGradient>
+      <filter id="cassette-5-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-5-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-5-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#ff1493" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        <rect x="202" y="304" width="620" height="360" rx="78" fill="#fff4c7" filter="url(#cassette-5-soft)" />
+        <rect x="286" y="374" width="452" height="120" rx="38" fill="#21152c" />
+        
+    <circle cx="400" cy="434" r="34" fill="#3a2747" />
+    <circle cx="400" cy="434" r="14.28" fill="#ffc45f" />
+  
+        
+    <circle cx="624" cy="434" r="34" fill="#3a2747" />
+    <circle cx="624" cy="434" r="14.28" fill="#1bd7ff" />
+  
+        <path d="M332 602 C394 540 450 590 410 642 C382 678 320 660 332 602 Z" fill="none" stroke="#ff1493" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M338 625 H398 M368 594 V656" stroke="#21152c" stroke-width="17" stroke-linecap="round" />
+        
+    <circle cx="614" cy="598" r="19" fill="#39ff14" />
+    <circle cx="656.75" cy="581.85" r="19" fill="#1bd7ff" />
+    <circle cx="699.5" cy="598" r="19" fill="#ff1493" />
+    <circle cx="656.75" cy="616.05" r="19" fill="#ffc45f" />
+  
+        <path d="M654 492 C694 550 668 602 716 644" fill="none" stroke="#fff4c7" stroke-width="18" stroke-linecap="round" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">05</p>
+        <h2>Tape Trail D-Pad</h2>
+        <p class="thesis">The magnetic tape exits the cassette and curls into a d-pad shape.</p>
+        <p><strong>Build note:</strong> More illustrative and ownable, but the tape line must stay thick for app-icon scale.</p>
+        <p><strong>Best for:</strong> A memorable craft-driven variation.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-6-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-6-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-6-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-6-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-6-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-6-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#f08338" />
+      </linearGradient>
+      <filter id="cassette-6-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-6-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-6-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#f08338" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        <path d="M234 270 H790 Q840 270 850 318 L890 738 H134 L174 318 Q184 270 234 270 Z" fill="#17101f" stroke="#ffc45f" stroke-width="18" filter="url(#cassette-6-soft)" />
+        <rect x="286" y="344" width="452" height="152" rx="40" fill="#fff4c7" />
+        
+    <circle cx="414" cy="420" r="34" fill="#21152c" />
+    <circle cx="414" cy="420" r="14.28" fill="#ff1493" />
+  
+        
+    <circle cx="610" cy="420" r="34" fill="#21152c" />
+    <circle cx="610" cy="420" r="14.28" fill="#1bd7ff" />
+  
+        <circle cx="350" cy="628" r="62" fill="#fff4c7" />
+        <path d="M350 572 V684 M294 628 H406" stroke="#21152c" stroke-width="26" stroke-linecap="round" />
+        <circle cx="620" cy="628" r="32" fill="#39ff14" />
+        <circle cx="710" cy="628" r="32" fill="#ff1493" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">06</p>
+        <h2>Arcade Cassette</h2>
+        <p class="thesis">A cassette becomes a mini arcade control deck with joystick, buttons, and a tape window.</p>
+        <p><strong>Build note:</strong> The most literal party-game take while still keeping the music source visible.</p>
+        <p><strong>Best for:</strong> Making the app premise obvious in one glance.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-7-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-7-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-7-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-7-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-7-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-7-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#39ff14" />
+      </linearGradient>
+      <filter id="cassette-7-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-7-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-7-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#39ff14" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        <rect x="244" y="244" width="536" height="536" rx="130" fill="#fff4c7" filter="url(#cassette-7-soft)" />
+        <rect x="326" y="334" width="372" height="116" rx="36" fill="#21152c" />
+        <circle cx="426" cy="392" r="24" fill="#ffc45f" />
+        <circle cx="598" cy="392" r="24" fill="#1bd7ff" />
+        
+    <rect x="378.28" y="571.78" width="27.44" height="76.44" rx="13.72" fill="#21152c" />
+    <rect x="353.78" y="596.28" width="76.44" height="27.44" rx="13.72" fill="#21152c" />
+  
+        <rect x="548" y="554" width="62" height="62" rx="18" fill="#ff1493" />
+        <rect x="626" y="554" width="62" height="62" rx="18" fill="#1bd7ff" />
+        <rect x="548" y="632" width="62" height="62" rx="18" fill="#ffc45f" />
+        <rect x="626" y="632" width="62" height="62" rx="18" fill="#39ff14" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">07</p>
+        <h2>Minimal Tapepad</h2>
+        <p class="thesis">A reduced rounded-square cassette uses only two reel dots, a slot, and four colored button cuts.</p>
+        <p><strong>Build note:</strong> Removes most retro detail so the icon can feel more current and premium.</p>
+        <p><strong>Best for:</strong> A polished iOS-home-screen direction.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-8-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-8-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-8-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-8-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-8-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-8-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#1bd7ff" />
+      </linearGradient>
+      <filter id="cassette-8-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-8-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-8-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#1bd7ff" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        <g transform="rotate(-10 512 512)">
+          <rect x="198" y="314" width="430" height="304" rx="70" fill="#fff4c7" filter="url(#cassette-8-soft)" />
+          <rect x="250" y="370" width="326" height="88" rx="30" fill="#21152c" />
+          
+    <rect x="286.2" y="516.7" width="19.6" height="54.6" rx="9.8" fill="#21152c" />
+    <rect x="268.7" y="534.2" width="54.6" height="19.6" rx="9.8" fill="#21152c" />
+  
+          
+    <circle cx="438" cy="530" r="15" fill="#39ff14" />
+    <circle cx="471.75" cy="517.25" r="15" fill="#1bd7ff" />
+    <circle cx="505.5" cy="530" r="15" fill="#ff1493" />
+    <circle cx="471.75" cy="544.25" r="15" fill="#ffc45f" />
+  
+        </g>
+        <g transform="rotate(11 512 512)">
+          <rect x="406" y="434" width="430" height="304" rx="70" fill="#f0dfc0" filter="url(#cassette-8-soft)" />
+          <rect x="458" y="490" width="326" height="88" rx="30" fill="#21152c" />
+          
+    <rect x="494.2" y="636.7" width="19.6" height="54.6" rx="9.8" fill="#21152c" />
+    <rect x="476.7" y="654.2" width="54.6" height="19.6" rx="9.8" fill="#21152c" />
+  
+          
+    <circle cx="646" cy="650" r="15" fill="#39ff14" />
+    <circle cx="679.75" cy="637.25" r="15" fill="#1bd7ff" />
+    <circle cx="713.5" cy="650" r="15" fill="#ff1493" />
+    <circle cx="679.75" cy="664.25" r="15" fill="#ffc45f" />
+  
+        </g>
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">08</p>
+        <h2>Co-op Deck</h2>
+        <p class="thesis">Two small cassette controllers overlap like player-one/player-two tiles.</p>
+        <p><strong>Build note:</strong> Sells the party and multiplayer side more than any single-device mark.</p>
+        <p><strong>Best for:</strong> A social game-night positioning.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-9-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-9-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-9-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-9-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-9-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-9-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#ffc45f" />
+      </linearGradient>
+      <filter id="cassette-9-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-9-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-9-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#ffc45f" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        
+    <rect x="188" y="292" width="648" height="438" rx="88" fill="#f6eedc" filter="url(#cassette-9-soft)" />
+    <rect x="265.76" y="370.84000000000003" width="492.48" height="144.54000000000002" rx="42" fill="#21152c" />
+  
+        <path d="M360 566 V686 M300 626 H420" stroke="#21152c" stroke-width="34" stroke-linecap="round" />
+        
+    <circle cx="498" cy="442" r="32" fill="#3a2747" />
+    <circle cx="498" cy="442" r="13.44" fill="#1bd7ff" />
+  
+        
+    <circle cx="626" cy="442" r="32" fill="#3a2747" />
+    <circle cx="626" cy="442" r="13.44" fill="#ff1493" />
+  
+        <circle cx="620" cy="620" r="28" fill="#39ff14" />
+        <circle cx="704" cy="620" r="28" fill="#ff1493" />
+        <path d="M286 360 H738" stroke="#ffc45f" stroke-width="18" stroke-linecap="round" opacity="0.8" />
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">09</p>
+        <h2>D-Pad Tape Label</h2>
+        <p class="thesis">The cassette label itself becomes a large plus-shaped d-pad, framed by two small tape reels.</p>
+        <p><strong>Build note:</strong> Very simple silhouette: music object first, game control second.</p>
+        <p><strong>Best for:</strong> Smallest icon sizes and notification surfaces.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="cassette-10-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-10-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="cassette-10-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-10-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    
+    
+    <defs>
+      <radialGradient id="cassette-10-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c1731" />
+        <stop offset="56%" stop-color="#090a13" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="cassette-10-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#ff1493" />
+      </linearGradient>
+      <filter id="cassette-10-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="cassette-10-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    <rect width="1024" height="1024" fill="url(#cassette-10-glow)" />
+    <circle cx="212" cy="196" r="130" fill="#1bd7ff" opacity="0.12" />
+    <circle cx="850" cy="810" r="190" fill="#ff1493" opacity="0.16" />
+    <path d="M0 786 L0 1024 L256 1024 Z" fill="#020306" opacity="0.68" />
+  
+    <rect x="126" y="126" width="772" height="772" rx="214" fill="#130b1a" opacity="0.56" />
+    <path d="M126 740 L126 898 L284 898 Z" fill="#030206" opacity="0.78" />
+  
+        <g transform="rotate(-8 512 512)">
+          <rect x="190" y="292" width="648" height="404" rx="84" fill="#16101f" stroke="#1bd7ff" stroke-width="18" filter="url(#cassette-10-soft)" />
+          <rect x="276" y="360" width="472" height="128" rx="36" fill="#fff4c7" />
+          <path d="M334 424 H690" stroke="#ff1493" stroke-width="20" stroke-linecap="round" />
+          <path d="M376 458 H648" stroke="#1bd7ff" stroke-width="18" stroke-linecap="round" />
+          
+    <circle cx="420" cy="424" r="24" fill="#21152c" />
+    <circle cx="420" cy="424" r="12" fill="#ffc45f" />
+  
+          
+    <circle cx="604" cy="424" r="24" fill="#21152c" />
+    <circle cx="604" cy="424" r="12" fill="#39ff14" />
+  
+          
+    <rect x="341.68" y="579.68" width="24.64" height="68.64" rx="12.32" fill="#fff4c7" />
+    <rect x="319.68" y="601.68" width="68.64" height="24.64" rx="12.32" fill="#fff4c7" />
+  
+          
+    <circle cx="610" cy="596" r="22" fill="#39ff14" />
+    <circle cx="659.5" cy="577.3" r="22" fill="#1bd7ff" />
+    <circle cx="709" cy="596" r="22" fill="#ff1493" />
+    <circle cx="659.5" cy="616.9" r="22" fill="#ffc45f" />
+  
+        </g>
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">10</p>
+        <h2>Neon Mixpad</h2>
+        <p class="thesis">A diagonal cassette-controller hybrid uses neon track lanes and arcade buttons inside one compact slab.</p>
+        <p><strong>Build note:</strong> Closest to the existing neon party palette and the earlier arcade drafts.</p>
+        <p><strong>Best for:</strong> The highest-energy, most branded variant.</p>
+      </div>
+    </article>
+  
+    </section>
+    <footer>
+      Generated as a self-contained Pidgin-ready design document. Preview icons use the iOS mask in the document; final exported PNGs should remain square so iOS applies its own mask.
+    </footer>
+  </main>
+</body>
+</html>

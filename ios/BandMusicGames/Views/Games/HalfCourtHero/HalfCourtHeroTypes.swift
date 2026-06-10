@@ -13,9 +13,10 @@ enum HalfCourtTeam {
     case away
 }
 
-enum HalfCourtAnimation {
+enum HalfCourtAnimation: String, CaseIterable {
     case idle
     case run
+    case dribble
     case jump
     case land
     case shoot

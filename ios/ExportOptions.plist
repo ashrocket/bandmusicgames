@@ -21,7 +21,7 @@
     <key>provisioningProfiles</key>
     <dict>
         <key>party.bandmusicgames.app</key>
-        <string>Band Music Games Party AppStore Distribution</string>
+        <string>BMGP</string>
     </dict>
 </dict>
 </plist>

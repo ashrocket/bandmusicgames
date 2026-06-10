@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>10 String Turntable Icon Iterations</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08070d;
+      --panel: #16111e;
+      --panel-2: #21172b;
+      --text: #fff7e4;
+      --muted: #c9b9af;
+      --line: rgba(255, 244, 199, 0.18);
+      --cream: #fff4c7;
+      --amber: #ffc45f;
+      --pink: #ff1493;
+      --green: #39ff14;
+      --cyan: #1bd7ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(27, 215, 255, 0.18), transparent 30rem),
+        radial-gradient(circle at 86% 10%, rgba(255, 20, 147, 0.16), transparent 28rem),
+        linear-gradient(135deg, #08070d 0%, #17101f 56%, #2b1724 100%);
+      color: var(--text);
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      padding: 28px;
+    }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+      padding: 28px 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      margin: 0;
+      color: var(--amber);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    h1 {
+      margin: 0;
+      max-width: 920px;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      max-width: 840px;
+      color: var(--muted);
+      margin: 0;
+      font-size: clamp(17px, 2.2vw, 23px);
+    }
+    .brief {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 18px;
+      margin: 24px 0 28px;
+    }
+    .note {
+      background: rgba(255, 244, 199, 0.08);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .note h2 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      color: var(--cream);
+    }
+    .note p {
+      margin: 0;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin: 28px 0 42px;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 210px minmax(0, 1fr);
+      min-height: 238px;
+    }
+    .icon-frame {
+      padding: 18px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+        rgba(0,0,0,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid var(--line);
+    }
+    .icon-svg {
+      width: 100%;
+      aspect-ratio: 1;
+      display: block;
+      border-radius: 22.37%;
+      box-shadow: 0 20px 45px rgba(0,0,0,0.38);
+      overflow: hidden;
+    }
+    .card-copy {
+      padding: 18px 18px 20px;
+    }
+    .number {
+      margin: 0 0 7px;
+      color: var(--amber);
+      font-weight: 900;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1.08;
+    }
+    .card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .card .thesis {
+      color: var(--text);
+      font-size: 15px;
+    }
+    strong {
+      color: var(--cream);
+    }
+    footer {
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      padding: 18px 0 8px;
+      font-size: 13px;
+    }
+    @media (max-width: 900px) {
+      body { padding: 18px; }
+      .brief { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .card {
+        grid-template-columns: 1fr;
+      }
+      .icon-frame {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .icon-svg {
+        max-width: 240px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <p class="eyebrow">Band Music Games Party · App Icon Exploration · June 3, 2026</p>
+      <h1>10 String Turntable Icon Iterations</h1>
+      <p class="subtitle">Variations that preserve the current record-player-made-from-animator-kite-string idea while tightening the app-icon silhouette.</p>
+    </header>
+    <section class="brief" aria-label="Creative brief">
+      <div class="note">
+        <h2>Creative Direction</h2>
+        <p>These options keep the cream cord, dark plum/orange warmth, hand-drawn line energy, record platter, and tonearm. The iteration space is composition, string gesture, party-game accents, and small-size clarity.</p>
+      </div>
+      <div class="note">
+        <h2>Prototype First</h2>
+        <p>Prototype Single Spiral Drop, Needle Lasso, and Woven Orbit first. They give the biggest range: boldest craft metaphor, most playful motion, and safest current-icon refinement.</p>
+      </div>
+    </section>
+    <section class="grid" aria-label="Icon concepts">
+      
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-1-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-1-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-1-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-1-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    
+    <rect width="1024" height="1024" fill="url(#string-1-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+    <g filter="url(#string-1-soft)">
+      <circle cx="512" cy="514" r="286" fill="#0d0710" opacity="0.74" />
+      <circle cx="512" cy="514" r="258" fill="none" stroke="#fff1b8" stroke-width="34" opacity="0.96" />
+      <circle cx="512" cy="514" r="205" fill="none" stroke="#fff7d6" stroke-width="26" opacity="0.95" />
+      <circle cx="512" cy="514" r="149" fill="none" stroke="#fff1b8" stroke-width="22" opacity="0.95" />
+      <circle cx="512" cy="514" r="79" fill="none" stroke="#fff4c7" stroke-width="22" opacity="0.98" />
+      <circle cx="512" cy="514" r="27" fill="#ffc45f" />
+      
+        <path d="M272 282 C362 178 421 244 483 286 C549 332 585 184 692 216" fill="none" stroke="#fff4c7" stroke-width="28" stroke-linecap="round" opacity="0.98" filter="url(#string-1-thread)" />
+      
+    </g>
+  
+    <g>
+      <path d="M736 736 C704 674 653 613 585 548" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-1-thread)" />
+      <path d="M736 736 C704 674 653 613 585 548" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-1-thread)" />
+    </g>
+  </svg></div>
+      <div class="card-copy">
+        <p class="number">01</p>
+        <h2>Woven Orbit</h2>
+        <p class="thesis">Closest to the current mark, but cleaner at small sizes: the record reads as one continuous cord wound around the platter.</p>
+        <p><strong>Build note:</strong> Keep the cream string thick and warm, reduce small dots, and let the tonearm sit as a single confident diagonal.</p>
+        <p><strong>Best for:</strong> Conservative update; safest replacement for the current app icon.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-2-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-2-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-2-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-2-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    
+    <rect width="1024" height="1024" fill="url(#string-2-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+    <g filter="url(#string-2-soft)">
+      <circle cx="512" cy="514" r="286" fill="#0d0710" opacity="0.74" />
+      <circle cx="512" cy="514" r="258" fill="none" stroke="#fff1b8" stroke-width="34" opacity="0.96" />
+      <circle cx="512" cy="514" r="205" fill="none" stroke="#fff7d6" stroke-width="26" opacity="0.95" />
+      <circle cx="512" cy="514" r="149" fill="none" stroke="#fff1b8" stroke-width="22" opacity="0.95" />
+      <circle cx="512" cy="514" r="79" fill="none" stroke="#fff4c7" stroke-width="22" opacity="0.98" />
+      <circle cx="512" cy="514" r="27" fill="#ffc45f" />
+      
+        <path d="M268 284 C322 228 382 211 440 254 C489 289 529 292 574 260 C634 217 681 218 738 263" fill="none" stroke="#fff4c7" stroke-width="26" stroke-linecap="round" opacity="0.98" filter="url(#string-2-thread)" />
+      
+    </g>
+  
+    <g>
+      <path d="M741 745 C690 658 646 637 608 575 C574 519 624 492 653 538 C680 582 640 609 591 557" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-2-thread)" />
+      <path d="M741 745 C690 658 646 637 608 575 C574 519 624 492 653 538 C680 582 640 609 591 557" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-2-thread)" />
+    </g>
+  </svg></div>
+      <div class="card-copy">
+        <p class="number">02</p>
+        <h2>Kite Tail Needle</h2>
+        <p class="thesis">The tonearm becomes an illustrator's kite-string tail with two soft bows before it lands in the groove.</p>
+        <p><strong>Build note:</strong> Adds the requested kite-string character without making the record itself too busy.</p>
+        <p><strong>Best for:</strong> More hand-made personality while preserving the record-player premise.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-3-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-3-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-3-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-3-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    <rect width="1024" height="1024" fill="url(#string-3-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+        <path d="M516 220 C684 220 806 345 806 512 C806 701 660 816 496 802 C332 788 208 667 219 501 C231 338 362 271 499 288 C648 307 720 404 705 529 C690 650 592 713 482 692 C378 672 322 592 343 494 C361 411 434 373 513 386 C588 398 629 453 617 522 C607 581 558 613 504 603 C457 594 431 558 438 516 C445 480 474 462 507 467" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-3-thread)" />
+        <circle cx="512" cy="514" r="28" fill="#ffc45f" />
+        <path d="M324 231 C398 164 447 233 501 252 C565 275 596 168 696 195" fill="none" stroke="#fff4c7" stroke-width="25" stroke-linecap="round" opacity="0.98" filter="url(#string-3-thread)" />
+        
+    <g>
+      <path d="M742 742 C690 682 650 620 588 548" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-3-thread)" />
+      <path d="M742 742 C690 682 650 620 588 548" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-3-thread)" />
+    </g>
+  
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">03</p>
+        <h2>Single Spiral Drop</h2>
+        <p class="thesis">One unbroken string spirals from the outer groove into the center, with a loose drop loop above the platter.</p>
+        <p><strong>Build note:</strong> The strongest 'made from string' read; one gesture explains the whole object.</p>
+        <p><strong>Best for:</strong> A bolder, more memorable app-store thumbnail.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-4-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-4-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-4-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-4-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    
+    <rect width="1024" height="1024" fill="url(#string-4-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+    <g filter="url(#string-4-soft)">
+      <circle cx="512" cy="514" r="286" fill="#0d0710" opacity="0.74" />
+      <circle cx="512" cy="514" r="258" fill="none" stroke="#fff1b8" stroke-width="34" opacity="0.96" />
+      <circle cx="512" cy="514" r="205" fill="none" stroke="#fff7d6" stroke-width="26" opacity="0.95" />
+      <circle cx="512" cy="514" r="149" fill="none" stroke="#fff1b8" stroke-width="22" opacity="0.95" />
+      <circle cx="512" cy="514" r="79" fill="none" stroke="#fff4c7" stroke-width="22" opacity="0.98" />
+      <circle cx="512" cy="514" r="27" fill="#ffc45f" />
+      
+        <circle cx="272" cy="750" r="18" fill="#ffc45f" />
+        <circle cx="748" cy="292" r="18" fill="#ff1493" />
+        <circle cx="792" cy="376" r="18" fill="#39ff14" />
+        <circle cx="338" cy="256" r="16" fill="#1bd7ff" />
+        <circle cx="682" cy="792" r="16" fill="#7b68ee" />
+      
+    </g>
+  
+    <g>
+      <path d="M745 744 C715 684 670 628 615 570" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-4-thread)" />
+      <path d="M745 744 C715 684 670 628 615 570" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-4-thread)" />
+    </g>
+  </svg></div>
+      <div class="card-copy">
+        <p class="number">04</p>
+        <h2>Confetti Platter</h2>
+        <p class="thesis">The turntable stays string-built, while tiny song-color beads make it feel like a game-night party object.</p>
+        <p><strong>Build note:</strong> Use only a few beads so it does not become decorative noise at 60px.</p>
+        <p><strong>Best for:</strong> Making the app feel less like a music utility and more like a game launcher.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-5-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-5-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-5-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-5-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    
+    <rect width="1024" height="1024" fill="url(#string-5-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+    <g filter="url(#string-5-soft)">
+      <circle cx="512" cy="514" r="286" fill="#0d0710" opacity="0.74" />
+      <circle cx="512" cy="514" r="258" fill="none" stroke="#fff1b8" stroke-width="34" opacity="0.96" />
+      <circle cx="512" cy="514" r="205" fill="none" stroke="#fff7d6" stroke-width="26" opacity="0.95" />
+      <circle cx="512" cy="514" r="149" fill="none" stroke="#fff1b8" stroke-width="22" opacity="0.95" />
+      <circle cx="512" cy="514" r="79" fill="none" stroke="#fff4c7" stroke-width="22" opacity="0.98" />
+      <circle cx="512" cy="514" r="27" fill="#ffc45f" />
+      
+        <path d="M267 296 C360 196 425 279 493 291 C559 302 604 207 728 233" fill="none" stroke="#fff4c7" stroke-width="25" stroke-linecap="round" opacity="0.95" filter="url(#string-5-thread)" />
+      
+    </g>
+  
+    <g>
+      <path d="M748 746 C674 693 671 624 616 606 C548 583 531 667 594 663 C654 659 670 592 590 544" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-5-thread)" />
+      <path d="M748 746 C674 693 671 624 616 606 C548 583 531 667 594 663 C654 659 670 592 590 544" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-5-thread)" />
+    </g>
+  </svg></div>
+      <div class="card-copy">
+        <p class="number">05</p>
+        <h2>Needle Lasso</h2>
+        <p class="thesis">The string tonearm loops around itself like a lasso, then points into the record groove.</p>
+        <p><strong>Build note:</strong> The lasso gives the arm an animator-drawn motion path without changing the icon silhouette.</p>
+        <p><strong>Best for:</strong> A playful variation that still reads clearly as a turntable.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-6-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-6-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-6-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-6-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    
+    <rect width="1024" height="1024" fill="url(#string-6-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+    <g filter="url(#string-6-soft)">
+      <circle cx="512" cy="514" r="286" fill="#0d0710" opacity="0.74" />
+      <circle cx="512" cy="514" r="258" fill="none" stroke="#fff1b8" stroke-width="34" opacity="0.96" />
+      <circle cx="512" cy="514" r="205" fill="none" stroke="#fff7d6" stroke-width="26" opacity="0.95" />
+      <circle cx="512" cy="514" r="149" fill="none" stroke="#fff1b8" stroke-width="22" opacity="0.95" />
+      <circle cx="512" cy="514" r="79" fill="none" stroke="#fff4c7" stroke-width="22" opacity="0.98" />
+      <circle cx="512" cy="514" r="27" fill="#ffc45f" />
+      
+        <circle cx="252" cy="520" r="31" fill="#39ff14" opacity="0.9" />
+        <rect x="736" y="316" width="54" height="54" rx="16" fill="#7b68ee" opacity="0.9" />
+        <path d="M747 675 l31 54 l-62 0 z" fill="#ff1493" opacity="0.9" />
+        <circle cx="348" cy="740" r="28" fill="#1bd7ff" opacity="0.9" />
+      
+    </g>
+  
+    <g>
+      <path d="M748 746 C704 674 657 623 601 560" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-6-thread)" />
+      <path d="M748 746 C704 674 657 623 601 560" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-6-thread)" />
+    </g>
+  </svg></div>
+      <div class="card-copy">
+        <p class="number">06</p>
+        <h2>Game Token Deck</h2>
+        <p class="thesis">The platter is still a cord record, but four simple game tokens sit around it like arcade buttons.</p>
+        <p><strong>Build note:</strong> The tokens are secondary and should use the app song colors, not extra detail.</p>
+        <p><strong>Best for:</strong> Bridging the current icon to the games premise.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-7-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-7-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-7-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-7-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    <rect width="1024" height="1024" fill="url(#string-7-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+        <path d="M124 662 L694 92 L928 326 L357 896 Z" fill="#e17739" opacity="0.88" />
+        <path d="M171 694 L698 167 L853 322 L326 849 Z" fill="#251331" opacity="0.72" />
+        <g transform="translate(22 -6)">
+          <circle cx="512" cy="514" r="258" fill="none" stroke="#fff7d6" stroke-width="36" stroke-linecap="round" filter="url(#string-7-thread)" />
+          <circle cx="512" cy="514" r="192" fill="none" stroke="#fff4c7" stroke-width="28" stroke-linecap="round" filter="url(#string-7-thread)" />
+          <circle cx="512" cy="514" r="116" fill="none" stroke="#fff7d6" stroke-width="24" stroke-linecap="round" filter="url(#string-7-thread)" />
+          <circle cx="512" cy="514" r="28" fill="#ffc45f" />
+        </g>
+        
+    <g>
+      <path d="M760 720 C694 660 644 612 586 556" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-7-thread)" />
+      <path d="M760 720 C694 660 644 612 586 556" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-7-thread)" />
+    </g>
+  
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">07</p>
+        <h2>Sleeve Corner</h2>
+        <p class="thesis">A diagonal record sleeve frames the cord platter, echoing the current orange/plum corner geometry.</p>
+        <p><strong>Build note:</strong> The sleeve gives the icon a stronger square composition for iOS masks.</p>
+        <p><strong>Best for:</strong> A premium, album-art-like direction.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-8-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-8-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-8-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-8-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    <rect width="1024" height="1024" fill="url(#string-8-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+        <g filter="url(#string-8-soft)">
+          <circle cx="512" cy="514" r="260" fill="#110910" opacity="0.78" />
+          <circle cx="512" cy="514" r="236" fill="none" stroke="#fff4c7" stroke-width="48" />
+          <circle cx="512" cy="514" r="138" fill="none" stroke="#fff4c7" stroke-width="42" opacity="0.96" />
+          <circle cx="512" cy="514" r="52" fill="none" stroke="#fff4c7" stroke-width="34" />
+          <path d="M280 516 C224 456 226 376 286 337 C355 291 432 333 425 410 C419 478 345 480 306 438" fill="none" stroke="#fff4c7" stroke-width="24" stroke-linecap="round" />
+          <circle cx="512" cy="514" r="27" fill="#ffc45f" />
+        </g>
+        
+    <g>
+      <path d="M745 744 C696 681 655 630 596 566" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-8-thread)" />
+      <path d="M745 744 C696 681 655 630 596 566" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-8-thread)" />
+    </g>
+  
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">08</p>
+        <h2>Thread Reel Platter</h2>
+        <p class="thesis">The record player reads like an animation desk spool: the platter is a reel of cream thread feeding the needle.</p>
+        <p><strong>Build note:</strong> More literal about materials, slightly less literal about vinyl.</p>
+        <p><strong>Best for:</strong> Leaning into 'illustrators' string' as the brand's craft language.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-9-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-9-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-9-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-9-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+        
+    <rect width="1024" height="1024" fill="url(#string-9-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+        <g filter="url(#string-9-soft)">
+          <path d="M257 356 C332 300 410 295 512 310 C626 326 701 383 745 461" fill="none" stroke="#fff4c7" stroke-width="34" stroke-linecap="round" />
+          <path d="M234 489 C338 424 462 416 582 449 C676 475 737 529 779 602" fill="none" stroke="#fff7d6" stroke-width="34" stroke-linecap="round" />
+          <path d="M260 638 C374 584 496 578 608 619 C671 642 717 681 748 728" fill="none" stroke="#fff4c7" stroke-width="34" stroke-linecap="round" />
+          <circle cx="512" cy="514" r="78" fill="none" stroke="#fff4c7" stroke-width="28" />
+          <circle cx="512" cy="514" r="27" fill="#ffc45f" />
+        </g>
+        
+    <g>
+      <path d="M748 746 C705 684 656 629 598 566" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-9-thread)" />
+      <path d="M748 746 C705 684 656 629 598 566" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-9-thread)" />
+    </g>
+  
+      </svg></div>
+      <div class="card-copy">
+        <p class="number">09</p>
+        <h2>Soundwave Grooves</h2>
+        <p class="thesis">The circular grooves become vibrating, imperfect soundwave cords while the arm anchors the record-player read.</p>
+        <p><strong>Build note:</strong> The variation should animate beautifully later, but still works as a static app icon.</p>
+        <p><strong>Best for:</strong> A music-forward take with a hand-drawn motion feel.</p>
+      </div>
+    </article>
+  
+
+    <article class="card">
+      <div class="icon-frame"><svg class="icon-svg" role="img" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="string-10-glow" cx="48%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#421e35" />
+        <stop offset="56%" stop-color="#1b1024" />
+        <stop offset="100%" stop-color="#050409" />
+      </radialGradient>
+      <linearGradient id="string-10-angle" x1="12%" y1="10%" x2="88%" y2="90%">
+        <stop offset="0%" stop-color="#241833" />
+        <stop offset="54%" stop-color="#4b2534" />
+        <stop offset="100%" stop-color="#c26230" />
+      </linearGradient>
+      <filter id="string-10-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#000000" flood-opacity="0.42" />
+      </filter>
+      <filter id="string-10-thread" x="-25%" y="-25%" width="150%" height="150%">
+        <feDropShadow dx="0" dy="9" stdDeviation="6" flood-color="#000000" flood-opacity="0.34" />
+      </filter>
+    </defs>
+  
+    
+    <rect width="1024" height="1024" fill="url(#string-10-angle)" />
+    <path d="M0 768 L0 1024 L252 1024 Z" fill="#050307" opacity="0.9" />
+    <path d="M900 0 L1024 0 L1024 126 Z" fill="#07040a" opacity="0.95" />
+    <circle cx="512" cy="514" r="364" fill="#120915" opacity="0.78" />
+    <circle cx="512" cy="514" r="354" fill="none" stroke="#6e4050" stroke-width="9" opacity="0.45" />
+  
+    <g filter="url(#string-10-soft)">
+      <circle cx="512" cy="514" r="286" fill="#0d0710" opacity="0.74" />
+      <circle cx="512" cy="514" r="258" fill="none" stroke="#fff1b8" stroke-width="34" opacity="0.96" />
+      <circle cx="512" cy="514" r="205" fill="none" stroke="#fff7d6" stroke-width="26" opacity="0.95" />
+      <circle cx="512" cy="514" r="149" fill="none" stroke="#fff1b8" stroke-width="22" opacity="0.95" />
+      <circle cx="512" cy="514" r="79" fill="none" stroke="#fff4c7" stroke-width="22" opacity="0.98" />
+      <circle cx="512" cy="514" r="27" fill="#ffc45f" />
+      
+        <path d="M474 486 C431 441 485 394 531 429 C558 449 552 490 522 501 C486 514 455 482 473 449" fill="none" stroke="#fff7d6" stroke-width="24" stroke-linecap="round" filter="url(#string-10-thread)" />
+        <path d="M545 523 C589 563 535 614 488 578 C460 557 468 516 498 505 C534 492 564 525 545 557" fill="none" stroke="#fff4c7" stroke-width="24" stroke-linecap="round" filter="url(#string-10-thread)" />
+      
+    </g>
+  
+    <g>
+      <path d="M746 744 C699 675 652 624 592 562" fill="none" stroke="#fff4c7" stroke-width="42" stroke-linecap="round" stroke-linejoin="round" filter="url(#string-10-thread)" />
+      <path d="M746 744 C699 675 652 624 592 562" fill="none" stroke="#fff9e6" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" opacity="0.65" />
+      <circle cx="748" cy="748" r="58" fill="#251833" stroke="#fff4c7" stroke-width="36" filter="url(#string-10-thread)" />
+    </g>
+  </svg></div>
+      <div class="card-copy">
+        <p class="number">10</p>
+        <h2>Knotted Center</h2>
+        <p class="thesis">A small center knot becomes the spindle, making the whole icon feel tied together from one piece of string.</p>
+        <p><strong>Build note:</strong> The knot must be simplified to two loops and a dot so it remains legible.</p>
+        <p><strong>Best for:</strong> Most distinctive craft metaphor among the turntable set.</p>
+      </div>
+    </article>
+  
+    </section>
+    <footer>
+      Generated as a self-contained Pidgin-ready design document. Preview icons use the iOS mask in the document; final exported PNGs should remain square so iOS applies its own mask.
+    </footer>
+  </main>
+</body>
+</html>

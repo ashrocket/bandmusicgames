@@ -14,9 +14,11 @@
 		158D8F08F041F7C10B28A262 /* LottieAnimationPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 179F02B60F81160662AA2202 /* LottieAnimationPlayer.swift */; };
 		16B4785DEE5036FB0474ABD0 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */; };
 		1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */; };
+		21E9713A5114CF6B213BE180 /* HalfCourtHeroBall.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 9A80508AF89C6F61C9C06257 /* HalfCourtHeroBall.atlas */; };
 		22D5B3007EE58B7B16CF6E0D /* mower-body-test.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B0FEFEAE20F717F1B193FC2 /* mower-body-test.png */; };
 		27159E56AFC91AD898ACB021 /* FrancisResultCardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7EDE15631752327AC90636E /* FrancisResultCardNode.swift */; };
 		2C67BCCD5486929AF288DCB0 /* PlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990409BAD59E5D7624090BC /* PlayerNode.swift */; };
+		31AA3FACB02EFCA7DF5030DC /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = DB0C50A18C596F6F226F4EA8 /* manifest.json */; };
 		322040669093637ABD0C5D8B /* ForCuttingGrassRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CAB0A5FEF74F7A89D13435 /* ForCuttingGrassRenderer.swift */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
 		44CD12EC1DF87386F9EE66E4 /* HalfCourtHUDNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CB28A4323E659BD953281 /* HalfCourtHUDNode.swift */; };
@@ -26,6 +28,7 @@
 		5C9F5213FA77EDE523255CA8 /* HalfCourtResultCardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC18B1C6F46DF6BDD916163 /* HalfCourtResultCardNode.swift */; };
 		62EAF7D5BBD7B4003C9F9A25 /* FrancisGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */; };
 		677C791AF93B76489A0C75C0 /* BallNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9335EB35B1AB2B24DF7F32A8 /* BallNode.swift */; };
+		6FA22C8B6C3EA7FFF0E5F4EA /* HalfCourtHeroPlayers.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 15FD344A0EF1D87A0B40DAAD /* HalfCourtHeroPlayers.atlas */; };
 		72D64E1818F031BF93F3AD9C /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = F282D587BD99FF41373791FB /* Song.swift */; };
 		78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D77DC43028C080E39E78EBBA /* Assets.xcassets */; };
 		78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AB66BC63FF553633DE7F80 /* ContentView.swift */; };
@@ -47,6 +50,7 @@
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
 		D2E91B487E48EBF3E79AB72F /* ForCuttingGrassHazards.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42A64FCF259A241304C2C44 /* ForCuttingGrassHazards.swift */; };
 		D823116F5A7896EB8EB9B757 /* FrancisLevels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7328A2BFED306DD0D64C17E /* FrancisLevels.swift */; };
+		DEDC2772035F23DBB8551E3A /* HalfCourtSpriteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 145BF3844A8BB0333AE5561A /* HalfCourtSpriteFactory.swift */; };
 		E381CD4A70AD0FE8E06E597D /* HalfCourtHeroScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFDCCD66F6537A3AD736D3F /* HalfCourtHeroScene.swift */; };
 		EF0346D702EFE9E3BA159733 /* mower-body.png in Resources */ = {isa = PBXBuildFile; fileRef = F0AF961A3AEB235F48467B6E /* mower-body.png */; };
 		FA1D789A8D056BD44CAC3CFF /* ForCuttingGrassControlOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3261C568DB64ABB2F1D9FA3 /* ForCuttingGrassControlOverlay.swift */; };
@@ -57,6 +61,8 @@
 		06CAB0A5FEF74F7A89D13435 /* ForCuttingGrassRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassRenderer.swift; sourceTree = "<group>"; };
 		07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
 		1447C20787223E3BA94B7B5C /* FrancisHUDNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisHUDNode.swift; sourceTree = "<group>"; };
+		145BF3844A8BB0333AE5561A /* HalfCourtSpriteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtSpriteFactory.swift; sourceTree = "<group>"; };
+		15FD344A0EF1D87A0B40DAAD /* HalfCourtHeroPlayers.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = HalfCourtHeroPlayers.atlas; sourceTree = "<group>"; };
 		179F02B60F81160662AA2202 /* LottieAnimationPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieAnimationPlayer.swift; sourceTree = "<group>"; };
 		1AEED640487C99F9E09BEAE4 /* GameWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWebView.swift; sourceTree = "<group>"; };
 		1DEF3481E9967A067F380C47 /* JukeboxLineIdle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JukeboxLineIdle.json; sourceTree = "<group>"; };
@@ -75,6 +81,7 @@
 		8BC18B1C6F46DF6BDD916163 /* HalfCourtResultCardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtResultCardNode.swift; sourceTree = "<group>"; };
 		8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		9335EB35B1AB2B24DF7F32A8 /* BallNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallNode.swift; sourceTree = "<group>"; };
+		9A80508AF89C6F61C9C06257 /* HalfCourtHeroBall.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = HalfCourtHeroBall.atlas; sourceTree = "<group>"; };
 		9D7C5C786747064F3815AA29 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		A42A64FCF259A241304C2C44 /* ForCuttingGrassHazards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassHazards.swift; sourceTree = "<group>"; };
 		A8204D91A13ADFCD5F19BC3B /* tile-garden-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-garden-1.png"; sourceTree = "<group>"; };
@@ -87,6 +94,7 @@
 		D7328A2BFED306DD0D64C17E /* FrancisLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisLevels.swift; sourceTree = "<group>"; };
 		D77DC43028C080E39E78EBBA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D990409BAD59E5D7624090BC /* PlayerNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerNode.swift; sourceTree = "<group>"; };
+		DB0C50A18C596F6F226F4EA8 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
 		DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleTubeView.swift; sourceTree = "<group>"; };
 		E69D42098AC1339D472BC3F3 /* tile-tall-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-tall-1.png"; sourceTree = "<group>"; };
 		E7EDE15631752327AC90636E /* FrancisResultCardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisResultCardNode.swift; sourceTree = "<group>"; };
@@ -143,6 +151,7 @@
 			isa = PBXGroup;
 			children = (
 				546BFC7674A38A36B3892887 /* ForCuttingGrass */,
+				D235B9C1A3AB5CCEF46BD40E /* HalfCourtHero */,
 			);
 			path = Sprites;
 			sourceTree = "<group>";
@@ -219,6 +228,7 @@
 				ACEDD1A7767AC680C9A5E0B3 /* HalfCourtHeroTypes.swift */,
 				F71CB28A4323E659BD953281 /* HalfCourtHUDNode.swift */,
 				8BC18B1C6F46DF6BDD916163 /* HalfCourtResultCardNode.swift */,
+				145BF3844A8BB0333AE5561A /* HalfCourtSpriteFactory.swift */,
 				D990409BAD59E5D7624090BC /* PlayerNode.swift */,
 			);
 			path = HalfCourtHero;
@@ -247,6 +257,16 @@
 				3833823A22221E5AE71A21C2 /* Sprites */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		D235B9C1A3AB5CCEF46BD40E /* HalfCourtHero */ = {
+			isa = PBXGroup;
+			children = (
+				9A80508AF89C6F61C9C06257 /* HalfCourtHeroBall.atlas */,
+				15FD344A0EF1D87A0B40DAAD /* HalfCourtHeroPlayers.atlas */,
+				DB0C50A18C596F6F226F4EA8 /* manifest.json */,
+			);
+			path = HalfCourtHero;
 			sourceTree = "<group>";
 		};
 		D669AFB1FE31DC16A12913A6 /* ForCuttingGrass */ = {
@@ -358,8 +378,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */,
+				21E9713A5114CF6B213BE180 /* HalfCourtHeroBall.atlas in Resources */,
+				6FA22C8B6C3EA7FFF0E5F4EA /* HalfCourtHeroPlayers.atlas in Resources */,
 				0CB33EBCF18FD541CB238B61 /* JukeboxLineIdle.json in Resources */,
 				7969C8D20EF4146A40592CE3 /* JukeboxLineKnot.json in Resources */,
+				31AA3FACB02EFCA7DF5030DC /* manifest.json in Resources */,
 				22D5B3007EE58B7B16CF6E0D /* mower-body-test.png in Resources */,
 				EF0346D702EFE9E3BA159733 /* mower-body.png in Resources */,
 				90604B97C7E0492877E71594 /* tile-cut-1.png in Resources */,
@@ -399,6 +422,7 @@
 				E381CD4A70AD0FE8E06E597D /* HalfCourtHeroScene.swift in Sources */,
 				95BF4499E00AF4D91FE21F30 /* HalfCourtHeroTypes.swift in Sources */,
 				5C9F5213FA77EDE523255CA8 /* HalfCourtResultCardNode.swift in Sources */,
+				DEDC2772035F23DBB8551E3A /* HalfCourtSpriteFactory.swift in Sources */,
 				CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */,
 				1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */,
 				8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */,

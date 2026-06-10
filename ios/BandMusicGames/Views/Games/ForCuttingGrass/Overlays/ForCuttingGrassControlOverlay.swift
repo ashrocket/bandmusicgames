@@ -4,38 +4,46 @@ struct ForCuttingGrassControlOverlay: View {
     @ObservedObject var input: ForCuttingGrassInputController
 
     var body: some View {
-        VStack(spacing: 4) {
-            ControlStyleSelector(style: $input.controlStyle)
+        HStack(alignment: .center, spacing: 16) {
+            Spacer(minLength: 0)
 
-            HStack(alignment: .center, spacing: 16) {
-                steeringControl
-                    .frame(width: controlSize.width, height: controlSize.height)
-
-                if input.canDig {
-                    DigButton(isPressed: $input.digging)
-                        .frame(width: 58, height: 58)
+            steeringControl
+                .frame(width: controlSize.width, height: controlSize.height)
+                .overlay(alignment: .bottom) {
+                    ControlStyleCaption(style: input.controlStyle)
+                        .offset(y: captionOffset)
                 }
+
+            if input.canDig {
+                DigButton(isPressed: $input.digging)
+                    .frame(width: 58, height: 58)
             }
+
+            Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
-        .padding(.top, 4)
-        .padding(.bottom, 8)
-        .background(Color.black.opacity(0.55))
+        .padding(.top, 8)
+        .padding(.bottom, 18)
+        .background(ControlDeckBackground())
     }
 
     private var controlSize: CGSize {
         switch input.controlStyle {
         case .joystick:
-            return CGSize(width: 116, height: 116)
+            return CGSize(width: 98, height: 98)
         case .dpad:
-            return CGSize(width: 176, height: 116)
+            return CGSize(width: 154, height: 98)
         case .wheel:
-            return CGSize(width: 176, height: 116)
+            return CGSize(width: 154, height: 98)
         case .trackpad:
-            return CGSize(width: 174, height: 108)
+            return CGSize(width: 154, height: 92)
         case .lean:
-            return CGSize(width: 176, height: 116)
+            return CGSize(width: 154, height: 92)
         }
+    }
+
+    private var captionOffset: CGFloat {
+        input.controlStyle == .joystick ? 31 : 28
     }
 
     @ViewBuilder
@@ -55,49 +63,58 @@ struct ForCuttingGrassControlOverlay: View {
     }
 }
 
-private struct ControlStyleSelector: View {
-    @Binding var style: ForCuttingGrassControlStyle
+private struct ControlStyleCaption: View {
+    let style: ForCuttingGrassControlStyle
 
     var body: some View {
-        HStack(spacing: 4) {
-            ForEach(ForCuttingGrassControlStyle.allCases) { candidate in
-                Button {
-                    withAnimation(.easeOut(duration: 0.16)) {
-                        style = candidate
-                    }
-                } label: {
-                    VStack(spacing: 2) {
-                        Image(systemName: candidate.symbolName)
-                            .font(.system(size: 11, weight: .bold))
-                        Text(candidate.title)
-                            .font(.system(size: 7.5, weight: .black, design: .monospaced))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.65)
-                    }
-                    .frame(width: 46, height: 32)
-                    .foregroundColor(style == candidate ? .black : .white.opacity(0.72))
-                    .background(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(style == candidate ? Color(hex: "#ffd27a") : Color.black.opacity(0.42))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(Color.white.opacity(style == candidate ? 0.0 : 0.14), lineWidth: 1)
-                    )
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(candidate.title)
-            }
+        VStack(spacing: 2) {
+            Text(style.title.uppercased())
+                .font(.system(size: 7.5, weight: .black, design: .monospaced))
+                .foregroundColor(Color(hex: "#ffd27a"))
+            Text(style.subtitle)
+                .font(.system(size: 6.5, weight: .bold, design: .monospaced))
+                .foregroundColor(.white.opacity(0.62))
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
         }
-        .padding(4)
+        .frame(width: 86, height: 30)
         .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.black.opacity(0.26))
+            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .fill(Color.black.opacity(0.68))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 5, style: .continuous)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
+    }
+}
+
+private struct ControlDeckBackground: View {
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                Color(hex: "#141914")
+
+                Path { path in
+                    let tile: CGFloat = 28
+                    var x: CGFloat = 0
+                    while x <= geo.size.width {
+                        path.move(to: CGPoint(x: x, y: 0))
+                        path.addLine(to: CGPoint(x: x, y: geo.size.height))
+                        x += tile
+                    }
+
+                    var y: CGFloat = 0
+                    while y <= geo.size.height {
+                        path.move(to: CGPoint(x: 0, y: y))
+                        path.addLine(to: CGPoint(x: geo.size.width, y: y))
+                        y += tile
+                    }
+                }
+                .stroke(Color.white.opacity(0.055), lineWidth: 1)
+            }
+        }
+        .background(Color.black.opacity(0.72))
     }
 }
 

@@ -4,6 +4,7 @@
   "scripts": {
     "dev":    "npx --yes vite@4 --host 127.0.0.1 --port 8081",
     "deploy": "npx wrangler pages deploy . --project-name bandmusicgames",
+    "sprites:halfcourt": "python3 scripts/generate-halfcourt-sprites.py",
     "testflight": "scripts/upload-testflight.sh"
   }
 }

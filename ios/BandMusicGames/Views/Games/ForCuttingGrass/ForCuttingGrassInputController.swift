@@ -28,6 +28,16 @@ enum ForCuttingGrassControlStyle: String, CaseIterable, Identifiable {
         case .lean: return "arrow.left.and.right"
         }
     }
+
+    var subtitle: String {
+        switch self {
+        case .joystick: return "Move freely in any direction"
+        case .dpad: return "Snap to 8 directions"
+        case .wheel: return "Steer, auto-drive forward"
+        case .trackpad: return "Touch & pull the mower"
+        case .lean: return "Tilt your device to steer"
+        }
+    }
 }
 
 @MainActor

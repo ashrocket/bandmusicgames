@@ -18,20 +18,29 @@ struct JukeboxView: View {
     private var isCurrentSongPlaying: Bool {
         auth.isPlaying && auth.currentTrackUri == currentSong.trackUri
     }
+    private var deckStatus: String {
+        if showingKnot {
+            return "NEEDLE"
+        }
+        if isCurrentSongPlaying {
+            return "SPINNING"
+        }
+        return "READY"
+    }
 
     var body: some View {
         GeometryReader { geo in
             let compact = geo.size.height < 720
             let horizontalPadding = min(max(geo.size.width * 0.055, 16), 30)
-            let topPadding = max(geo.safeAreaInsets.top, 54) + 12
-            let bottomPadding = max(geo.safeAreaInsets.bottom, 18) + 14
+            let topPadding = min(max(geo.safeAreaInsets.top * 0.55, 24), 44)
+            let bottomPadding = max(geo.safeAreaInsets.bottom, 14) + 8
             let contentWidth = max(0, geo.size.width - horizontalPadding * 2)
             let contentHeight = max(0, geo.size.height - topPadding - bottomPadding)
 
             ZStack(alignment: .top) {
                 background(song: currentSong)
 
-                VStack(spacing: compact ? 10 : 14) {
+                VStack(spacing: compact ? 8 : 12) {
                     topBar
 
                     animatedSelector(in: geo.size, compact: compact)
@@ -62,28 +71,51 @@ struct JukeboxView: View {
 
     private var topBar: some View {
         HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("BAND MUSIC GAMES")
-                    .font(.system(size: 13, weight: .black, design: .monospaced))
-                    .tracking(2.2)
+            Image(systemName: "music.note")
+                .font(.system(size: 13, weight: .black))
+                .foregroundColor(.black.opacity(0.82))
+                .frame(width: 28, height: 28)
+                .background(currentSong.color)
+                .clipShape(Circle())
+                .shadow(color: currentSong.color.opacity(0.32), radius: 12, y: 4)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("BMG")
+                    .font(.system(size: 12, weight: .black, design: .monospaced))
+                    .tracking(1.6)
                     .foregroundColor(.white.opacity(0.88))
                     .lineLimit(1)
-                    .minimumScaleFactor(0.68)
 
-                Text(currentSong.artist)
-                    .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .tracking(1.4)
+                Text("JUKEBOX")
+                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                    .tracking(1.2)
                     .foregroundColor(currentSong.color.opacity(0.9))
                     .lineLimit(1)
             }
 
             Spacer()
 
+            VStack(alignment: .trailing, spacing: 3) {
+                Text(deckStatus)
+                    .font(.system(size: 10, weight: .black, design: .monospaced))
+                    .tracking(1.2)
+                    .foregroundColor(currentSong.color)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+
+                Text(auth.isConnected ? "MUSIC READY" : "NO MUSIC OK")
+                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                    .tracking(1)
+                    .foregroundColor(.white.opacity(0.48))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+
             Button(action: onShowSpotify) {
                 Image(systemName: auth.isConnected ? "music.note" : "music.note.list")
-                    .font(.system(size: 16, weight: .black))
+                    .font(.system(size: 15, weight: .black))
                     .foregroundColor(auth.isConnected ? .black : .white.opacity(0.88))
-                    .frame(width: 44, height: 38)
+                    .frame(width: 40, height: 34)
                     .background(auth.isConnected ? currentSong.color : Color.white.opacity(0.08))
                     .clipShape(Capsule())
                     .overlay(
@@ -93,19 +125,47 @@ struct JukeboxView: View {
             }
             .buttonStyle(.plain)
         }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 18)
+                .fill(Color.white.opacity(0.055))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18)
+                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                )
+        )
     }
 
     private func animatedSelector(in size: CGSize, compact: Bool) -> some View {
         let height = selectorHeight(in: size, compact: compact)
 
         return ZStack {
-            InkJukeboxDrawing(unraveling: showingKnot, trigger: selectionTrigger)
-            .frame(width: min(size.width * 1.08, 620), height: height)
-            .opacity(showingKnot ? 1 : 0.96)
-            .shadow(color: Color.white.opacity(showingKnot ? 0.24 : 0.14), radius: showingKnot ? 28 : 18)
-            .allowsHitTesting(false)
+            RoundedRectangle(cornerRadius: 22)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.08),
+                            Color.black.opacity(0.18),
+                            currentSong.color.opacity(0.08),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22)
+                        .stroke(Color.white.opacity(0.16), lineWidth: 1)
+                )
+                .shadow(color: currentSong.color.opacity(0.12), radius: 24, y: 10)
 
-            VStack(spacing: compact ? 14 : 18) {
+            InkJukeboxDrawing(unraveling: showingKnot, trigger: selectionTrigger)
+                .frame(width: min(size.width * 1.08, 620), height: height)
+                .opacity(showingKnot ? 1 : 0.96)
+                .shadow(color: Color.white.opacity(showingKnot ? 0.24 : 0.14), radius: showingKnot ? 28 : 18)
+                .allowsHitTesting(false)
+
+            VStack(spacing: compact ? 12 : 16) {
                 songReadout(compact: compact)
                     .opacity(showingKnot ? 0 : 1)
                     .scaleEffect(showingKnot ? 0.9 : 1)
@@ -145,6 +205,15 @@ struct JukeboxView: View {
                 .minimumScaleFactor(0.65)
         }
         .padding(.horizontal, 30)
+        .padding(.vertical, compact ? 11 : 13)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.24))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(currentSong.color.opacity(0.22), lineWidth: 1)
+                )
+        )
     }
 
     private func transportControls(compact: Bool) -> some View {
@@ -155,9 +224,9 @@ struct JukeboxView: View {
 
             Button(action: onPlay) {
                 HStack(spacing: 9) {
-                    Image(systemName: isCurrentSongPlaying ? "pause.fill" : "play.fill")
+                    Image(systemName: "record.circle")
                         .font(.system(size: compact ? 16 : 18, weight: .black))
-                    Text(isCurrentSongPlaying ? "PAUSE" : "PLAY GAME")
+                    Text("DROP NEEDLE")
                         .font(.system(size: compact ? 12 : 13, weight: .black, design: .monospaced))
                         .tracking(1.5)
                         .lineLimit(1)
@@ -181,6 +250,22 @@ struct JukeboxView: View {
 
     private func selectionList(compact: Bool) -> some View {
         VStack(spacing: compact ? 7 : 9) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("SELECTIONS")
+                    .font(.system(size: 10, weight: .black, design: .monospaced))
+                    .tracking(1.8)
+                    .foregroundColor(.white.opacity(0.62))
+
+                Spacer()
+
+                Text("\(selectedIndex + 1) / \(songs.count)")
+                    .font(.system(size: 10, weight: .black, design: .monospaced))
+                    .tracking(1.2)
+                    .foregroundColor(currentSong.color.opacity(0.86))
+            }
+            .padding(.horizontal, 2)
+            .padding(.bottom, 1)
+
             ForEach(songs.indices, id: \.self) { index in
                 Button {
                     select(index)
@@ -189,6 +274,10 @@ struct JukeboxView: View {
                     let selected = index == selectedIndex
 
                     HStack(spacing: 12) {
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(selected ? Color.black.opacity(0.62) : song.color.opacity(song.unlocked ? 0.74 : 0.2))
+                            .frame(width: 4)
+
                         Text(jukeboxCode(for: index))
                             .font(.system(size: 11, weight: .black, design: .monospaced))
                             .tracking(1.8)
@@ -200,7 +289,8 @@ struct JukeboxView: View {
                                 .font(.system(size: compact ? 13 : 15, weight: .black, design: .monospaced))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.68)
-                            Text(song.artist)
+
+                            Text("\(song.artist)  /  \(song.gameName)")
                                 .font(.system(size: 9, weight: .bold, design: .monospaced))
                                 .tracking(1.4)
                                 .lineLimit(1)
@@ -209,12 +299,19 @@ struct JukeboxView: View {
 
                         Spacer()
 
-                        Image(systemName: selected ? "smallcircle.filled.circle" : "circle")
-                            .font(.system(size: 14, weight: .bold))
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Image(systemName: selected ? "record.circle.fill" : "record.circle")
+                                .font(.system(size: 14, weight: .bold))
+
+                            Text(selected ? "CUED" : (song.unlocked ? "READY" : "LOCKED"))
+                                .font(.system(size: 8, weight: .black, design: .monospaced))
+                                .tracking(1)
+                                .lineLimit(1)
+                        }
                     }
                     .foregroundColor(selected ? .black : .white.opacity(song.unlocked ? 0.9 : 0.36))
-                    .padding(.horizontal, 14)
-                    .frame(height: compact ? 44 : 48)
+                    .padding(.horizontal, 12)
+                    .frame(height: compact ? 46 : 50)
                     .background(selected ? song.color : Color.white.opacity(0.055))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .overlay(
@@ -226,6 +323,15 @@ struct JukeboxView: View {
                 .disabled(!songs[index].unlocked)
             }
         }
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.22))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                )
+        )
     }
 
     private func musicControls(compact: Bool) -> some View {
@@ -313,7 +419,7 @@ struct JukeboxView: View {
     }
 
     private func selectorHeight(in size: CGSize, compact: Bool) -> CGFloat {
-        min(max(size.height * (compact ? 0.31 : 0.33), compact ? 220 : 250), compact ? 275 : 295)
+        min(max(size.height * (compact ? 0.27 : 0.29), compact ? 198 : 224), compact ? 236 : 258)
     }
 
     private func select(_ index: Int) {
@@ -332,7 +438,9 @@ struct JukeboxView: View {
     private func playKnotAnimation() {
         guard selectionTrigger > 0 else { return }
         knotResetTask?.cancel()
-        showingKnot = true
+        withAnimation(.easeOut(duration: 0.18)) {
+            showingKnot = true
+        }
         knotResetTask = Task { @MainActor in
             try? await Task.sleep(nanoseconds: 1_760_000_000)
             if !Task.isCancelled {
@@ -360,9 +468,108 @@ struct JukeboxView: View {
     .environmentObject(SpotifyAuthManager())
 }
 
+struct TurntableAnimationPreview: View {
+    enum Mode {
+        case cycling
+        case idle
+        case playing
+    }
+
+    var mode: Mode = .cycling
+
+    @State private var unraveling = false
+    @State private var trigger = 0
+    @State private var cycleTask: Task<Void, Never>?
+
+    var body: some View {
+        GeometryReader { geo in
+            let compact = geo.size.height < 720
+            let drawingWidth = min(geo.size.width * 1.08, compact ? 560 : 700)
+            let drawingHeight = min(max(geo.size.height * 0.64, compact ? 320 : 420), compact ? 500 : 620)
+
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color(hex: "#06070B"),
+                        Color(hex: "#101421"),
+                        Color(hex: "#050506"),
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                RadialGradient(
+                    colors: [
+                        Color(hex: "#FFB548").opacity(0.14),
+                        Color(hex: "#47D9AE").opacity(0.08),
+                        .clear,
+                    ],
+                    center: .center,
+                    startRadius: 0,
+                    endRadius: min(geo.size.width, geo.size.height) * 0.72
+                )
+                .blur(radius: 22)
+                .ignoresSafeArea()
+
+                InkJukeboxDrawing(unraveling: unraveling, trigger: trigger, showsGameWindow: false)
+                    .frame(width: drawingWidth, height: drawingHeight)
+                    .shadow(color: .white.opacity(unraveling ? 0.22 : 0.12), radius: unraveling ? 28 : 18)
+                    .allowsHitTesting(false)
+            }
+            .frame(width: geo.size.width, height: geo.size.height)
+        }
+        .ignoresSafeArea()
+        .statusBarHidden(true)
+        .onAppear(perform: start)
+        .onDisappear {
+            cycleTask?.cancel()
+            cycleTask = nil
+        }
+    }
+
+    private func start() {
+        cycleTask?.cancel()
+        cycleTask = Task { @MainActor in
+            switch mode {
+            case .idle:
+                unraveling = false
+
+            case .playing:
+                await playOnce()
+
+            case .cycling:
+                while !Task.isCancelled {
+                    await playOnce()
+                    try? await Task.sleep(nanoseconds: 2_900_000_000)
+                    guard !Task.isCancelled else { return }
+                    withAnimation(.easeOut(duration: 0.22)) {
+                        unraveling = false
+                    }
+                    try? await Task.sleep(nanoseconds: 850_000_000)
+                }
+            }
+        }
+    }
+
+    @MainActor
+    private func playOnce() async {
+        unraveling = false
+        try? await Task.sleep(nanoseconds: 160_000_000)
+        guard !Task.isCancelled else { return }
+        unraveling = true
+        trigger &+= 1
+    }
+}
+
+#Preview("Turntable Animation") {
+    TurntableAnimationPreview()
+}
+
 private struct InkJukeboxDrawing: View {
     let unraveling: Bool
     let trigger: Int
+    var showsGameWindow = true
 
     @State private var unravelProgress: CGFloat = 0
 
@@ -383,7 +590,9 @@ private struct InkJukeboxDrawing: View {
                 drawInkLines(in: &inkContext, size: size, time: time, filmFrame: filmFrame)
                 drawSinglePlayer(in: &inkContext, size: size, time: time, filmFrame: filmFrame)
                 drawUnravelThreads(in: &inkContext, size: size, time: time, filmFrame: filmFrame)
-                drawGameWindow(in: &inkContext, size: size)
+                if showsGameWindow {
+                    drawGameWindow(in: &inkContext, size: size)
+                }
             }
         }
         .onAppear {

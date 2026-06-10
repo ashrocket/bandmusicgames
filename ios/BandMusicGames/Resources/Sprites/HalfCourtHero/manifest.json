@@ -1,0 +1,268 @@
+{
+  "schema": 1,
+  "frameSize": [
+    256,
+    256
+  ],
+  "runtime": "SpriteKit SKTextureAtlas",
+  "generator": "scripts/generate-halfcourt-sprites.py",
+  "atlases": {
+    "players": {
+      "name": "HalfCourtHeroPlayers",
+      "path": "ios/BandMusicGames/Resources/Sprites/HalfCourtHero/HalfCourtHeroPlayers.atlas",
+      "animations": {
+        "nara": {
+          "idle": {
+            "fps": 7,
+            "frames": [
+              "nara_idle_000",
+              "nara_idle_001",
+              "nara_idle_002",
+              "nara_idle_003"
+            ]
+          },
+          "dribble": {
+            "fps": 12,
+            "frames": [
+              "nara_dribble_000",
+              "nara_dribble_001",
+              "nara_dribble_002",
+              "nara_dribble_003",
+              "nara_dribble_004",
+              "nara_dribble_005"
+            ]
+          },
+          "run": {
+            "fps": 12,
+            "frames": [
+              "nara_run_000",
+              "nara_run_001",
+              "nara_run_002",
+              "nara_run_003",
+              "nara_run_004",
+              "nara_run_005"
+            ]
+          },
+          "shoot": {
+            "fps": 14,
+            "frames": [
+              "nara_shoot_000",
+              "nara_shoot_001",
+              "nara_shoot_002",
+              "nara_shoot_003",
+              "nara_shoot_004",
+              "nara_shoot_005",
+              "nara_shoot_006",
+              "nara_shoot_007"
+            ]
+          },
+          "celebrate": {
+            "fps": 10,
+            "frames": [
+              "nara_celebrate_000",
+              "nara_celebrate_001",
+              "nara_celebrate_002",
+              "nara_celebrate_003",
+              "nara_celebrate_004",
+              "nara_celebrate_005"
+            ]
+          }
+        },
+        "ethan": {
+          "idle": {
+            "fps": 7,
+            "frames": [
+              "ethan_idle_000",
+              "ethan_idle_001",
+              "ethan_idle_002",
+              "ethan_idle_003"
+            ]
+          },
+          "dribble": {
+            "fps": 12,
+            "frames": [
+              "ethan_dribble_000",
+              "ethan_dribble_001",
+              "ethan_dribble_002",
+              "ethan_dribble_003",
+              "ethan_dribble_004",
+              "ethan_dribble_005"
+            ]
+          },
+          "run": {
+            "fps": 12,
+            "frames": [
+              "ethan_run_000",
+              "ethan_run_001",
+              "ethan_run_002",
+              "ethan_run_003",
+              "ethan_run_004",
+              "ethan_run_005"
+            ]
+          },
+          "shoot": {
+            "fps": 14,
+            "frames": [
+              "ethan_shoot_000",
+              "ethan_shoot_001",
+              "ethan_shoot_002",
+              "ethan_shoot_003",
+              "ethan_shoot_004",
+              "ethan_shoot_005",
+              "ethan_shoot_006",
+              "ethan_shoot_007"
+            ]
+          },
+          "celebrate": {
+            "fps": 10,
+            "frames": [
+              "ethan_celebrate_000",
+              "ethan_celebrate_001",
+              "ethan_celebrate_002",
+              "ethan_celebrate_003",
+              "ethan_celebrate_004",
+              "ethan_celebrate_005"
+            ]
+          }
+        },
+        "brendan": {
+          "idle": {
+            "fps": 7,
+            "frames": [
+              "brendan_idle_000",
+              "brendan_idle_001",
+              "brendan_idle_002",
+              "brendan_idle_003"
+            ]
+          },
+          "dribble": {
+            "fps": 12,
+            "frames": [
+              "brendan_dribble_000",
+              "brendan_dribble_001",
+              "brendan_dribble_002",
+              "brendan_dribble_003",
+              "brendan_dribble_004",
+              "brendan_dribble_005"
+            ]
+          },
+          "run": {
+            "fps": 12,
+            "frames": [
+              "brendan_run_000",
+              "brendan_run_001",
+              "brendan_run_002",
+              "brendan_run_003",
+              "brendan_run_004",
+              "brendan_run_005"
+            ]
+          },
+          "shoot": {
+            "fps": 14,
+            "frames": [
+              "brendan_shoot_000",
+              "brendan_shoot_001",
+              "brendan_shoot_002",
+              "brendan_shoot_003",
+              "brendan_shoot_004",
+              "brendan_shoot_005",
+              "brendan_shoot_006",
+              "brendan_shoot_007"
+            ]
+          },
+          "celebrate": {
+            "fps": 10,
+            "frames": [
+              "brendan_celebrate_000",
+              "brendan_celebrate_001",
+              "brendan_celebrate_002",
+              "brendan_celebrate_003",
+              "brendan_celebrate_004",
+              "brendan_celebrate_005"
+            ]
+          }
+        },
+        "will": {
+          "idle": {
+            "fps": 7,
+            "frames": [
+              "will_idle_000",
+              "will_idle_001",
+              "will_idle_002",
+              "will_idle_003"
+            ]
+          },
+          "dribble": {
+            "fps": 12,
+            "frames": [
+              "will_dribble_000",
+              "will_dribble_001",
+              "will_dribble_002",
+              "will_dribble_003",
+              "will_dribble_004",
+              "will_dribble_005"
+            ]
+          },
+          "run": {
+            "fps": 12,
+            "frames": [
+              "will_run_000",
+              "will_run_001",
+              "will_run_002",
+              "will_run_003",
+              "will_run_004",
+              "will_run_005"
+            ]
+          },
+          "shoot": {
+            "fps": 14,
+            "frames": [
+              "will_shoot_000",
+              "will_shoot_001",
+              "will_shoot_002",
+              "will_shoot_003",
+              "will_shoot_004",
+              "will_shoot_005",
+              "will_shoot_006",
+              "will_shoot_007"
+            ]
+          },
+          "celebrate": {
+            "fps": 10,
+            "frames": [
+              "will_celebrate_000",
+              "will_celebrate_001",
+              "will_celebrate_002",
+              "will_celebrate_003",
+              "will_celebrate_004",
+              "will_celebrate_005"
+            ]
+          }
+        }
+      }
+    },
+    "ball": {
+      "name": "HalfCourtHeroBall",
+      "path": "ios/BandMusicGames/Resources/Sprites/HalfCourtHero/HalfCourtHeroBall.atlas",
+      "animations": {
+        "spin": {
+          "fps": 16,
+          "frames": [
+            "ball_spin_000",
+            "ball_spin_001",
+            "ball_spin_002",
+            "ball_spin_003",
+            "ball_spin_004",
+            "ball_spin_005",
+            "ball_spin_006",
+            "ball_spin_007",
+            "ball_spin_008",
+            "ball_spin_009",
+            "ball_spin_010",
+            "ball_spin_011"
+          ]
+        }
+      }
+    }
+  }
+}

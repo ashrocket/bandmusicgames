@@ -1,21 +1,6 @@
 import SwiftUI
 import SpriteKit
 
-private let hchW: CGFloat = 390
-private let hchH: CGFloat = 750
-private let hchFloorY: CGFloat = 510
-private let hchCourtFarY: CGFloat = hchFloorY - 8
-private let hchCourtNearY: CGFloat = hchFloorY + 42
-private let hchHoopX: CGFloat = 352
-private let hchRimY: CGFloat = 258
-private let hchRimR: CGFloat = 19
-private let hchWinScore = 11
-private let hchRange3: CGFloat = 210
-private let hchRange2: CGFloat = 130
-private let hchLayupRange: CGFloat = 55
-private let hchGreenLow: CGFloat = 52
-private let hchGreenHigh: CGFloat = 76
-
 struct LizzyMcGuireGameView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var auth: SpotifyAuthManager
@@ -44,6 +29,7 @@ struct LizzyMcGuireGameView: View {
             closeButton
         }
         .onAppear {
+            scene.onDismiss = { dismiss() }
             if auth.accessToken != nil {
                 Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
             }
@@ -108,6 +94,14 @@ struct LizzyMcGuireGameView: View {
                         .shadow(color: Color(hex: "#FFD700").opacity(0.35), radius: 16)
                 }
                 .padding(.horizontal, compact ? 28 : 34)
+
+                Text("DRAG TO MOVE · HOLD SHOOT & RELEASE IN THE GREEN\n3 ON-BEAT SHOTS IN A ROW = ON FIRE 🔥")
+                    .font(.system(size: compact ? 9 : 10, weight: .bold, design: .monospaced))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+                    .foregroundColor(.white.opacity(0.6))
+                    .padding(.top, 14)
+                    .padding(.horizontal, 24)
 
                 Text("BANDMUSICGAMES.PARTY")
                     .font(.system(size: compact ? 9 : 11, weight: .bold, design: .monospaced))
@@ -230,71 +224,19 @@ private struct HalfCourtHeroBadge: View {
     let dimmed: Bool
 
     var body: some View {
-        let ch = hero.character
-        Canvas { ctx, size in
-            let cx = size.width / 2
-            let s = size.height / 120  // scale factor
-
-            // Shirt / shoulders
-            let shirtRect = CGRect(x: cx - 32*s, y: size.height - 50*s, width: 64*s, height: 58*s)
-            ctx.fill(Path(roundedRect: shirtRect, cornerRadius: 14*s), with: .color(ch.shirt))
-
-            // Neck
-            ctx.fill(Path(roundedRect: CGRect(x: cx - 7*s, y: size.height - 62*s, width: 14*s, height: 18*s), cornerRadius: 4*s),
-                     with: .color(ch.skin))
-
-            // Head
-            let headRect = CGRect(x: cx - 20*s, y: size.height - 98*s, width: 40*s, height: 44*s)
-            ctx.fill(Path(ellipseIn: headRect), with: .color(ch.skin))
-
-            // Hair (drawn before face features, behind on some styles)
-            drawHair(ctx: &ctx, size: size, cx: cx, s: s, ch: ch)
-
-            // Eyes
-            let eyeY = size.height - 82*s
-            ctx.fill(Path(ellipseIn: CGRect(x: cx - 11*s, y: eyeY, width: 6*s, height: 5*s)), with: .color(.black.opacity(0.85)))
-            ctx.fill(Path(ellipseIn: CGRect(x: cx + 5*s, y: eyeY, width: 6*s, height: 5*s)), with: .color(.black.opacity(0.85)))
-
-            // Mouth
-            var mouth = Path()
-            mouth.move(to: CGPoint(x: cx - 6*s, y: size.height - 68*s))
-            mouth.addQuadCurve(to: CGPoint(x: cx + 6*s, y: size.height - 68*s),
-                               control: CGPoint(x: cx, y: size.height - 63*s))
-            ctx.stroke(mouth, with: .color(.black.opacity(0.5)), lineWidth: 1.5*s)
-        }
-        .opacity(dimmed ? 0.35 : 1)
-        .overlay(alignment: .bottom) {
-            if selected {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(hero.character.hue)
-                    .frame(height: 3)
-                    .padding(.horizontal, 12)
+        Image("hch_\(hero.rawValue)")
+            .resizable()
+            .scaledToFit()
+            .frame(maxWidth: .infinity)
+            .opacity(dimmed ? 0.35 : 1)
+            .shadow(color: selected ? hero.character.hue.opacity(0.55) : .clear, radius: 10)
+            .overlay(alignment: .bottom) {
+                if selected {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(hero.character.hue)
+                        .frame(height: 3)
+                        .padding(.horizontal, 12)
+                }
             }
-        }
-    }
-
-    private func drawHair(ctx: inout GraphicsContext, size: CGSize, cx: CGFloat, s: CGFloat, ch: HalfCourtHero) {
-        switch ch.hairStyle {
-        case .bob:
-            let r = CGRect(x: cx - 23*s, y: size.height - 102*s, width: 46*s, height: 50*s)
-            ctx.fill(Path(roundedRect: r, cornerRadius: 16*s), with: .color(ch.hair))
-        case .long:
-            let r = CGRect(x: cx - 25*s, y: size.height - 108*s, width: 50*s, height: 72*s)
-            ctx.fill(Path(roundedRect: r, cornerRadius: 16*s), with: .color(ch.hair))
-        case .beanie:
-            let r = CGRect(x: cx - 21*s, y: size.height - 106*s, width: 42*s, height: 26*s)
-            ctx.fill(Path(roundedRect: r, cornerRadius: 10*s), with: .color(.gray))
-            // beanie stripe
-            let stripe = CGRect(x: cx - 20*s, y: size.height - 83*s, width: 40*s, height: 5*s)
-            ctx.fill(Path(roundedRect: stripe, cornerRadius: 2*s), with: .color(.white.opacity(0.35)))
-        case .glasses:
-            let r = CGRect(x: cx - 20*s, y: size.height - 104*s, width: 40*s, height: 34*s)
-            ctx.fill(Path(ellipseIn: r), with: .color(ch.hair))
-            // glasses
-            var g = Path()
-            g.addEllipse(in: CGRect(x: cx - 14*s, y: size.height - 86*s, width: 12*s, height: 9*s))
-            g.addEllipse(in: CGRect(x: cx + 2*s, y: size.height - 86*s, width: 12*s, height: 9*s))
-            ctx.stroke(g, with: .color(.black.opacity(0.85)), lineWidth: 1.5*s)
-        }
     }
 }
