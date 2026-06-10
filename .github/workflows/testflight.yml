@@ -63,16 +63,24 @@ jobs:
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
 
       - name: Install provisioning profile
-        if: steps.asc_secrets.outputs.ready == 'true' && env.APPLE_PROVISIONING_PROFILE_BASE64 != ''
+        if: steps.asc_secrets.outputs.ready == 'true'
         env:
           APPLE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPLE_PROVISIONING_PROFILE_BASE64 }}
         run: |
-          PP_PATH="$RUNNER_TEMP/profile.mobileprovision"
-          echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_PATH"
-          PP_UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$PP_UUID".mobileprovision
-          echo "Installed provisioning profile $PP_UUID"
+          if [[ -n "$APPLE_PROVISIONING_PROFILE_BASE64" ]]; then
+            PP_PATH="$RUNNER_TEMP/profile.mobileprovision"
+            echo "$APPLE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_PATH"
+            PP_UUID=$(security cms -D -i "$PP_PATH" | plutil -extract UUID raw -)
+            cp "$PP_PATH" ~/Library/MobileDevice/Provisioning\ Profiles/"$PP_UUID".mobileprovision
+            echo "Installed secret provisioning profile $PP_UUID"
+          fi
+          # Repo copy of the BMGP App Store profile that ExportOptions.plist references
+          if [[ -f "BMGP.mobileprovision" ]]; then
+            RP_UUID=$(security cms -D -i "BMGP.mobileprovision" | plutil -extract UUID raw -)
+            cp "BMGP.mobileprovision" ~/Library/MobileDevice/Provisioning\ Profiles/"$RP_UUID".mobileprovision
+            echo "Installed repo provisioning profile BMGP ($RP_UUID)"
+          fi
 
       - name: Select latest Xcode
         if: steps.asc_secrets.outputs.ready == 'true'
