@@ -89,6 +89,9 @@ final class StormSkyNode: SKNode {
         let entered = stage.kind != lastKind
         lastKind = stage.kind
 
+        // Invariant: charge increases monotonically during a hold (the scene only
+        // raises it until release/cancel resets via nil), so within one charge cycle
+        // stages only progress building → green → parted — the one-shots rely on this.
         switch stage {
         case .clear:
             if entered { fadeOutAndRecenter() }
@@ -111,7 +114,6 @@ final class StormSkyNode: SKNode {
     }
 
     private func resetForNewCharge() {
-        removeAllActions()
         for node in [leftCloud, rightCloud, greenWash] { node.removeAllActions() }
         leftCloud.position = CGPoint(x: sceneSize.width * 0.25, y: sceneSize.height * 0.5)
         rightCloud.position = CGPoint(x: sceneSize.width * 0.75, y: sceneSize.height * 0.5)
@@ -125,18 +127,7 @@ final class StormSkyNode: SKNode {
             node.removeAllActions()
             node.run(.fadeOut(withDuration: 0.15))
         }
-        // Slide the halves back once invisible so the next charge starts centered.
-        removeAllActions()
-        run(.sequence([
-            .wait(forDuration: 0.16),
-            .run { [weak self] in
-                guard let self else { return }
-                self.leftCloud.position = CGPoint(x: self.sceneSize.width * 0.25,
-                                                  y: self.sceneSize.height * 0.5)
-                self.rightCloud.position = CGPoint(x: self.sceneSize.width * 0.75,
-                                                   y: self.sceneSize.height * 0.5)
-            },
-        ]))
+        // Recentering happens in resetForNewCharge() at the start of the next charge.
     }
 
     private func partClouds() {
