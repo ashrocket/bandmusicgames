@@ -20,7 +20,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private let onBeatWindow: TimeInterval = 0.14
     private let powerUpDuration: TimeInterval = 12
     private let shotClockSeconds: TimeInterval = 10
-    private let chargeRate: CGFloat = 1.4      // full meter in ~0.7s
+    private let chargeRate: CGFloat = 1.0      // full meter in ~1s — sky cue needs time to read
     private let greenLow: CGFloat = 0.50
     private let greenHigh: CGFloat = 0.80
     private let perfectLow: CGFloat = 0.60
@@ -51,6 +51,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var hud: HalfCourtHUDNode?
     private var resultCard: HalfCourtResultCardNode?
     private var shootButton: ShootButtonNode?
+    private var stormSky: StormSkyNode?
     private var joystick: JoystickNode?
     private var streakPips: StreakPipsNode?
     private var calloutNode: SKNode?
@@ -230,6 +231,14 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             asphalt.strokeColor = .clear
             courtLayer.addChild(asphalt)
         }
+
+        // Storm sky — charge-meter weather. Above backdrop, below players.
+        let storm = StormSkyNode(size: size,
+                                 greenLow: greenLow, greenHigh: greenHigh,
+                                 perfectLow: perfectLow, perfectHigh: perfectHigh)
+        storm.zPosition = -5
+        courtLayer.addChild(storm)
+        stormSky = storm
 
         // Three-point marker
         let tpLine = SKShapeNode()
@@ -547,12 +556,14 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
         charge = min(charge + chargeRate * dt, 1.18)
         shootButton?.setCharge(charge)
+        stormSky?.setCharge(charge)
     }
 
     private func cancelCharge() {
         chargeActive = false
         charge = 0
         shootButton?.setCharge(nil)
+        stormSky?.setCharge(nil)
     }
 
     private func updateHuman(_ dt: CGFloat) {
@@ -791,6 +802,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 chargeActive = true
                 charge = 0
                 shootButton?.setCharge(0)
+                stormSky?.setCharge(0)
                 HapticManager.impact(.light)
             } else if joystickTouch == nil, p.y < size.height - 140 {
                 joystickTouch = touch
