@@ -44,12 +44,13 @@
 		99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE185679CAD568601C864B6E /* ArchHeaderView.swift */; };
 		9F55F487EE8D3ABC0C84FE55 /* FrancisHUDNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1447C20787223E3BA94B7B5C /* FrancisHUDNode.swift */; };
 		A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */; };
+		A974458E68E8B84835D08791 /* StormSkyNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E77EEBE8BC5E9F2A41B420 /* StormSkyNode.swift */; };
 		AEBD877831FCB56EA1A41FB5 /* tile-house-wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DAD71611E68F61627E3F2 /* tile-house-wall.png */; };
-		B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */; };
 		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
 		D2E91B487E48EBF3E79AB72F /* ForCuttingGrassHazards.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42A64FCF259A241304C2C44 /* ForCuttingGrassHazards.swift */; };
+		D3ACBA6A3C0856BAC26398E5 /* StormStageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF53F9CA93346E2D56EF710B /* StormStageTests.swift */; };
 		D823116F5A7896EB8EB9B757 /* FrancisLevels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7328A2BFED306DD0D64C17E /* FrancisLevels.swift */; };
 		DEDC2772035F23DBB8551E3A /* HalfCourtSpriteFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 145BF3844A8BB0333AE5561A /* HalfCourtSpriteFactory.swift */; };
 		E381CD4A70AD0FE8E06E597D /* HalfCourtHeroScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BFDCCD66F6537A3AD736D3F /* HalfCourtHeroScene.swift */; };
@@ -100,6 +101,7 @@
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
 		BED672FC4A58B627A3DF1FEF /* ForCuttingGrassInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassInputController.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
+		CF53F9CA93346E2D56EF710B /* StormStageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StormStageTests.swift; sourceTree = "<group>"; };
 		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3261C568DB64ABB2F1D9FA3 /* ForCuttingGrassControlOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassControlOverlay.swift; sourceTree = "<group>"; };
 		D5B2265F8A59C6A75AE95963 /* tile-cut-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-cut-1.png"; sourceTree = "<group>"; };
@@ -112,10 +114,10 @@
 		E7EDE15631752327AC90636E /* FrancisResultCardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisResultCardNode.swift; sourceTree = "<group>"; };
 		EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromePlayButton.swift; sourceTree = "<group>"; };
 		F0AF961A3AEB235F48467B6E /* mower-body.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body.png"; sourceTree = "<group>"; };
+		F1E77EEBE8BC5E9F2A41B420 /* StormSkyNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StormSkyNode.swift; sourceTree = "<group>"; };
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
 		F71CB28A4323E659BD953281 /* HalfCourtHUDNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtHUDNode.swift; sourceTree = "<group>"; };
-		FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		FACBCEE1035B20CF24D9EA3B /* ForCuttingGrassGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassGameView.swift; sourceTree = "<group>"; };
 		FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JukeboxView.swift; sourceTree = "<group>"; };
 		FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -237,7 +239,7 @@
 		8FAC014724E2F2C7F2A3E5E9 /* BandMusicGamesTests */ = {
 			isa = PBXGroup;
 			children = (
-				FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */,
+				CF53F9CA93346E2D56EF710B /* StormStageTests.swift */,
 			);
 			path = BandMusicGamesTests;
 			sourceTree = "<group>";
@@ -252,6 +254,7 @@
 				8BC18B1C6F46DF6BDD916163 /* HalfCourtResultCardNode.swift */,
 				145BF3844A8BB0333AE5561A /* HalfCourtSpriteFactory.swift */,
 				D990409BAD59E5D7624090BC /* PlayerNode.swift */,
+				F1E77EEBE8BC5E9F2A41B420 /* StormSkyNode.swift */,
 			);
 			path = HalfCourtHero;
 			sourceTree = "<group>";
@@ -441,7 +444,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */,
+				D3ACBA6A3C0856BAC26398E5 /* StormStageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,6 +485,7 @@
 				BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */,
 				48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */,
 				39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */,
+				A974458E68E8B84835D08791 /* StormSkyNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
