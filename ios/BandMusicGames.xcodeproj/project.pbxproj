@@ -45,6 +45,7 @@
 		9F55F487EE8D3ABC0C84FE55 /* FrancisHUDNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1447C20787223E3BA94B7B5C /* FrancisHUDNode.swift */; };
 		A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */; };
 		AEBD877831FCB56EA1A41FB5 /* tile-house-wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DAD71611E68F61627E3F2 /* tile-house-wall.png */; };
+		B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */; };
 		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
@@ -56,6 +57,16 @@
 		FA1D789A8D056BD44CAC3CFF /* ForCuttingGrassControlOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3261C568DB64ABB2F1D9FA3 /* ForCuttingGrassControlOverlay.swift */; };
 		FB8F8A2F4E1B3CEEFF1295D8 /* ForCuttingGrassInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BED672FC4A58B627A3DF1FEF /* ForCuttingGrassInputController.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		695E40D9FFF2D07FE82FF5B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EBEB5370E94A17E28C6ED964 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2D49D197F3FAA99C1DCB7626;
+			remoteInfo = BandMusicGames;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		06CAB0A5FEF74F7A89D13435 /* ForCuttingGrassRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassRenderer.swift; sourceTree = "<group>"; };
@@ -89,6 +100,7 @@
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
 		BED672FC4A58B627A3DF1FEF /* ForCuttingGrassInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassInputController.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
+		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3261C568DB64ABB2F1D9FA3 /* ForCuttingGrassControlOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassControlOverlay.swift; sourceTree = "<group>"; };
 		D5B2265F8A59C6A75AE95963 /* tile-cut-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-cut-1.png"; sourceTree = "<group>"; };
 		D7328A2BFED306DD0D64C17E /* FrancisLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisLevels.swift; sourceTree = "<group>"; };
@@ -103,6 +115,7 @@
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
 		F71CB28A4323E659BD953281 /* HalfCourtHUDNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtHUDNode.swift; sourceTree = "<group>"; };
+		FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		FACBCEE1035B20CF24D9EA3B /* ForCuttingGrassGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassGameView.swift; sourceTree = "<group>"; };
 		FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JukeboxView.swift; sourceTree = "<group>"; };
 		FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -206,6 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				128AB88CDD9DDB290A232974 /* BandMusicGames */,
+				8FAC014724E2F2C7F2A3E5E9 /* BandMusicGamesTests */,
 				AED8F6CE3DF690382D21F806 /* Frameworks */,
 				FF6B55FAC4BD53FB04D8BC73 /* Products */,
 			);
@@ -218,6 +232,14 @@
 				4D0C48531D9DA41E250F59D8 /* JukeboxLineKnot.json */,
 			);
 			path = Animations;
+			sourceTree = "<group>";
+		};
+		8FAC014724E2F2C7F2A3E5E9 /* BandMusicGamesTests */ = {
+			isa = PBXGroup;
+			children = (
+				FAB01268C4BB5E713C9B5772 /* SmokeTests.swift */,
+			);
+			path = BandMusicGamesTests;
 			sourceTree = "<group>";
 		};
 		92FC4BEBD0EA6DD3248DC2AA /* HalfCourtHero */ = {
@@ -308,6 +330,7 @@
 			isa = PBXGroup;
 			children = (
 				8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */,
+				CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -334,6 +357,24 @@
 			productName = BandMusicGames;
 			productReference = 8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */;
 			productType = "com.apple.product-type.application";
+		};
+		7F5526DE96087751F2441ECD /* BandMusicGamesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8910255B15214860891324F6 /* Build configuration list for PBXNativeTarget "BandMusicGamesTests" */;
+			buildPhases = (
+				D931139572BD046179C6AE5A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				399BB02C5DC481BB6B49A3B8 /* PBXTargetDependency */,
+			);
+			name = BandMusicGamesTests;
+			packageProductDependencies = (
+			);
+			productName = BandMusicGamesTests;
+			productReference = CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -368,6 +409,7 @@
 			projectRoot = "";
 			targets = (
 				2D49D197F3FAA99C1DCB7626 /* BandMusicGames */,
+				7F5526DE96087751F2441ECD /* BandMusicGamesTests */,
 			);
 		};
 /* End PBXProject section */
@@ -395,6 +437,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D931139572BD046179C6AE5A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B30A8826CE9280C0088303A0 /* SmokeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FE3BC4012F7FF206E04A239F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -436,6 +486,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		399BB02C5DC481BB6B49A3B8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2D49D197F3FAA99C1DCB7626 /* BandMusicGames */;
+			targetProxy = 695E40D9FFF2D07FE82FF5B2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		45BE1D5DBAFA75F516F2360F /* Release */ = {
@@ -493,6 +551,25 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
+		};
+		86A347C0A25420A7AD310F3C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.party.bandmusicgames.app.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BandMusicGames.app/BandMusicGames";
+			};
+			name = Debug;
 		};
 		90DBEC10CA8F7D41740B13D4 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -557,6 +634,25 @@
 			};
 			name = Debug;
 		};
+		A21B9BA020E938B122196770 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.party.bandmusicgames.app.tests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.10;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BandMusicGames.app/BandMusicGames";
+			};
+			name = Release;
+		};
 		BC97A4042A3BEFD4EB4A3325 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -606,6 +702,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		8910255B15214860891324F6 /* Build configuration list for PBXNativeTarget "BandMusicGamesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				86A347C0A25420A7AD310F3C /* Debug */,
+				A21B9BA020E938B122196770 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		8E282F4B7F3B4E76A192797F /* Build configuration list for PBXNativeTarget "BandMusicGames" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
