@@ -48,8 +48,25 @@ targets:
         UILaunchScreen: {}
         LSApplicationQueriesSchemes:
           - spotify
+    scheme:
+      testTargets:
+        - BandMusicGamesTests
     dependencies:
       - sdk: WebKit.framework
       - sdk: AuthenticationServices.framework
       - package: Lottie
         product: Lottie
+
+  BandMusicGamesTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: BandMusicGamesTests
+    dependencies:
+      - target: BandMusicGames
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.party.bandmusicgames.app.tests
+        SWIFT_VERSION: "5.10"
+        GENERATE_INFOPLIST_FILE: "YES"
