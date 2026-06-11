@@ -39,6 +39,12 @@ final class StormStageTests: XCTestCase {
     func testPastWindowIsParted() {
         XCTAssertEqual(stage(0.81), .parted)
         XCTAssertEqual(stage(1.18), .parted)
+        XCTAssertEqual(stage(1.2), .parted)
+        XCTAssertEqual(stage(1.5), .parted)
+    }
+
+    func testNegativeChargeClampsToZeroProgress() {
+        XCTAssertEqual(stage(-0.1), .building(progress: 0))
     }
 
     func testKindsDistinguishStagesIgnoringValues() {
