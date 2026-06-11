@@ -44,6 +44,7 @@ struct LizzyMcGuireGameView: View {
                     },
                     onClose: { scoutedHero = nil }
                 )
+                .id(hero)
                 .zIndex(10)
             }
 
@@ -176,7 +177,33 @@ struct LizzyMcGuireGameView: View {
                     ForEach(HalfCourtHeroID.allCases) { hero in
                         let disabled = selectStep == 2 && hero == selectedPlayer
                         let isSelected = hero == selectedPlayer || hero == selectedTeammate
-                        Button {
+                        VStack(spacing: compact ? 6 : 8) {
+                            HalfCourtHeroBadge(hero: hero, selected: isSelected, dimmed: disabled)
+                                .frame(height: compact ? 90 : 110)
+                            Text(hero.character.name)
+                                .font(.system(size: compact ? 12 : 14, weight: .black, design: .monospaced))
+                                .foregroundColor(disabled ? .white.opacity(0.24) : hero.character.hue)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                            Text(hero.character.ability)
+                                .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
+                                .tracking(1.2)
+                                .foregroundColor(disabled ? .white.opacity(0.2) : .white.opacity(0.58))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.65)
+                        }
+                        .padding(compact ? 10 : 14)
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(isSelected ? hero.character.hue.opacity(0.17) : Color.black.opacity(0.28))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(isSelected ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: isSelected ? 2.5 : 1)
+                        )
+                        .contentShape(RoundedRectangle(cornerRadius: 12))
+                        .onTapGesture {
                             guard !disabled else { return }
                             HapticManager.selection()
                             if selectStep == 1 {
@@ -185,39 +212,11 @@ struct LizzyMcGuireGameView: View {
                             } else {
                                 selectedTeammate = hero
                             }
-                        } label: {
-                            VStack(spacing: compact ? 6 : 8) {
-                                HalfCourtHeroBadge(hero: hero, selected: isSelected, dimmed: disabled)
-                                    .frame(height: compact ? 90 : 110)
-                                Text(hero.character.name)
-                                    .font(.system(size: compact ? 12 : 14, weight: .black, design: .monospaced))
-                                    .foregroundColor(disabled ? .white.opacity(0.24) : hero.character.hue)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.7)
-                                Text(hero.character.ability)
-                                    .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
-                                    .tracking(1.2)
-                                    .foregroundColor(disabled ? .white.opacity(0.2) : .white.opacity(0.58))
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.65)
-                            }
-                            .padding(compact ? 10 : 14)
-                            .frame(maxWidth: .infinity)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(isSelected ? hero.character.hue.opacity(0.17) : Color.black.opacity(0.28))
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(isSelected ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: isSelected ? 2.5 : 1)
-                            )
                         }
-                        .simultaneousGesture(
-                            LongPressGesture(minimumDuration: 0.4).onEnded { _ in
-                                HapticManager.impact(.medium)
-                                scoutedHero = hero
-                            }
-                        )
+                        .onLongPressGesture(minimumDuration: 0.4) {
+                            HapticManager.impact(.medium)
+                            scoutedHero = hero
+                        }
                     }
                 }
                 .padding(.horizontal, compact ? 16 : 22)
@@ -301,6 +300,7 @@ private struct HeroScoutingOverlay: View {
         .onAppear {
             withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true }
         }
+        .accessibilityAddTraits(.isModal)
     }
 
     private var pickLabel: String {
