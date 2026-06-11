@@ -78,7 +78,7 @@ final class HalfCourtHUDNode: SKNode {
     }
 
     func layout(size: CGSize) {
-        let topY = size.height - 64
+        let topY = size.height - 96  // clear the Dynamic Island on full-bleed layouts
         let cx = size.width / 2
 
         backdrop.path = CGPath(

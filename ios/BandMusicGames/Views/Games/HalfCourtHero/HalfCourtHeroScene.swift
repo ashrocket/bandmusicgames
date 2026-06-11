@@ -194,7 +194,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         rimX = w - 58
         rimY = h * 0.62
         threePointX = rimX - w * 0.56
-        playerMinX = 30
+        playerMinX = 44
         playerMaxX = rimX - 56
         playerSpriteSize = min(210, max(140, h * 0.215))
 

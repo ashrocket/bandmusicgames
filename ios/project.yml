@@ -45,6 +45,7 @@ targets:
               - bandmusicgames
             CFBundleURLName: com.party.bandmusicgames.app
         ITSAppUsesNonExemptEncryption: false
+        UILaunchScreen: {}
         LSApplicationQueriesSchemes:
           - spotify
     dependencies:
