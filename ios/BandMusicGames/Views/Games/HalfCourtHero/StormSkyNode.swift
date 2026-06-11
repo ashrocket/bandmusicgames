@@ -113,6 +113,33 @@ final class StormSkyNode: SKNode {
         }
     }
 
+    /// Sync visual state to the current charge WITHOUT firing one-shot effects
+    /// (lightning, haptic, part animation). Used when the node is recreated
+    /// mid-charge by a layout rebuild, so re-entering a stage doesn't re-strike.
+    func prime(charge: CGFloat?) {
+        let stage = StormStage.stage(charge: charge,
+                                     greenLow: greenLow, greenHigh: greenHigh,
+                                     perfectLow: perfectLow, perfectHigh: perfectHigh)
+        lastKind = stage.kind
+        switch stage {
+        case .clear:
+            break   // fresh node is already clear
+        case .building(let progress):
+            let dim = maxDim * progress * progress
+            leftCloud.alpha = dim
+            rightCloud.alpha = dim
+        case .green(let perfect):
+            leftCloud.alpha = maxDim
+            rightCloud.alpha = maxDim
+            greenWash.alpha = perfect ? 0.40 : 0.28
+        case .parted:
+            // Window already passed — show the parted end-state (clouds gone).
+            leftCloud.alpha = 0
+            rightCloud.alpha = 0
+            greenWash.alpha = 0
+        }
+    }
+
     private func resetForNewCharge() {
         for node in [leftCloud, rightCloud, greenWash] { node.removeAllActions() }
         leftCloud.position = CGPoint(x: sceneSize.width * 0.25, y: sceneSize.height * 0.5)

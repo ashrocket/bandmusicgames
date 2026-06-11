@@ -239,6 +239,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         storm.zPosition = -5
         courtLayer.addChild(storm)
         stormSky = storm
+        storm.prime(charge: chargeActive ? charge : nil)
 
         // Three-point marker
         let tpLine = SKShapeNode()
