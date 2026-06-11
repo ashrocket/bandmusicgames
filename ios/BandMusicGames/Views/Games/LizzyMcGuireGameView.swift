@@ -9,6 +9,7 @@ struct LizzyMcGuireGameView: View {
     @State private var selectedPlayer: HalfCourtHeroID = .nara
     @State private var selectedTeammate: HalfCourtHeroID? = .ethan
     @State private var selectStep = 1
+    @State private var scoutedHero: HalfCourtHeroID?
 
     var body: some View {
         ZStack {
@@ -24,6 +25,26 @@ struct LizzyMcGuireGameView: View {
                 titleOverlay
             } else if scene.phase == .characterSelect {
                 characterSelectOverlay
+            }
+
+            if let hero = scoutedHero, scene.phase == .characterSelect {
+                HeroScoutingOverlay(
+                    hero: hero,
+                    selectStep: selectStep,
+                    isBallHandler: selectStep == 2 && hero == selectedPlayer,
+                    onPick: {
+                        HapticManager.selection()
+                        if selectStep == 1 {
+                            selectedPlayer = hero
+                            selectStep = 2
+                        } else {
+                            selectedTeammate = hero
+                        }
+                        scoutedHero = nil
+                    },
+                    onClose: { scoutedHero = nil }
+                )
+                .zIndex(10)
             }
 
             closeButton
@@ -138,6 +159,11 @@ struct LizzyMcGuireGameView: View {
                         .tracking(1.5)
                         .foregroundColor(.white.opacity(0.55))
                         .lineLimit(1)
+                    Text("HOLD A CARD FOR SCOUTING REPORT")
+                        .font(.system(size: compact ? 7 : 8, weight: .bold, design: .monospaced))
+                        .tracking(1.5)
+                        .foregroundColor(.white.opacity(0.35))
+                        .padding(.top, 3)
                 }
                 .padding(.top, topInset + (compact ? 14 : 20))
                 .padding(.bottom, compact ? 12 : 16)
@@ -151,6 +177,7 @@ struct LizzyMcGuireGameView: View {
                         let disabled = selectStep == 2 && hero == selectedPlayer
                         let isSelected = hero == selectedPlayer || hero == selectedTeammate
                         Button {
+                            guard !disabled else { return }
                             HapticManager.selection()
                             if selectStep == 1 {
                                 selectedPlayer = hero
@@ -185,7 +212,12 @@ struct LizzyMcGuireGameView: View {
                                     .stroke(isSelected ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: isSelected ? 2.5 : 1)
                             )
                         }
-                        .disabled(disabled)
+                        .simultaneousGesture(
+                            LongPressGesture(minimumDuration: 0.4).onEnded { _ in
+                                HapticManager.impact(.medium)
+                                scoutedHero = hero
+                            }
+                        )
                     }
                 }
                 .padding(.horizontal, compact ? 16 : 22)
@@ -238,5 +270,146 @@ private struct HalfCourtHeroBadge: View {
                         .padding(.horizontal, 12)
                 }
             }
+    }
+}
+
+// MARK: - Long-press flip scouting report (ported from lizzie-direct-launch ad132c3)
+
+private struct HeroScoutingOverlay: View {
+    let hero: HalfCourtHeroID
+    let selectStep: Int
+    let isBallHandler: Bool
+    let onPick: () -> Void
+    let onClose: () -> Void
+
+    @State private var appeared = false
+
+    var body: some View {
+        let ch = hero.character
+        ZStack {
+            Color.black.opacity(appeared ? 0.66 : 0)
+                .ignoresSafeArea()
+                .onTapGesture { onClose() }
+
+            detailCard(ch)
+                .rotation3DEffect(.degrees(appeared ? 0 : -82),
+                                  axis: (x: 0, y: 1, z: 0), perspective: 0.55)
+                .scaleEffect(appeared ? 1 : 0.82)
+                .opacity(appeared ? 1 : 0)
+                .padding(.horizontal, 26)
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) { appeared = true }
+        }
+    }
+
+    private var pickLabel: String {
+        if isBallHandler { return "ALREADY ON TEAM" }
+        return selectStep == 1 ? "PICK AS BALL HANDLER" : "ADD AS TEAMMATE"
+    }
+
+    private func detailCard(_ ch: HalfCourtHero) -> some View {
+        VStack(spacing: 14) {
+            HStack(spacing: 14) {
+                HalfCourtHeroBadge(hero: hero, selected: true, dimmed: false)
+                    .frame(width: 78, height: 100)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(ch.name)
+                        .font(.system(size: 26, weight: .black, design: .monospaced))
+                        .foregroundColor(ch.hue)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    Text(ch.fullName)
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.55))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                    Text("\(ch.role)  ·  \(Int(ch.height))CM")
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .tracking(1)
+                        .foregroundColor(.white.opacity(0.45))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                }
+                Spacer(minLength: 0)
+            }
+
+            VStack(spacing: 7) {
+                StatBar(label: "SHOOTING", value: min(1, 0.5 + ch.threeBonus * 4), hue: ch.hue)
+                StatBar(label: "DEFENSE", value: min(1, 0.42 + ch.stealBonus * 2.6), hue: ch.hue)
+                StatBar(label: "SPEED", value: min(1, ch.speed * 0.78), hue: ch.hue)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("ABILITY · \(ch.ability)")
+                    .font(.system(size: 13, weight: .black, design: .monospaced))
+                    .foregroundColor(ch.hue)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                Text(ch.abilityBlurb)
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.8))
+                    .fixedSize(horizontal: false, vertical: true)
+                Label("3 ON-BEAT SHOTS IN A ROW = ON FIRE 🔥", systemImage: "bolt.fill")
+                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                    .foregroundColor(ch.hue.opacity(0.9))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(RoundedRectangle(cornerRadius: 12).fill(ch.hue.opacity(0.12)))
+            .overlay(RoundedRectangle(cornerRadius: 12).stroke(ch.hue.opacity(0.4), lineWidth: 1))
+
+            Button(action: onPick) {
+                Text(pickLabel)
+                    .font(.system(size: 13, weight: .black, design: .monospaced))
+                    .tracking(2)
+                    .foregroundColor(isBallHandler ? .white.opacity(0.4) : .black)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(isBallHandler ? Color.white.opacity(0.07) : ch.hue)
+                    .clipShape(RoundedRectangle(cornerRadius: 11))
+            }
+            .disabled(isBallHandler)
+        }
+        .padding(20)
+        .frame(maxWidth: 360)
+        .background(RoundedRectangle(cornerRadius: 22).fill(Color(hex: "#160833")))
+        .overlay(RoundedRectangle(cornerRadius: 22).stroke(ch.hue, lineWidth: 2))
+        .overlay(alignment: .topTrailing) {
+            Button(action: onClose) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 26))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.white, Color.black.opacity(0.5))
+            }
+            .padding(10)
+        }
+        .shadow(color: .black.opacity(0.5), radius: 24, y: 10)
+    }
+}
+
+private struct StatBar: View {
+    let label: String
+    let value: CGFloat
+    let hue: Color
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(label)
+                .font(.system(size: 9, weight: .black, design: .monospaced))
+                .tracking(1)
+                .foregroundColor(.white.opacity(0.6))
+                .frame(width: 74, alignment: .leading)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.white.opacity(0.12))
+                    Capsule().fill(hue)
+                        .frame(width: max(6, geo.size.width * min(1, max(0, value))))
+                }
+            }
+            .frame(height: 7)
+        }
     }
 }
