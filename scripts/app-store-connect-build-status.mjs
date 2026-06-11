@@ -7,7 +7,7 @@ import os from "node:os";
 const keyId = process.env.ASC_KEY_ID || "N89CARWD2R";
 const issuerId = process.env.ASC_ISSUER_ID || "69a6de77-108b-47e3-e053-5b8c7c11a4d1";
 const keyPath = process.env.ASC_KEY_PATH || `${os.homedir()}/.env/ashcode/apple/AuthKey_${keyId}.p8`;
-const bundleId = process.env.ASC_BUNDLE_ID || "party.bandmusicgames.app";
+const bundleId = process.env.ASC_BUNDLE_ID || "com.party.bandmusicgames.app";
 const buildNumber = process.env.ASC_BUILD_NUMBER || process.argv[2];
 const waitSeconds = Number(process.env.ASC_WAIT_SECONDS || 900);
 const pollSeconds = Number(process.env.ASC_POLL_SECONDS || 30);

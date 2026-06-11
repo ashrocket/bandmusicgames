@@ -20,7 +20,7 @@
     <string>Apple Distribution</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>party.bandmusicgames.app</key>
+        <key>com.party.bandmusicgames.app</key>
         <string>BMGP</string>
     </dict>
 </dict>

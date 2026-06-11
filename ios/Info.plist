@@ -20,7 +20,7 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>party.bandmusicgames.app</string>
+			<string>com.party.bandmusicgames.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>bandmusicgames</string>

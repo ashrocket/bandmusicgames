@@ -12,7 +12,7 @@ EXPORT_OPTIONS_PLIST="${EXPORT_OPTIONS_PLIST:-$IOS_DIR/ExportOptions.plist}"
 ASC_KEY_ID="${ASC_KEY_ID:-N89CARWD2R}"
 ASC_ISSUER_ID="${ASC_ISSUER_ID:-69a6de77-108b-47e3-e053-5b8c7c11a4d1}"
 ASC_KEY_PATH="${ASC_KEY_PATH:-$HOME/.env/ashcode/apple/AuthKey_${ASC_KEY_ID}.p8}"
-ASC_BUNDLE_ID="${ASC_BUNDLE_ID:-party.bandmusicgames.app}"
+ASC_BUNDLE_ID="${ASC_BUNDLE_ID:-com.party.bandmusicgames.app}"
 
 BUILD_NUMBER="${BMG_BUILD_NUMBER:-$(date -u +%Y%m%d%H%M%S)}"
 ARCHIVE_PATH="${ARCHIVE_PATH:-/private/tmp/BandMusicGames-${BUILD_NUMBER}.xcarchive}"

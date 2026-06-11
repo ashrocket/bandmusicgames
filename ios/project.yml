@@ -20,7 +20,7 @@ targets:
       - path: BandMusicGames
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: party.bandmusicgames.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.party.bandmusicgames.app
         SWIFT_VERSION: "5.10"
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
@@ -43,7 +43,7 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLSchemes:
               - bandmusicgames
-            CFBundleURLName: party.bandmusicgames.app
+            CFBundleURLName: com.party.bandmusicgames.app
         ITSAppUsesNonExemptEncryption: false
         LSApplicationQueriesSchemes:
           - spotify
