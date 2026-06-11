@@ -133,6 +133,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 fullName: "NARA AVAKIAN",
                 role: "VOCALS / GUITAR",
                 ability: "3PT SHOOTER",
+                abilityBlurb: "Deadeye from beyond the arc. Leave her open out there and it's MONEY.",
                 hue: Color(hex: "#FF1493"),
                 skin: Color(hex: "#FDBCB4"),
                 hair: Color(hex: "#1C0A00"),
@@ -152,6 +153,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 fullName: "ETHAN NASH",
                 role: "BASS",
                 ability: "LOCKDOWN",
+                abilityBlurb: "A glove on defense — quick feet and a hand in every passing lane.",
                 hue: Color(hex: "#32CD32"),
                 skin: Color(hex: "#C68642"),
                 hair: Color(hex: "#3D2B1F"),
@@ -171,6 +173,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 fullName: "BRENDAN JONES",
                 role: "DRUMS",
                 ability: "PAINT BEAST",
+                abilityBlurb: "Owns the paint. Strong drives, stronger finishes. BOOM.",
                 hue: Color(hex: "#FF6B35"),
                 skin: Color(hex: "#FDBCB4"),
                 hair: Color(hex: "#CC2200"),
@@ -190,6 +193,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 fullName: "WILL FISHER",
                 role: "KEYS",
                 ability: "DEEP RANGE",
+                abilityBlurb: "Limitless range off the keys — pulls from the logo like it's a layup.",
                 hue: Color(hex: "#9B59B6"),
                 skin: Color(hex: "#8D5524"),
                 hair: Color(hex: "#111111"),
@@ -212,6 +216,7 @@ struct HalfCourtHero {
     let fullName: String
     let role: String
     let ability: String
+    let abilityBlurb: String
     let hue: Color
     let skin: Color
     let hair: Color
