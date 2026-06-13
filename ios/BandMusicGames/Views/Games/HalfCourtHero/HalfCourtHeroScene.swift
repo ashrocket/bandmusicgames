@@ -1114,6 +1114,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 HapticManager.notification(.success)
                 HapticManager.impact(.heavy)
                 flashScreen()
+                shakeWorld(14)
             } else {
                 HapticManager.notification(.error)
             }
