@@ -7,7 +7,7 @@ struct LizzyMcGuireGameView: View {
     @StateObject private var scene = HalfCourtHeroScene.make()
 
     @State private var selectedPlayer: HalfCourtHeroID = .nara
-    @State private var selectedTeammate: HalfCourtHeroID? = .ethan
+    @State private var selectedTeammate: HalfCourtHeroID? = nil
     @State private var selectStep = 1
     @State private var scoutedHero: HalfCourtHeroID?
 
@@ -36,6 +36,7 @@ struct LizzyMcGuireGameView: View {
                         HapticManager.selection()
                         if selectStep == 1 {
                             selectedPlayer = hero
+                            selectedTeammate = nil
                             selectStep = 2
                         } else {
                             selectedTeammate = hero
@@ -233,6 +234,7 @@ struct LizzyMcGuireGameView: View {
                             HapticManager.selection()
                             if selectStep == 1 {
                                 selectedPlayer = hero
+                                selectedTeammate = nil
                                 selectStep = 2
                             } else {
                                 selectedTeammate = hero
