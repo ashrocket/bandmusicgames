@@ -20,11 +20,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private let onBeatWindow: TimeInterval = 0.14
     private let powerUpDuration: TimeInterval = 12
     private let shotClockSeconds: TimeInterval = 10
-    private let chargeRate: CGFloat = 1.0      // full meter in ~1s — sky cue needs time to read
-    private let greenLow: CGFloat = 0.50
-    private let greenHigh: CGFloat = 0.80
-    private let perfectLow: CGFloat = 0.60
-    private let perfectHigh: CGFloat = 0.70
+    private var chargeRate: CGFloat = 1.55
+    private var greenLow: CGFloat = 0.52
+    private var greenHigh: CGFloat = 0.76
+    private var perfectLow: CGFloat = 0.59
+    private var perfectHigh: CGFloat = 0.69
+    private var cpuShotMult: CGFloat = 1.0
     private let shootWindupDelay: TimeInterval = 0.29  // ball leaves hand 4 frames into the 14fps shoot anim
 
     // MARK: - Layout metrics (recomputed from `size`)
@@ -63,6 +64,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
     // MARK: - Match state
     @Published private(set) var phase: HalfCourtPhase = .title
+    @Published private(set) var difficulty: HalfCourtDifficulty = .normal
     @Published var homeScore = 0
     @Published var awayScore = 0
     @Published var homeSeriesWins = 0
@@ -354,7 +356,20 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         phase = .characterSelect
     }
 
-    func startGame(playerID: HalfCourtHeroID, teammateID: HalfCourtHeroID) {
+    func startGame(playerID: HalfCourtHeroID, teammateID: HalfCourtHeroID, difficulty: HalfCourtDifficulty = .normal) {
+        self.difficulty = difficulty
+        let d = difficulty
+        greenLow = d.greenWindow.low / 100
+        greenHigh = d.greenWindow.high / 100
+        let mid = (greenLow + greenHigh) / 2
+        perfectLow = mid - 0.05
+        perfectHigh = mid + 0.05
+        chargeRate = d.chargeRate
+        cpuShotMult = d.cpuShotMultiplier
+
+        shootButton?.reconfigureArcs(greenLow: greenLow, greenHigh: greenHigh,
+                                      perfectLow: perfectLow, perfectHigh: perfectHigh)
+
         homeIDs = [playerID, teammateID]
         awayIDs = HalfCourtHeroID.allCases.filter { !homeIDs.contains($0) }
         activeHumanID = playerID
@@ -599,7 +614,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         switch cpuState {
         case .bringUp(let spot):
-            if !steer(handler, toward: spot, speed: 150, dt: dt) {
+            if !steer(handler, toward: spot, speed: 150 * difficulty.cpuDriveSpeed / 2.2, dt: dt) {
                 cpuState = .dribbling(now + TimeInterval.random(in: 0.8...1.5))
             }
             handler.updateLocomotion(moving: true, hasBall: true)
@@ -609,7 +624,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             if now >= until {
                 cpuState = .shooting
                 let dist = abs(rimX - handler.position.x)
-                var error: CGFloat = 17 + dist * 0.05
+                var error: CGFloat = (17 + dist * 0.05) * cpuShotMult
                 if let humanID = activeHumanID, let human = players[humanID],
                    hypot(human.position.x - handler.position.x, human.position.y - handler.position.y) < 64 {
                     let lockdownBonus = humanID.character.stealBonus
@@ -1106,10 +1121,10 @@ final class ShootButtonNode: SKNode {
     private let label = SKLabelNode(text: "SHOOT")
     private let ballIcon = SKShapeNode(circleOfRadius: 13)
 
-    private let greenLow: CGFloat
-    private let greenHigh: CGFloat
-    private let perfectLow: CGFloat
-    private let perfectHigh: CGFloat
+    private var greenLow: CGFloat
+    private var greenHigh: CGFloat
+    private var perfectLow: CGFloat
+    private var perfectHigh: CGFloat
 
     // Meter sweeps 240° clockwise starting at the lower-left
     private let startAngle: CGFloat = .pi * 7 / 6      // 210°
@@ -1188,6 +1203,15 @@ final class ShootButtonNode: SKNode {
             SKAction.scale(to: 0.97, duration: 0.7),
         ])
         base.run(SKAction.repeatForever(pulse))
+    }
+
+    func reconfigureArcs(greenLow: CGFloat, greenHigh: CGFloat, perfectLow: CGFloat, perfectHigh: CGFloat) {
+        self.greenLow = greenLow
+        self.greenHigh = greenHigh
+        self.perfectLow = perfectLow
+        self.perfectHigh = perfectHigh
+        greenArc.path = arcPath(from: angle(for: greenLow), to: angle(for: greenHigh), radius: 47)
+        perfectArc.path = arcPath(from: angle(for: perfectLow), to: angle(for: perfectHigh), radius: 47)
     }
 
     func setEnabled(_ enabled: Bool) {
