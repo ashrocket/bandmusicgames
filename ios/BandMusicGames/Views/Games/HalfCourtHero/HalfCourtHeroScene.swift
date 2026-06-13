@@ -1097,6 +1097,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             showCallout(["MISS", "OFF THE RIM", "NO GOOD"].randomElement() ?? "MISS",
                         color: SKColor.white.withAlphaComponent(0.6))
             HapticManager.impact(.medium)
+        } else {
+            showCallout(["BRICKED!", "CPU MISSES", "BLOCKED OUT"].randomElement() ?? "BRICKED!",
+                        color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 0.85))
         }
         scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 0.6)
     }
