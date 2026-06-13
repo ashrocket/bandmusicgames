@@ -28,6 +28,7 @@ struct ForCuttingGrassSkunk: Identifiable, Equatable {
     var velocity: CGVector
     var alarm: CGFloat   // 0..1
     var changeDirAt: TimeInterval
+    var hitCooldownUntil: TimeInterval = 0
 }
 
 struct ForCuttingGrassLevelConfig {

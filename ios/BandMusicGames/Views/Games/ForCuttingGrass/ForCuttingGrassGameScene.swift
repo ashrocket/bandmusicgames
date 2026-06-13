@@ -405,6 +405,20 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         }
         // Skunks
         ForCuttingGrassHazards.tickSkunks(&skunks, delta: delta, now: now, bounds: bounds, mowerPos: mower.position)
+        for i in skunks.indices where now >= skunks[i].hitCooldownUntil {
+            let hitRadius = unit * 1.5
+            if distanceSq(skunks[i].position, mower.position) < hitRadius * hitRadius {
+                skunks[i].hitCooldownUntil = now + 3.0
+                triesRemaining -= 1
+                if triesRemaining <= 0 {
+                    gameOverTitle = "SKUNKED OUT!"
+                    phase = .gameOver
+                } else {
+                    startLevel(levelNum, resetTries: false)
+                }
+                return
+            }
+        }
     }
 
     private func restartAfterCuttingFlowers() {
