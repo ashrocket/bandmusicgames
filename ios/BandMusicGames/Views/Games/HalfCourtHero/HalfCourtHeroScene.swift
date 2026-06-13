@@ -922,21 +922,23 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private func shotError(charge: CGFloat, dist: CGFloat, beyondArc: Bool,
                            contested: Bool, hero: HalfCourtHero) -> CGFloat {
         let c = min(charge, 1.2)
-        var error: CGFloat
+        var accuracy: CGFloat
         if c >= perfectLow && c <= perfectHigh {
-            error = 3
+            accuracy = difficulty.perfectAccuracy
         } else if c >= greenLow && c <= greenHigh {
-            error = 11
+            accuracy = difficulty.greenAccuracy
         } else {
-            let off = c < greenLow ? (greenLow - c) : (c - greenHigh)
-            error = 14 + off * 150
+            accuracy = difficulty.lateAccuracy
         }
-        error += dist * 0.035
-        if contested { error += 15 }
-        if beyondArc { error *= (1 - hero.threeBonus) }
-        if !beyondArc { error *= (1 - hero.closeBonus) }
-        if isPowered { error *= 0.4 }
-        return error
+        accuracy -= dist * 0.00025
+        if contested { accuracy -= 0.12 }
+        if beyondArc { accuracy += hero.threeBonus }
+        if !beyondArc { accuracy += hero.closeBonus }
+        if isPowered { accuracy += 0.15 }
+        accuracy = max(0.05, min(1.0, accuracy))
+        return CGFloat.random(in: 0...1) < accuracy
+            ? CGFloat.random(in: 2...5)
+            : CGFloat.random(in: 20...55)
     }
 
     private func registerBeatTiming(_ now: TimeInterval) {
