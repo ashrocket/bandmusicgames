@@ -183,7 +183,6 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     func replayFromWin() {
         clearProgress()
         startLevel(1)
-        phase = .title
     }
 
     // MARK: - Entity Placement
