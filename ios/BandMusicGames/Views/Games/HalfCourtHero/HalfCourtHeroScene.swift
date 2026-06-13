@@ -1034,6 +1034,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private func resolveGame() {
         let isSeriesOver = homeSeriesWins >= seriesWinTarget || awaySeriesWins >= seriesWinTarget
         let card = HalfCourtResultCardNode(
+            homeScore: homeScore,
+            awayScore: awayScore,
             homeWins: homeSeriesWins,
             awayWins: awaySeriesWins,
             isSeriesOver: isSeriesOver,
