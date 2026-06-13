@@ -28,9 +28,13 @@ struct FrancisGameView: View {
         }
         .onAppear {
             scene.onDismiss = { dismiss() }
-            if auth.accessToken != nil {
-                Task { await auth.playTrack("spotify:track:64h0585a6LWXOdsCD2pOiW") }
+            let uri = "spotify:track:64h0585a6LWXOdsCD2pOiW"
+            if auth.accessToken != nil, !(auth.isPlaying && auth.currentTrackUri == uri) {
+                Task { await auth.playTrack(uri) }
             }
+        }
+        .onDisappear {
+            Task { await auth.pausePlayback() }
         }
     }
 

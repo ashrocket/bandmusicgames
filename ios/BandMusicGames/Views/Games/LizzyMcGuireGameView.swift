@@ -52,9 +52,13 @@ struct LizzyMcGuireGameView: View {
         }
         .onAppear {
             scene.onDismiss = { dismiss() }
-            if auth.accessToken != nil {
-                Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
+            let uri = "spotify:track:7kNqAfUxLmrETcwvBTQCkg"
+            if auth.accessToken != nil, !(auth.isPlaying && auth.currentTrackUri == uri) {
+                Task { await auth.playTrack(uri) }
             }
+        }
+        .onDisappear {
+            Task { await auth.pausePlayback() }
         }
     }
 
@@ -148,23 +152,44 @@ struct LizzyMcGuireGameView: View {
 
             VStack(spacing: 0) {
                 // Header
-                VStack(spacing: compact ? 3 : 5) {
-                    Text(selectStep == 1 ? "MEET THE TEAM" : "PICK TEAMMATE")
-                        .font(.system(size: compact ? 16 : 19, weight: .black, design: .monospaced))
-                        .tracking(2)
-                        .foregroundColor(selectStep == 1 ? Color(hex: "#FFD700") : selectedPlayer.character.hue)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.65)
-                    Text(selectStep == 1 ? "Choose your ball handler" : "\(selectedPlayer.character.fullName) is in")
-                        .font(.system(size: compact ? 9 : 11, weight: .semibold, design: .monospaced))
-                        .tracking(1.5)
-                        .foregroundColor(.white.opacity(0.55))
-                        .lineLimit(1)
-                    Text("HOLD A CARD FOR SCOUTING REPORT")
-                        .font(.system(size: compact ? 7 : 8, weight: .bold, design: .monospaced))
-                        .tracking(1.5)
-                        .foregroundColor(.white.opacity(0.35))
-                        .padding(.top, 3)
+                ZStack(alignment: .leading) {
+                    if selectStep == 2 {
+                        Button {
+                            HapticManager.selection()
+                            selectedTeammate = nil
+                            selectStep = 1
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: compact ? 11 : 13, weight: .black))
+                                Text("BACK")
+                                    .font(.system(size: compact ? 9 : 11, weight: .black, design: .monospaced))
+                                    .tracking(1)
+                            }
+                            .foregroundColor(.white.opacity(0.52))
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.leading, compact ? 16 : 22)
+                    }
+                    VStack(spacing: compact ? 3 : 5) {
+                        Text(selectStep == 1 ? "MEET THE TEAM" : "PICK TEAMMATE")
+                            .font(.system(size: compact ? 16 : 19, weight: .black, design: .monospaced))
+                            .tracking(2)
+                            .foregroundColor(selectStep == 1 ? Color(hex: "#FFD700") : selectedPlayer.character.hue)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.65)
+                        Text(selectStep == 1 ? "Choose your ball handler" : "\(selectedPlayer.character.fullName) is in")
+                            .font(.system(size: compact ? 9 : 11, weight: .semibold, design: .monospaced))
+                            .tracking(1.5)
+                            .foregroundColor(.white.opacity(0.55))
+                            .lineLimit(1)
+                        Text("HOLD A CARD FOR SCOUTING REPORT")
+                            .font(.system(size: compact ? 7 : 8, weight: .bold, design: .monospaced))
+                            .tracking(1.5)
+                            .foregroundColor(.white.opacity(0.35))
+                            .padding(.top, 3)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
                 .padding(.top, topInset + (compact ? 14 : 20))
                 .padding(.bottom, compact ? 12 : 16)
