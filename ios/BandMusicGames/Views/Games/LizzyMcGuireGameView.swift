@@ -361,7 +361,7 @@ private struct HeroScoutingOverlay: View {
             }
 
             VStack(spacing: 7) {
-                StatBar(label: "SHOOTING", value: min(1, 0.5 + ch.threeBonus * 4), hue: ch.hue)
+                StatBar(label: "SHOOTING", value: min(1, 0.5 + ch.threeBonus * 4 + ch.closeBonus * 1.5), hue: ch.hue)
                 StatBar(label: "DEFENSE", value: min(1, 0.42 + ch.stealBonus * 2.6), hue: ch.hue)
                 StatBar(label: "SPEED", value: min(1, ch.speed * 0.78), hue: ch.hue)
             }
