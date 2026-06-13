@@ -2,7 +2,10 @@ import SpriteKit
 
 @MainActor
 final class BallNode: SKNode {
+    /// Physics radius — rim-bounce and scoring tuning depend on this; don't grow it for looks.
     let ballRadius: CGFloat = 11
+    /// Drawn radius — larger than physics so the ball reads clearly on a phone screen.
+    let visualRadius: CGFloat = 16
     private var spriteNode: SKSpriteNode?
     private var fireGlow: SKShapeNode?
 
@@ -64,7 +67,7 @@ final class BallNode: SKNode {
     func setOnFire(_ on: Bool) {
         if on {
             guard fireGlow == nil else { return }
-            let glow = SKShapeNode(circleOfRadius: ballRadius + 7)
+            let glow = SKShapeNode(circleOfRadius: visualRadius + 7)
             glow.fillColor = SKColor(red: 1.0, green: 0.45, blue: 0.1, alpha: 0.4)
             glow.strokeColor = SKColor(red: 1.0, green: 0.72, blue: 0.15, alpha: 0.75)
             glow.lineWidth = 2
@@ -89,7 +92,7 @@ final class BallNode: SKNode {
         guard let firstTexture = HalfCourtSpriteFactory.ballSpinTextures().first else { return false }
 
         let sprite = SKSpriteNode(texture: firstTexture)
-        sprite.size = CGSize(width: ballRadius * 2.5, height: ballRadius * 2.5)
+        sprite.size = CGSize(width: visualRadius * 2.5, height: visualRadius * 2.5)
         sprite.name = "halfcourt-ball-sprite"
         addChild(sprite)
         spriteNode = sprite
@@ -111,18 +114,18 @@ final class BallNode: SKNode {
     }
 
     private func drawFallbackBody() {
-        let circle = SKShapeNode(circleOfRadius: ballRadius)
+        let circle = SKShapeNode(circleOfRadius: visualRadius)
         circle.fillColor = SKColor(red: 0.85, green: 0.42, blue: 0.11, alpha: 1.0) // D96A1B
         circle.strokeColor = SKColor(red: 0.48, green: 0.16, blue: 0.05, alpha: 1.0) // 7A2A0C
         circle.lineWidth = 1.5
         addChild(circle)
 
-        let hLine = SKShapeNode(rectOf: CGSize(width: ballRadius * 2, height: 1))
+        let hLine = SKShapeNode(rectOf: CGSize(width: visualRadius * 2, height: 1))
         hLine.fillColor = SKColor(red: 0.48, green: 0.16, blue: 0.05, alpha: 0.75)
         hLine.strokeColor = .clear
         addChild(hLine)
 
-        let vLine = SKShapeNode(rectOf: CGSize(width: 1, height: ballRadius * 2))
+        let vLine = SKShapeNode(rectOf: CGSize(width: 1, height: visualRadius * 2))
         vLine.fillColor = SKColor(red: 0.48, green: 0.16, blue: 0.05, alpha: 0.75)
         vLine.strokeColor = .clear
         addChild(vLine)
