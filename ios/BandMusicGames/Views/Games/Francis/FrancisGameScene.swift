@@ -245,6 +245,15 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
         if isCorrect {
             HapticManager.impact(.soft)
+            for idx in [a, b] {
+                if let starNode = targetsLayer.childNode(withName: "star_\(idx)") {
+                    starNode.removeAction(forKey: "starPop")
+                    starNode.run(.sequence([
+                        .scale(to: 1.5, duration: 0.07),
+                        .scale(to: 1.0, duration: 0.12),
+                    ]), withKey: "starPop")
+                }
+            }
         } else {
             HapticManager.impact(.rigid)
         }
