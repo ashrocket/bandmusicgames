@@ -344,6 +344,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
 
             if gas <= 0 {
                 gameOverTitle = "GAS OUT"
+                HapticManager.notification(.error)
                 phase = .gameOver
                 return
             }
@@ -357,6 +358,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
 
         // Win condition
         if grid.cutPercentage >= config.win {
+            HapticManager.notification(.success)
             if levelNum >= ForCuttingGrassLevels.all.count { saveWon(); phase = .win }
             else { phase = .levelComplete }
         }
