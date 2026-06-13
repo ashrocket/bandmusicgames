@@ -74,9 +74,9 @@ final class FrancisHUDNode: SKNode {
 
         let seconds = Int(timeRemaining)
         timeLabel.text = "\(seconds / 60):\(String(format: "%02d", seconds % 60)) left"
-        if timeRemaining < 30 {
-            timeLabel.fontColor = SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 1)
-        }
+        timeLabel.fontColor = timeRemaining < 30
+            ? SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 1)
+            : SKColor(red: 1.0, green: 0.82, blue: 0.48, alpha: 1)
 
         let barWidth = size.width - 48
         progressFill.path = CGPath(roundedRect: CGRect(x: 0, y: 0, width: barWidth * CGFloat(progress), height: 4), cornerWidth: 2, cornerHeight: 2, transform: nil)
