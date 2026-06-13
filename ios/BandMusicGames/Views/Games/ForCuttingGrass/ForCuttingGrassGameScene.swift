@@ -66,6 +66,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
 
     // MARK: - Runtime state
     @Published private(set) var gas: CGFloat = 0
+    private var gasLowWarned = false
     var grid = ForCuttingGrassGrid(cells: ContiguousArray<ForCuttingGrassTile>(repeating: .tall, count: ForCuttingGrassGrid.width * ForCuttingGrassGrid.height))
     var score: Int = 0
     var mower: ForCuttingGrassMower = ForCuttingGrassMower(position: .zero, velocity: .zero, facing: 0)
@@ -146,6 +147,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         gameOverTitle = "NO TRIES LEFT"
         grid = ForCuttingGrassGrid.make(for: config)
         gas = config.gasMax
+        gasLowWarned = false
         score = 0
 
         mower.position = startPosition(for: config)
@@ -342,6 +344,10 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                 gas = max(0, gas - drain * drainScale * throttle)
             }
 
+            if !gasLowWarned, config.gasMax > 0, gas / config.gasMax < 0.2 {
+                gasLowWarned = true
+                HapticManager.impact(.heavy)
+            }
             if gas <= 0 {
                 gameOverTitle = "GAS OUT"
                 HapticManager.notification(.error)
@@ -375,6 +381,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
             if distanceSq(gasCans[i].position, mower.position) < pickupRadius * pickupRadius {
                 gasCans[i].collected = true
                 gas = config.gasMax
+                gasLowWarned = false
             }
         }
 
