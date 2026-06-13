@@ -87,11 +87,13 @@ final class FrancisGameScene: SKScene, ObservableObject {
         startTime = nil
         elapsedTime = 0
         isPreviewActive = true
+        linksLayer.removeAllActions()
         resetLevel()
         showConstellationPreview()
     }
 
     private func showConstellationPreview() {
+        hud?.update(level: config, correct: 0, total: config.edges.count, timeRemaining: trackDuration, progress: 0)
         for (a, b) in config.edges {
             let start = config.stars[a]
             let end = config.stars[b]
@@ -268,7 +270,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
             correct: correctCount,
             total: config.edges.count,
             isLast: isLast,
-            onNext: { [weak self] in self?.startLevel(self!.levelNum + 1) },
+            onNext: { [weak self] in guard let self else { return }; self.startLevel(self.levelNum + 1) },
             onFinish: { [weak self] in self?.onDismiss?() }
         )
         card.position = CGPoint(x: size.width / 2, y: size.height / 2)

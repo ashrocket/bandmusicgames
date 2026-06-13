@@ -120,6 +120,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var pendingPossessionAt: TimeInterval = 0
     private var pendingResolveAt: TimeInterval?
     private var shotDeadline: TimeInterval = .infinity
+    private var stealCooldownUntil: TimeInterval = 0
 
     // MARK: - Construction
     static func make() -> HalfCourtHeroScene {
@@ -381,6 +382,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         onBeatStreak = 0
         poweredUntil = 0
         isPowered = false
+        stealCooldownUntil = 0
         resetMatch()
         phase = .playing
     }
@@ -672,6 +674,22 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             defender.updateLocomotion(moving: moved, hasBall: false)
             if !moved, possession == .home, let humanID = activeHumanID, let human = players[humanID] {
                 defender.facing = human.position.x > defender.position.x ? 1 : -1
+            }
+        }
+
+        // CPU steal attempt: primary defender close to human ball-handler
+        if possession == .home, playState == .homeLive, nowTime > stealCooldownUntil,
+           let awayID = awayIDs.first, let defender = players[awayID],
+           let humanID = activeHumanID, let human = players[humanID] {
+            let dist = hypot(defender.position.x - human.position.x, defender.position.y - human.position.y)
+            if dist < 44 {
+                let stealChance = difficulty.cpuStealRate * dt
+                if CGFloat.random(in: 0...1) < stealChance {
+                    stealCooldownUntil = nowTime + 3.5
+                    showCallout("STOLEN!", color: SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1))
+                    HapticManager.notification(.error)
+                    givePossession(to: .away)
+                }
             }
         }
     }

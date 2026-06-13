@@ -410,6 +410,8 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
             if distanceSq(skunks[i].position, mower.position) < hitRadius * hitRadius {
                 skunks[i].hitCooldownUntil = now + 3.0
                 triesRemaining -= 1
+                HapticManager.notification(.error)
+                flashRed()
                 if triesRemaining <= 0 {
                     gameOverTitle = "SKUNKED OUT!"
                     phase = .gameOver
@@ -424,6 +426,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     private func restartAfterCuttingFlowers() {
         triesRemaining -= 1
         HapticManager.notification(.error)
+        flashRed()
 
         guard triesRemaining > 0 else {
             gameOverTitle = "NO TRIES LEFT"
@@ -432,6 +435,18 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         }
 
         startLevel(levelNum, resetTries: false)
+    }
+
+    private func flashRed() {
+        let flash = SKShapeNode(rect: CGRect(origin: .zero, size: size))
+        flash.fillColor = SKColor(red: 1, green: 0.1, blue: 0.1, alpha: 0.55)
+        flash.strokeColor = .clear
+        flash.zPosition = 900
+        addChild(flash)
+        flash.run(SKAction.sequence([
+            SKAction.fadeOut(withDuration: 0.35),
+            SKAction.removeFromParent()
+        ]))
     }
 
     private func clampToLawn(_ p: CGPoint) -> CGPoint {
