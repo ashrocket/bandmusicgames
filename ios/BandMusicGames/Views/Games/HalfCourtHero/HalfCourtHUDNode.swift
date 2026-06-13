@@ -126,6 +126,16 @@ final class HalfCourtHUDNode: SKNode {
         seriesLabel.text = "SERIES \(homeWins)–\(awayWins)"
         shotClockLabel.text = shotClock > 0 ? "\(shotClock)" : ""
         shotClockLabel.fontColor = shotClock <= 3 ? .red : .yellow
+        if (1...3).contains(shotClock), shotClockLabel.action(forKey: "pulse") == nil {
+            let pulse = SKAction.sequence([
+                SKAction.scale(to: 1.3, duration: 0.18),
+                SKAction.scale(to: 1.0, duration: 0.18),
+            ])
+            shotClockLabel.run(SKAction.repeatForever(pulse), withKey: "pulse")
+        } else if shotClock == 0 || shotClock > 3 {
+            shotClockLabel.removeAction(forKey: "pulse")
+            shotClockLabel.setScale(1.0)
+        }
 
         fireBanner.isHidden = !powered
         if powered {
