@@ -199,9 +199,10 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
         if let endIdx = findNearestStar(to: location), startIdx != endIdx {
             tryConnect(startIdx, endIdx)
+            clearDragLine()
+        } else {
+            fadeDragLine()
         }
-
-        clearDragLine()
         dragStartStar = nil
     }
 
@@ -307,8 +308,10 @@ final class FrancisGameScene: SKScene, ObservableObject {
         path.addLine(to: from)
 
         let node = SKShapeNode(path: path)
-        node.strokeColor = SKColor(red: 0.96, green: 0.7, blue: 0.38, alpha: 0.6)
-        node.lineWidth = 1.5
+        node.strokeColor = SKColor(red: 0.96, green: 0.7, blue: 0.38, alpha: 0.75)
+        node.lineWidth = 2
+        node.glowWidth = 5
+        node.lineCap = .round
         targetsLayer.addChild(node)
         dragLine = node
     }
@@ -325,6 +328,15 @@ final class FrancisGameScene: SKScene, ObservableObject {
     private func clearDragLine() {
         dragLine?.removeFromParent()
         dragLine = nil
+    }
+
+    private func fadeDragLine() {
+        guard let line = dragLine else { return }
+        dragLine = nil
+        line.run(.sequence([
+            .fadeOut(withDuration: 0.18),
+            .removeFromParent(),
+        ]))
     }
 
     // MARK: - Updates
