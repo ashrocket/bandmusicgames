@@ -10,6 +10,7 @@ struct LizzyMcGuireGameView: View {
     @State private var selectedTeammate: HalfCourtHeroID? = nil
     @State private var selectStep = 1
     @State private var scoutedHero: HalfCourtHeroID?
+    @State private var difficulty: HalfCourtDifficulty = .normal
 
     var body: some View {
         ZStack {
@@ -105,6 +106,28 @@ struct LizzyMcGuireGameView: View {
                 }
 
                 Spacer()
+
+                // Difficulty selector
+                HStack(spacing: 6) {
+                    ForEach(HalfCourtDifficulty.allCases) { d in
+                        let sel = d == difficulty
+                        Button {
+                            HapticManager.selection()
+                            difficulty = d
+                        } label: {
+                            Text(d.label)
+                                .font(.system(size: compact ? 10 : 11, weight: .black, design: .monospaced))
+                                .tracking(1.5)
+                                .foregroundColor(sel ? .black : .white.opacity(0.62))
+                                .padding(.vertical, compact ? 7 : 8)
+                                .frame(maxWidth: .infinity)
+                                .background(sel ? Color(hex: "#FFD700") : Color.white.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                }
+                .padding(.horizontal, compact ? 28 : 34)
+                .padding(.bottom, 10)
 
                 Button {
                     HapticManager.impact(.medium)
@@ -253,7 +276,7 @@ struct LizzyMcGuireGameView: View {
                 // Play button
                 Button {
                     HapticManager.impact(.heavy)
-                    scene.startGame(playerID: selectedPlayer, teammateID: selectedTeammate ?? .ethan)
+                    scene.startGame(playerID: selectedPlayer, teammateID: selectedTeammate ?? .ethan, difficulty: difficulty)
                 } label: {
                     Text("PLAY")
                         .font(.system(size: compact ? 16 : 18, weight: .black, design: .monospaced))
