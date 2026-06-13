@@ -208,6 +208,10 @@ struct ForCuttingGrassGameView: View {
                         .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(.red)
 
+                    Text("\(Int(scene.grid.cutPercentage * 100))% mowed")
+                        .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.6))
+
                     Button("RETRY") {
                         scene.retry()
                     }
