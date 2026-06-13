@@ -902,6 +902,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let error = shotError(charge: charge, dist: dist, beyondArc: beyondArc,
                               contested: contested, hero: player.heroID.character)
 
+        if contested {
+            showCallout("CONTESTED!", color: SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1))
+        }
         if charge >= perfectLow && charge <= perfectHigh {
             showCallout(player.heroID.character.quip, color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
         }
