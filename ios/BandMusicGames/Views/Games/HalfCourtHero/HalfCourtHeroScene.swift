@@ -121,6 +121,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var pendingResolveAt: TimeInterval?
     private var shotDeadline: TimeInterval = .infinity
     private var stealCooldownUntil: TimeInterval = 0
+    private var humanStealCooldownUntil: TimeInterval = 0
 
     // MARK: - Construction
     static func make() -> HalfCourtHeroScene {
@@ -384,6 +385,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         poweredUntil = 0
         isPowered = false
         stealCooldownUntil = 0
+        humanStealCooldownUntil = 0
         resetMatch()
         phase = .playing
     }
@@ -840,6 +842,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 shootButton?.setCharge(0)
                 stormSky?.setCharge(0)
                 HapticManager.impact(.light)
+            } else if shootTouch == nil,
+                      playState == .awayLive,
+                      let btn = shootButton,
+                      hypot(p.x - btn.position.x, p.y - btn.position.y) <= 86 {
+                shootTouch = touch
+                tryHumanSteal()
             } else if joystickTouch == nil, p.y < size.height - 140 {
                 joystickTouch = touch
                 joystick?.begin(at: p)
@@ -917,6 +925,29 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             errorOffset: CGFloat.random(in: -error...error)
         )
         HapticManager.impact(.medium)
+    }
+
+    private func tryHumanSteal() {
+        guard nowTime > humanStealCooldownUntil,
+              let handlerID = cpuHandlerID, let handler = players[handlerID],
+              let humanID = activeHumanID, let human = players[humanID] else { return }
+
+        let dist = hypot(handler.position.x - human.position.x, handler.position.y - human.position.y)
+        humanStealCooldownUntil = nowTime + 3.0
+        guard dist < 52 else {
+            showCallout("GET CLOSER!", color: SKColor.white.withAlphaComponent(0.55))
+            return
+        }
+
+        let chance = (0.15 + human.heroID.character.stealBonus * 2.0) / (1.0 + difficulty.cpuStealRate * 0.5)
+        if CGFloat.random(in: 0...1) < chance {
+            showCallout("STEAL!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1))
+            HapticManager.notification(.success)
+            givePossession(to: .home)
+        } else {
+            showCallout("NO GOOD", color: SKColor.white.withAlphaComponent(0.5))
+            HapticManager.impact(.rigid)
+        }
     }
 
     private func shotError(charge: CGFloat, dist: CGFloat, beyondArc: Bool,
