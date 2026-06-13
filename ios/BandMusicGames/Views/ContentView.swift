@@ -156,6 +156,10 @@ struct ContentView: View {
                     Button {
                         auth.wakeSpotify()
                         auth.playbackError = nil
+                        Task {
+                            try? await Task.sleep(nanoseconds: 4_000_000_000)
+                            await auth.retryLastPlayback()
+                        }
                     } label: {
                         Text("WAKE SPOTIFY")
                             .font(.system(size: 11, weight: .bold, design: .monospaced))

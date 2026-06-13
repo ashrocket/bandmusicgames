@@ -50,8 +50,17 @@ struct ForCuttingGrassGameView: View {
             }
         }
         .background(Color(hex: "#0a1a0a").ignoresSafeArea())
-        .onAppear { scene.activate() }
-        .onDisappear { scene.deactivate() }
+        .onAppear {
+            scene.activate()
+            let uri = "spotify:track:6EJAb3oTjDFwrt1dpIJPbr"
+            if auth.accessToken != nil, !(auth.isPlaying && auth.currentTrackUri == uri) {
+                Task { await auth.playTrack(uri) }
+            }
+        }
+        .onDisappear {
+            scene.deactivate()
+            Task { await auth.pausePlayback() }
+        }
     }
 
     private var canvasZoomGesture: some Gesture {

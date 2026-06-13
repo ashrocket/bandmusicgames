@@ -34,6 +34,7 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
 
     private var pendingVerifier: String?
     private var authSession: ASWebAuthenticationSession?
+    private(set) var lastAttemptedUri: String?
 
     override init() {
         super.init()
@@ -117,7 +118,13 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
 
     // MARK: - Playback
 
+    func retryLastPlayback() async {
+        guard let uri = lastAttemptedUri else { return }
+        await playTrack(uri)
+    }
+
     func playTrack(_ uri: String) async {
+        lastAttemptedUri = uri
         guard let token = await validToken() else { return }
         var req = URLRequest(url: URL(string: "https://api.spotify.com/v1/me/player/play")!)
         req.httpMethod = "PUT"
