@@ -1123,9 +1123,17 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         )
         card.position = CGPoint(x: size.width / 2, y: size.height / 2)
         card.setScale(min(1, size.width / 440))
+        card.alpha = 0
         uiLayer.addChild(card)
         resultCard = card
         phase = .ended
+        card.run(SKAction.group([
+            SKAction.fadeIn(withDuration: 0.28),
+            SKAction.sequence([
+                SKAction.scale(by: 1.08, duration: 0.14),
+                SKAction.scale(to: min(1, size.width / 440), duration: 0.14),
+            ]),
+        ]))
     }
 
     // MARK: - Callouts

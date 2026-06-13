@@ -274,8 +274,14 @@ final class FrancisGameScene: SKScene, ObservableObject {
             onFinish: { [weak self] in self?.onDismiss?() }
         )
         card.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        card.alpha = 0
+        card.setScale(0.88)
         addChild(card)
         resultCard = card
+        card.run(SKAction.group([
+            SKAction.fadeIn(withDuration: 0.3),
+            SKAction.scale(to: 1.0, duration: 0.3),
+        ]))
     }
 
     private func createDragLine(from: CGPoint) {
