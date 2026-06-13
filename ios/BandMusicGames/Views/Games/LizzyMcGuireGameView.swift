@@ -145,7 +145,7 @@ struct LizzyMcGuireGameView: View {
                 }
                 .padding(.horizontal, compact ? 28 : 34)
 
-                Text("DRAG TO MOVE · HOLD SHOOT, RELEASE WHEN THE SKY GOES GREEN\n3 ON-BEAT SHOTS IN A ROW = ON FIRE 🔥")
+                Text("DRAG TO MOVE · HOLD SHOOT, RELEASE WHEN THE SKY GOES GREEN\n3 ON-BEAT SHOTS IN A ROW = ON FIRE 🔥\nFIRST TO 11 · BEST OF 5")
                     .font(.system(size: compact ? 9 : 10, weight: .bold, design: .monospaced))
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
