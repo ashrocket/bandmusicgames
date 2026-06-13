@@ -505,7 +505,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
         updateDepthSorting()
 
-        shootButton?.setEnabled(playState == .homeLive)
+        shootButton?.setEnabled(playState == .homeLive || playState == .awayLive)
+        shootButton?.setMode(stealing: playState == .awayLive)
         hud?.update(
             homeScore: homeScore,
             awayScore: awayScore,
@@ -1293,6 +1294,10 @@ final class ShootButtonNode: SKNode {
 
     func setEnabled(_ enabled: Bool) {
         alpha = enabled ? 1 : 0.3
+    }
+
+    func setMode(stealing: Bool) {
+        label.text = stealing ? "STEAL" : "SHOOT"
     }
 
     /// nil hides the meter; 0...1+ draws the charge sweep.
