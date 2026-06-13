@@ -849,6 +849,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                       hypot(p.x - btn.position.x, p.y - btn.position.y) <= 86 {
                 shootTouch = touch
                 tryHumanSteal()
+            } else if shootTouch == nil,
+                      let btn = shootButton,
+                      hypot(p.x - btn.position.x, p.y - btn.position.y) <= 86 {
+                // Consume button-area taps during non-interactive states so they
+                // don't accidentally spawn the joystick at the shoot button position
+                shootTouch = touch
             } else if joystickTouch == nil, p.y < size.height - 140 {
                 joystickTouch = touch
                 joystick?.begin(at: p)
