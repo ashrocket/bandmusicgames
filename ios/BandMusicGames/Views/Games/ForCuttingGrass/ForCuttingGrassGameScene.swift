@@ -403,6 +403,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                         if let tile = tileCoordinate(atWorldPos: stumps[i].position) {
                             grid.set(tile.x, tile.y, .cut)
                         }
+                        redrawTile(atWorldPos: stumps[i].position)
                         HapticManager.notification(.success)
                     }
                 }
