@@ -6,17 +6,18 @@ final class FrancisResultCardNode: SKNode {
     private let titleLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
     private let subtitleLabel = SKLabelNode(fontNamed: "AvenirNext-Italic")
     private let scoreLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
-    private let loreLabel1 = SKLabelNode(fontNamed: "AvenirNext-Regular")
-    private let loreLabel2 = SKLabelNode(fontNamed: "AvenirNext-Regular")
+    private let loreLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
     private let actionButton = SKShapeNode(rectOf: CGSize(width: 200, height: 44), cornerRadius: 22)
     private let actionLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
 
     private var onNext: (() -> Void)?
     private var onFinish: (() -> Void)?
+    private var isLast: Bool = false
 
     init(size: CGSize, config: FrancisLevelConfig, correct: Int, total: Int, isLast: Bool, onNext: @escaping () -> Void, onFinish: @escaping () -> Void) {
         self.onNext = onNext
         self.onFinish = onFinish
+        self.isLast = isLast
         super.init()
         setup(config: config, correct: correct, total: total, isLast: isLast)
     }
@@ -58,20 +59,16 @@ final class FrancisResultCardNode: SKNode {
         scoreLabel.horizontalAlignmentMode = .left
         addChild(scoreLabel)
 
-        // Lore (Simplified for SpriteKit labels)
-        loreLabel1.text = "One of the most recognizable patterns"
-        loreLabel1.fontSize = 13
-        loreLabel1.fontColor = .white.withAlphaComponent(0.85)
-        loreLabel1.position = CGPoint(x: -150, y: 60)
-        loreLabel1.horizontalAlignmentMode = .left
-        addChild(loreLabel1)
-
-        loreLabel2.text = "in the northern sky."
-        loreLabel2.fontSize = 13
-        loreLabel2.fontColor = .white.withAlphaComponent(0.85)
-        loreLabel2.position = CGPoint(x: -150, y: 40)
-        loreLabel2.horizontalAlignmentMode = .left
-        addChild(loreLabel2)
+        // Lore — actual per-constellation text with markdown stripped
+        loreLabel.text = config.lore.replacingOccurrences(of: "**", with: "")
+        loreLabel.fontSize = 12
+        loreLabel.fontColor = .white.withAlphaComponent(0.75)
+        loreLabel.position = CGPoint(x: -150, y: 80)
+        loreLabel.horizontalAlignmentMode = .left
+        loreLabel.verticalAlignmentMode = .top
+        loreLabel.numberOfLines = 0
+        loreLabel.preferredMaxLayoutWidth = 290
+        addChild(loreLabel)
 
         // Action Button
         actionButton.fillColor = SKColor(red: 1.0, green: 0.82, blue: 0.48, alpha: 1)
@@ -93,7 +90,7 @@ final class FrancisResultCardNode: SKNode {
         let location = touch.location(in: self)
         let node = atPoint(location)
         if node.name == "action_button" {
-            onNext?() // Or onFinish depending on context, handled by caller
+            if isLast { onFinish?() } else { onNext?() }
             return true
         }
         return false
