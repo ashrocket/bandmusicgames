@@ -223,7 +223,7 @@ struct ForCuttingGrassGameView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                     }
 
-                    Button("NEXT LEVEL") {
+                    Button(nextConfig != nil ? "NEXT LEVEL" : "FINISH") {
                         scene.nextLevel()
                     }
                     .buttonStyle(ForCuttingGrassButtonStyle())
