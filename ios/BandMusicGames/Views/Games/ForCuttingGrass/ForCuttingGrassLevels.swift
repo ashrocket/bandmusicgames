@@ -135,14 +135,14 @@ struct ForCuttingGrassGrid {
         var cells = ContiguousArray<ForCuttingGrassTile>(repeating: .tall, count: width * height)
         if config.n == 1 {
             // High-Quality Garden Layout (Ref Image: ba.png)
-            
+
             // 1. House at the top (2 tiles high)
             for y in 0...1 {
                 for x in 0..<width {
                     cells[y * width + x] = .house
                 }
             }
-            
+
             // 2. Thick Flower beds on the sides (2 tiles wide)
             for y in 2..<height {
                 // Left bed
@@ -154,21 +154,77 @@ struct ForCuttingGrassGrid {
                     cells[y * width + x] = .garden
                 }
             }
-            
+
             // 3. Flower bed at the bottom (2 tiles high)
             for y in (height - 3)..<(height - 1) {
                 for x in 0..<width {
                     cells[y * width + x] = .garden
                 }
             }
-            
+
             // 4. Stone path at the very bottom (1 tile high)
             for x in 0..<width {
                 cells[(height - 1) * width + x] = .garden // Paving
             }
-            
+
             // 5. Birdbath obstacle (specifically on the left side of lawn)
             cells[14 * width + 2] = .birdbath
+
+        } else if config.n == 2 {
+            // Long Backyard — two garden strips create zones to route around while managing gas
+            for x in 4...10 {
+                cells[4 * width + x] = .garden
+            }
+            for x in 4...10 {
+                cells[20 * width + x] = .garden
+            }
+
+        } else if config.n == 3 {
+            // Stump Trouble — shed in top-left corner + birdbath on right
+            for y in 0...2 {
+                for x in 0...3 {
+                    cells[y * width + x] = .house
+                }
+            }
+            cells[4 * width + 12] = .birdbath
+
+        } else if config.n == 4 {
+            // Cricket Season — patio nook at top-right + a partial mid-fence with a gap
+            for y in 0...3 {
+                for x in 11...14 {
+                    cells[y * width + x] = .garden
+                }
+            }
+            // Mid-fence: two sections with 3-tile gap at center (x=6..8)
+            for x in 0...5 {
+                cells[12 * width + x] = .garden
+            }
+            for x in 9...14 {
+                cells[12 * width + x] = .garden
+            }
+
+        } else if config.n == 5 {
+            // The Final Yard — most complex: corner structures + central obstacles
+            for y in 0...2 {
+                for x in 0...2 {
+                    cells[y * width + x] = .house
+                }
+            }
+            for y in 0...2 {
+                for x in 12...14 {
+                    cells[y * width + x] = .house
+                }
+            }
+            // Horizontal garden strip near top with gap in center
+            for x in 3...5 {
+                cells[5 * width + x] = .garden
+            }
+            for x in 9...11 {
+                cells[5 * width + x] = .garden
+            }
+            // Birdbaths dividing the yard vertically
+            cells[9 * width + 7] = .birdbath
+            cells[15 * width + 7] = .birdbath
         }
         return ForCuttingGrassGrid(cells: cells)
     }
