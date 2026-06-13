@@ -39,6 +39,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
     private var dragStartStar: Int?
     private var startTime: Date?
     private var elapsedTime: TimeInterval = 0
+    private var isPreviewActive = false
 
     var correctCount: Int {
         links.filter { link in
@@ -83,9 +84,37 @@ final class FrancisGameScene: SKScene, ObservableObject {
     func startLevel(_ n: Int) {
         levelNum = max(1, min(n, FrancisLevels.all.count))
         phase = .playing
-        startTime = Date()
+        startTime = nil
         elapsedTime = 0
+        isPreviewActive = true
         resetLevel()
+        showConstellationPreview()
+    }
+
+    private func showConstellationPreview() {
+        for (a, b) in config.edges {
+            let start = config.stars[a]
+            let end = config.stars[b]
+            let path = CGMutablePath()
+            path.move(to: CGPoint(x: start.nx * size.width, y: (1.0 - start.ny) * size.height))
+            path.addLine(to: CGPoint(x: end.nx * size.width, y: (1.0 - end.ny) * size.height))
+            let node = SKShapeNode(path: path)
+            node.strokeColor = SKColor(red: 0.55, green: 0.80, blue: 1.0, alpha: 0.9)
+            node.lineWidth = 2.5
+            node.name = "preview_line"
+            linksLayer.addChild(node)
+        }
+        linksLayer.run(SKAction.sequence([
+            SKAction.wait(forDuration: 1.6),
+            SKAction.fadeOut(withDuration: 0.4),
+            SKAction.run { [weak self] in
+                guard let self else { return }
+                self.linksLayer.removeAllChildren()
+                self.linksLayer.alpha = 1
+                self.isPreviewActive = false
+                self.startTime = Date()
+            },
+        ]))
     }
 
     private func resetLevel() {
@@ -145,7 +174,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
 
-        if phase == .playing {
+        if phase == .playing, !isPreviewActive {
             let location = touch.location(in: targetsLayer)
             if let starIndex = findNearestStar(to: location) {
                 dragStartStar = starIndex
@@ -259,7 +288,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
     override func update(_ currentTime: TimeInterval) {
         updateMotion()
 
-        if phase == .playing, let start = startTime {
+        if phase == .playing, let start = startTime, !isPreviewActive {
             elapsedTime = -start.timeIntervalSinceNow
             let remaining = max(0, trackDuration - elapsedTime)
             hud?.update(
