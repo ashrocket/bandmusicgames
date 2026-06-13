@@ -243,6 +243,12 @@ final class FrancisGameScene: SKScene, ObservableObject {
         node.lineWidth = 2
         linksLayer.addChild(node)
 
+        if isCorrect {
+            HapticManager.impact(.soft)
+        } else {
+            HapticManager.impact(.rigid)
+        }
+
         if !isCorrect {
             let key = (min(a, b), max(a, b))
             let nudge: CGFloat = 3
@@ -262,6 +268,8 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
     private func endLevel() {
         phase = .ended
+        let won = correctCount == config.edges.count
+        HapticManager.notification(won ? .success : .error)
 
         let isLast = levelNum == FrancisLevels.all.count
         let card = FrancisResultCardNode(
