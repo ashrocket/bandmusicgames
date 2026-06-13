@@ -17,7 +17,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
     // MARK: - Constants
     private let ambientCount = 75
-    private let trackDuration: TimeInterval = 212 // 3:32
+    private var trackDuration: TimeInterval { config.timeLimit }
 
     // MARK: - Nodes
     private let worldNode = SKNode()

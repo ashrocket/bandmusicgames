@@ -15,6 +15,7 @@ struct FrancisLevelConfig {
     let stars: [FrancisStarConfig]
     let edges: [(Int, Int)]
     let lore: String
+    let timeLimit: TimeInterval
 }
 
 enum FrancisLevels {
@@ -32,7 +33,8 @@ enum FrancisLevels {
                 FrancisStarConfig(nx: 0.88, ny: 0.38, name: "ε · Segin · unnamed")
             ],
             edges: [(0, 1), (1, 2), (2, 3), (3, 4)],
-            lore: "Her distinctive **W** shape is one of the easiest patterns to find in the northern sky. Visible all year round from most of the Northern Hemisphere, best seen in autumn."
+            lore: "Her distinctive **W** shape is one of the easiest patterns to find in the northern sky. Visible all year round from most of the Northern Hemisphere, best seen in autumn.",
+            timeLimit: 60
         ),
         FrancisLevelConfig(
             n: 2,
@@ -47,7 +49,8 @@ enum FrancisLevels {
                 FrancisStarConfig(nx: 0.5, ny: 0.8, name: "β · Albireo · \"the beak\"")
             ],
             edges: [(0, 1), (1, 2), (1, 3), (1, 4)],
-            lore: "Deneb, its brightest star, marks the swan's tail and is one of the three stars in the Summer Triangle. It is often depicted flying south along the Milky Way."
+            lore: "Deneb, its brightest star, marks the swan's tail and is one of the three stars in the Summer Triangle. It is often depicted flying south along the Milky Way.",
+            timeLimit: 60
         ),
         FrancisLevelConfig(
             n: 3,
@@ -64,7 +67,8 @@ enum FrancisLevels {
                 FrancisStarConfig(nx: 0.74, ny: 0.75, name: "β · Rigel · \"the left foot\"")
             ],
             edges: [(0, 2), (1, 4), (2, 3), (3, 4), (2, 5), (4, 6)],
-            lore: "Rigel and Betelgeuse are contrasting giants — Rigel burns blue-white while Betelgeuse glows red. Betelgeuse is a red supergiant expected to explode as a supernova within 100,000 years."
+            lore: "Rigel and Betelgeuse are contrasting giants — Rigel burns blue-white while Betelgeuse glows red. Betelgeuse is a red supergiant expected to explode as a supernova within 100,000 years.",
+            timeLimit: 90
         ),
         FrancisLevelConfig(
             n: 4,
@@ -81,7 +85,8 @@ enum FrancisLevels {
                 FrancisStarConfig(nx: 0.82, ny: 0.48, name: "β · Denebola · \"the lion's tail\"")
             ],
             edges: [(0, 1), (1, 2), (2, 3), (3, 4), (0, 5), (5, 6)],
-            lore: "Regulus, the brightest star in Leo, sits almost exactly on the ecliptic — the Sun's annual path across the sky. It spins so fast that it bulges noticeably at its equator."
+            lore: "Regulus, the brightest star in Leo, sits almost exactly on the ecliptic — the Sun's annual path across the sky. It spins so fast that it bulges noticeably at its equator.",
+            timeLimit: 90
         ),
         FrancisLevelConfig(
             n: 5,
@@ -98,7 +103,8 @@ enum FrancisLevels {
                 FrancisStarConfig(nx: 0.54, ny: 0.78, name: "υ · Upsilon Scorpii · unnamed")
             ],
             edges: [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6)],
-            lore: "Antares, a red supergiant at the scorpion's heart, is so large that if placed at the center of our solar system, it would engulf Mercury, Venus, Earth, and Mars."
+            lore: "Antares, a red supergiant at the scorpion's heart, is so large that if placed at the center of our solar system, it would engulf Mercury, Venus, Earth, and Mars.",
+            timeLimit: 120
         )
     ]
 }
