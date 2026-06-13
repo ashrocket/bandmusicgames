@@ -423,6 +423,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
 
     private func restartAfterCuttingFlowers() {
         triesRemaining -= 1
+        HapticManager.notification(.error)
 
         guard triesRemaining > 0 else {
             gameOverTitle = "NO TRIES LEFT"
