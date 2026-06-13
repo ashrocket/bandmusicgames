@@ -282,6 +282,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
     }
 
     private func endLevel() {
+        guard phase == .playing else { return }
         phase = .ended
         let won = correctCount == config.edges.count
         HapticManager.notification(won ? .success : .error)
