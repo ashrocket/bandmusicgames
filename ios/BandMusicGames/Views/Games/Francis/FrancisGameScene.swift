@@ -235,9 +235,27 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
         let node = SKShapeNode(path: path)
         let isCorrect = config.edges.contains { ($0.0 == a && $0.1 == b) || ($0.0 == b && $0.1 == a) }
-        node.strokeColor = isCorrect ? SKColor(red: 0.65, green: 0.94, blue: 0.65, alpha: 0.85) : SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 0.6)
+        node.strokeColor = isCorrect
+            ? SKColor(red: 0.65, green: 0.94, blue: 0.65, alpha: 0.85)
+            : SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 0.6)
         node.lineWidth = 2
         linksLayer.addChild(node)
+
+        if !isCorrect {
+            let key = (min(a, b), max(a, b))
+            let nudge: CGFloat = 3
+            node.run(SKAction.sequence([
+                SKAction.moveBy(x: -nudge, y: 0, duration: 0.05),
+                SKAction.moveBy(x: nudge * 2, y: 0, duration: 0.06),
+                SKAction.moveBy(x: -nudge, y: 0, duration: 0.05),
+                SKAction.wait(forDuration: 1.0),
+                SKAction.fadeOut(withDuration: 0.4),
+                SKAction.removeFromParent(),
+            ]))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.65) { [weak self] in
+                self?.links.removeAll { $0 == key }
+            }
+        }
     }
 
     private func endLevel() {
