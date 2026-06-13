@@ -254,9 +254,10 @@ final class FrancisGameScene: SKScene, ObservableObject {
             for idx in [a, b] {
                 if let starNode = targetsLayer.childNode(withName: "star_\(idx)") {
                     starNode.removeAction(forKey: "starPop")
+                    // Pop up then settle at 1.25x — stars stay "lit" once connected
                     starNode.run(.sequence([
                         .scale(to: 1.5, duration: 0.07),
-                        .scale(to: 1.0, duration: 0.12),
+                        .scale(to: 1.25, duration: 0.14),
                     ]), withKey: "starPop")
                 }
             }
@@ -287,6 +288,9 @@ final class FrancisGameScene: SKScene, ObservableObject {
         let won = correctCount == config.edges.count
         HapticManager.notification(won ? .success : .error)
 
+        let cardDelay: TimeInterval = won ? 0.55 : 0.0
+        if won { burstStars() }
+
         let isLast = levelNum == FrancisLevels.all.count
         let card = FrancisResultCardNode(
             size: size,
@@ -302,10 +306,25 @@ final class FrancisGameScene: SKScene, ObservableObject {
         card.setScale(0.88)
         addChild(card)
         resultCard = card
-        card.run(SKAction.group([
-            SKAction.fadeIn(withDuration: 0.3),
-            SKAction.scale(to: 1.0, duration: 0.3),
+        card.run(SKAction.sequence([
+            SKAction.wait(forDuration: cardDelay),
+            SKAction.group([
+                SKAction.fadeIn(withDuration: 0.3),
+                SKAction.scale(to: 1.0, duration: 0.3),
+            ]),
         ]))
+    }
+
+    private func burstStars() {
+        for i in 0..<config.stars.count {
+            guard let starNode = targetsLayer.childNode(withName: "star_\(i)") else { continue }
+            let delay = TimeInterval(i) * 0.04
+            starNode.run(.sequence([
+                .wait(forDuration: delay),
+                .scale(to: 2.0, duration: 0.12),
+                .scale(to: 1.4, duration: 0.18),
+            ]))
+        }
     }
 
     private func createDragLine(from: CGPoint) {

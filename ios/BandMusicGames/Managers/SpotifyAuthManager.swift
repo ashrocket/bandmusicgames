@@ -125,6 +125,7 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
 
     func playTrack(_ uri: String) async {
         lastAttemptedUri = uri
+        playbackError = nil
         guard let token = await validToken() else { return }
         var req = URLRequest(url: URL(string: "https://api.spotify.com/v1/me/player/play")!)
         req.httpMethod = "PUT"
