@@ -142,6 +142,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shoes: Color(hex: "#2A2A2A"),
                 hairStyle: .bob,
                 threeBonus: 0.10,
+                closeBonus: 0,
                 stealBonus: 0,
                 speed: 1.0,
                 height: 175,
@@ -162,6 +163,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shoes: .white,
                 hairStyle: .long,
                 threeBonus: 0,
+                closeBonus: 0,
                 stealBonus: 0.20,
                 speed: 1.05,
                 height: 180,
@@ -182,6 +184,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shoes: Color(hex: "#222222"),
                 hairStyle: .beanie,
                 threeBonus: 0,
+                closeBonus: 0.18,
                 stealBonus: 0,
                 speed: 1.0,
                 height: 185,
@@ -202,6 +205,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shoes: Color(hex: "#9B59B6"),
                 hairStyle: .glasses,
                 threeBonus: 0.08,
+                closeBonus: 0,
                 stealBonus: 0,
                 speed: 0.95,
                 height: 174,
@@ -225,7 +229,8 @@ struct HalfCourtHero {
     let shoes: Color
     let hairStyle: HairStyle
     let threeBonus: CGFloat
-    let stealBonus: CGFloat
+    let closeBonus: CGFloat  // error reduction on non-arc shots
+    let stealBonus: CGFloat  // extra contest pressure on CPU shots
     let speed: CGFloat
     let height: CGFloat
     let quip: String

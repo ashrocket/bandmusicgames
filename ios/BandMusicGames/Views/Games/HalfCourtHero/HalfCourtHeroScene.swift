@@ -612,7 +612,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 var error: CGFloat = 17 + dist * 0.05
                 if let humanID = activeHumanID, let human = players[humanID],
                    hypot(human.position.x - handler.position.x, human.position.y - handler.position.y) < 64 {
-                    error += 18
+                    let lockdownBonus = humanID.character.stealBonus
+                    error += 18 * (1 + lockdownBonus)
                     showCallout("CONTESTED!", color: SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 1))
                 }
                 playState = .awayShot
@@ -896,6 +897,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         error += dist * 0.035
         if contested { error += 15 }
         if beyondArc { error *= (1 - hero.threeBonus) }
+        if !beyondArc { error *= (1 - hero.closeBonus) }
         if isPowered { error *= 0.4 }
         return error
     }
