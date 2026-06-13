@@ -115,6 +115,14 @@ enum HalfCourtDifficulty: String, CaseIterable, Identifiable {
         case .hard: return 0.32
         }
     }
+
+    var shotClockSeconds: TimeInterval {
+        switch self {
+        case .easy: return 13
+        case .normal: return 10
+        case .hard: return 7
+        }
+    }
 }
 
 enum HalfCourtHeroID: String, CaseIterable, Identifiable {
