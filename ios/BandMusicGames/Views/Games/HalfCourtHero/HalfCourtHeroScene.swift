@@ -1103,6 +1103,15 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
     private func resolveGame() {
         let isSeriesOver = homeSeriesWins >= seriesWinTarget || awaySeriesWins >= seriesWinTarget
+        if isSeriesOver {
+            if homeSeriesWins >= seriesWinTarget {
+                HapticManager.notification(.success)
+                HapticManager.impact(.heavy)
+                flashScreen()
+            } else {
+                HapticManager.notification(.error)
+            }
+        }
         let card = HalfCourtResultCardNode(
             homeScore: homeScore,
             awayScore: awayScore,

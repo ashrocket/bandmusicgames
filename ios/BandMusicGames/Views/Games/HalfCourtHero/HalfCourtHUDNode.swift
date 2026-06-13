@@ -14,6 +14,8 @@ final class HalfCourtHUDNode: SKNode {
     private let seriesLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
     private let shotClockLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
     private let fireBanner = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+    private var lastHomeScore = -1
+    private var lastAwayScore = -1
 
     init(size: CGSize) {
         super.init()
@@ -105,8 +107,22 @@ final class HalfCourtHUDNode: SKNode {
         powered: Bool,
         powerRemaining: Int
     ) {
-        homeScoreLabel.text = "\(homeScore)"
-        awayScoreLabel.text = "\(awayScore)"
+        if homeScore != lastHomeScore {
+            lastHomeScore = homeScore
+            homeScoreLabel.text = "\(homeScore)"
+            if homeScore > 0 {
+                homeScoreLabel.removeAction(forKey: "bump")
+                homeScoreLabel.run(.sequence([.scale(to: 1.4, duration: 0.07), .scale(to: 1.0, duration: 0.13)]), withKey: "bump")
+            }
+        }
+        if awayScore != lastAwayScore {
+            lastAwayScore = awayScore
+            awayScoreLabel.text = "\(awayScore)"
+            if awayScore > 0 {
+                awayScoreLabel.removeAction(forKey: "bump")
+                awayScoreLabel.run(.sequence([.scale(to: 1.4, duration: 0.07), .scale(to: 1.0, duration: 0.13)]), withKey: "bump")
+            }
+        }
         seriesLabel.text = "SERIES \(homeWins)–\(awayWins)"
         shotClockLabel.text = shotClock > 0 ? "\(shotClock)" : ""
         shotClockLabel.fontColor = shotClock <= 3 ? .red : .yellow
