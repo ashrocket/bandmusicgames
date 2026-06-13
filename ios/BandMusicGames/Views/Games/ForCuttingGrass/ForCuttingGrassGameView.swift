@@ -195,9 +195,33 @@ struct ForCuttingGrassGameView: View {
 
             VStack(spacing: 24) {
                 if scene.phase == .levelComplete {
+                    let nextIdx = scene.levelNum  // levelNum is 1-indexed; after completion next = levelNum
+                    let nextConfig = nextIdx < ForCuttingGrassLevels.all.count
+                        ? ForCuttingGrassLevels.all[nextIdx] : nil
+
                     Text("LEVEL COMPLETE")
                         .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(.white)
+
+                    if let next = nextConfig {
+                        VStack(spacing: 6) {
+                            Text("NEXT UP")
+                                .font(.system(size: 10, weight: .black, design: .monospaced))
+                                .tracking(2.5)
+                                .foregroundColor(Color(hex: "#8bc44a").opacity(0.8))
+                            Text(next.sub.uppercased())
+                                .font(.system(size: 15, weight: .black, design: .monospaced))
+                                .foregroundColor(.white)
+                            Text(next.desc)
+                                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.white.opacity(0.55))
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(Color.white.opacity(0.07))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
 
                     Button("NEXT LEVEL") {
                         scene.nextLevel()
@@ -220,6 +244,11 @@ struct ForCuttingGrassGameView: View {
                     Text("YOU WON!")
                         .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(Color(hex: "#ffd27a"))
+
+                    Text("ALL 5 YARDS MOWED")
+                        .font(.system(size: 12, weight: .black, design: .monospaced))
+                        .tracking(2)
+                        .foregroundColor(.white.opacity(0.52))
 
                     Button("PLAY AGAIN") {
                         scene.replayFromWin()
