@@ -190,7 +190,7 @@ struct ForCuttingGrassGameView: View {
     }
 
     private var phaseOverlay: some View {
-        ZStack {
+        ZStack(alignment: .topTrailing) {
             Color.black.opacity(0.6).ignoresSafeArea()
 
             VStack(spacing: 24) {
@@ -222,6 +222,18 @@ struct ForCuttingGrassGameView: View {
                     }
                     .buttonStyle(ForCuttingGrassButtonStyle())
                 }
+
+                Button("QUIT") { dismiss() }
+                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.52))
+            }
+
+            Button { dismiss() } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 28))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.white, Color.black.opacity(0.5))
+                    .padding(16)
             }
         }
     }
