@@ -68,8 +68,8 @@ final class FrancisHUDNode: SKNode {
     }
 
     func update(level: FrancisLevelConfig, correct: Int, total: Int, timeRemaining: TimeInterval, progress: Double) {
-        titleLabel.text = "Francis" // Or level.constellationName
-        artistLabel.text = "Darger"
+        titleLabel.text = level.constellationName
+        artistLabel.text = level.subtitle
         matchLabel.text = "\(correct) / \(total)"
 
         let seconds = Int(timeRemaining)
