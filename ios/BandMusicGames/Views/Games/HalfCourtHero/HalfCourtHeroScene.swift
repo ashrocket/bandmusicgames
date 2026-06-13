@@ -19,7 +19,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private let beatBPM: Double = 112          // Nara's Room tempo — tune to taste
     private let onBeatWindow: TimeInterval = 0.14
     private let powerUpDuration: TimeInterval = 12
-    private let shotClockSeconds: TimeInterval = 10
+    private var shotClockSeconds: TimeInterval = 10
     private var chargeRate: CGFloat = 1.55
     private var greenLow: CGFloat = 0.52
     private var greenHigh: CGFloat = 0.76
@@ -367,6 +367,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         perfectHigh = mid + 0.05
         chargeRate = d.chargeRate
         cpuShotMult = d.cpuShotMultiplier
+        shotClockSeconds = d.shotClockSeconds
 
         shootButton?.reconfigureArcs(greenLow: greenLow, greenHigh: greenHigh,
                                       perfectLow: perfectLow, perfectHigh: perfectHigh)
