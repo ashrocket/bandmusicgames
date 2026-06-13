@@ -1075,6 +1075,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         } else {
             awayScore += points
             showCallout("CPU +\(points)", color: SKColor(red: 1.0, green: 0.42, blue: 0.21, alpha: 1))
+            HapticManager.impact(.medium)
             if let id = cpuHandlerID {
                 players[id]?.playAnimationOnce(.celebrate)
             }
@@ -1095,6 +1096,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         if ball.shotTeam == .home {
             showCallout(["MISS", "OFF THE RIM", "NO GOOD"].randomElement() ?? "MISS",
                         color: SKColor.white.withAlphaComponent(0.6))
+            HapticManager.impact(.medium)
         }
         scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 0.6)
     }
