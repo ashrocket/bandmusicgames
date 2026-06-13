@@ -78,6 +78,17 @@ final class FrancisHUDNode: SKNode {
             ? SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 1)
             : SKColor(red: 1.0, green: 0.82, blue: 0.48, alpha: 1)
 
+        if timeRemaining < 10 && timeLabel.action(forKey: "pulse") == nil {
+            let pulse = SKAction.sequence([
+                SKAction.scale(to: 1.2, duration: 0.25),
+                SKAction.scale(to: 1.0, duration: 0.25),
+            ])
+            timeLabel.run(SKAction.repeatForever(pulse), withKey: "pulse")
+        } else if timeRemaining >= 10 {
+            timeLabel.removeAction(forKey: "pulse")
+            timeLabel.setScale(1.0)
+        }
+
         let barWidth = size.width - 48
         progressFill.path = CGPath(roundedRect: CGRect(x: 0, y: 0, width: barWidth * CGFloat(progress), height: 4), cornerWidth: 2, cornerHeight: 2, transform: nil)
     }
