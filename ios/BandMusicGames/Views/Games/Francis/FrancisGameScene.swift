@@ -206,6 +206,11 @@ final class FrancisGameScene: SKScene, ObservableObject {
         dragStartStar = nil
     }
 
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        fadeDragLine()
+        dragStartStar = nil
+    }
+
     private func findNearestStar(to point: CGPoint) -> Int? {
         for (index, star) in config.stars.enumerated() {
             let starPos = CGPoint(x: star.nx * size.width, y: (1.0 - star.ny) * size.height)
