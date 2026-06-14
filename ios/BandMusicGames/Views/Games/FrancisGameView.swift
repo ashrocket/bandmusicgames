@@ -42,6 +42,7 @@ struct FrancisGameView: View {
         .onDisappear {
             Task { await auth.pausePlayback() }
         }
+        .spotifyErrorBanner()
     }
 
     private var pressPlayOverlay: some View {

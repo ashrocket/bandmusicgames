@@ -42,6 +42,10 @@ struct ForCuttingGrassGameView: View {
                         }
                         .transition(.opacity)
                     }
+
+                    if scene.phase == .playing && scene.needsReplant {
+                        replantBanner
+                    }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
@@ -70,6 +74,14 @@ struct ForCuttingGrassGameView: View {
             scene.deactivate()
             Task { await auth.pausePlayback() }
         }
+        .onChange(of: scene.needsReplant) { needs in
+            if needs {
+                Task { await auth.pausePlayback() }
+            } else if auth.accessToken != nil {
+                Task { await auth.playTrack("spotify:track:6EJAb3oTjDFwrt1dpIJPbr") }
+            }
+        }
+        .spotifyErrorBanner()
     }
 
     private var canvasZoomGesture: some Gesture {
@@ -281,6 +293,28 @@ struct ForCuttingGrassGameView: View {
         }
     }
 
+    private var replantBanner: some View {
+        VStack {
+            HStack(spacing: 8) {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.system(size: 15, weight: .black))
+                    .foregroundColor(Color(hex: "#ffd27a"))
+                Text("GO TO THE SHED TO REPLANT")
+                    .font(.system(size: 12, weight: .black, design: .monospaced))
+                    .foregroundColor(.white)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 9)
+            .background(Color(red: 0.55, green: 0.08, blue: 0.08, opacity: 0.94))
+            .clipShape(Capsule())
+            .shadow(color: .black.opacity(0.45), radius: 8)
+            Spacer()
+        }
+        .padding(.top, 58)
+        .transition(.move(edge: .top).combined(with: .opacity))
+        .animation(.easeInOut(duration: 0.3), value: scene.needsReplant)
+    }
+
     private var levelOneTutorialCard: some View {
         VStack(spacing: 12) {
             Text("🌸  DON'T CUT THE FLOWERS!  🌸")
@@ -288,7 +322,7 @@ struct ForCuttingGrassGameView: View {
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
 
-            Text("Mow the green grass but stay off\nthe flower beds — hit one and\nyou'll lose a try.")
+            Text("Mow the green grass but stay off\nthe flower beds — hit one and\nyou'll need to go to the SHED\nto replant before you can continue.")
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(.white.opacity(0.82))
                 .multilineTextAlignment(.center)

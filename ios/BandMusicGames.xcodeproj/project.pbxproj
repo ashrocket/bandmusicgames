@@ -21,6 +21,7 @@
 		31AA3FACB02EFCA7DF5030DC /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = DB0C50A18C596F6F226F4EA8 /* manifest.json */; };
 		322040669093637ABD0C5D8B /* ForCuttingGrassRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CAB0A5FEF74F7A89D13435 /* ForCuttingGrassRenderer.swift */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
+		D54E0F078034448EB3FABCC4 /* SpotifyErrorBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F673AE8E2744948A7E43F9 /* SpotifyErrorBanner.swift */; };
 		44CD12EC1DF87386F9EE66E4 /* HalfCourtHUDNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CB28A4323E659BD953281 /* HalfCourtHUDNode.swift */; };
 		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
 		F4552C5046D74C00B5E66ED4 /* LobbyPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3372F06D07C64D01888CEE0F /* LobbyPreviewPlayer.swift */; };
@@ -83,6 +84,7 @@
 		3C7238AEDFCD2DDC7C2750E4 /* FrancisGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameScene.swift; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
 		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
+		40F673AE8E2744948A7E43F9 /* SpotifyErrorBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyErrorBanner.swift; sourceTree = "<group>"; };
 		4B0FEFEAE20F717F1B193FC2 /* mower-body-test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body-test.png"; sourceTree = "<group>"; };
 		4D0C48531D9DA41E250F59D8 /* JukeboxLineKnot.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JukeboxLineKnot.json; sourceTree = "<group>"; };
 		52C830562785E9E848F6E9F9 /* ForCuttingGrassLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassLevels.swift; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				179F02B60F81160662AA2202 /* LottieAnimationPlayer.swift */,
 				CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */,
 				494493654D27227DBC1E24DB /* SpotifySheetView.swift */,
+				40F673AE8E2744948A7E43F9 /* SpotifyErrorBanner.swift */,
 				78F249AC8A96E504E2113CCA /* Games */,
 			);
 			path = Views;
@@ -489,6 +492,7 @@
 				BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */,
 				48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */,
 				39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */,
+				D54E0F078034448EB3FABCC4 /* SpotifyErrorBanner.swift in Sources */,
 				A974458E68E8B84835D08791 /* StormSkyNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -667,7 +671,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20260520230000;
+				CURRENT_PROJECT_VERSION = 20260614173937;
 				DEVELOPMENT_TEAM = 6P24N3R4TP;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -690,7 +694,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20260520230000;
+				CURRENT_PROJECT_VERSION = 20260614173937;
 				DEVELOPMENT_TEAM = 6P24N3R4TP;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;

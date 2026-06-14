@@ -115,6 +115,7 @@ struct LizzyMcGuireGameView: View {
         .onDisappear {
             Task { await auth.pausePlayback() }
         }
+        .spotifyErrorBanner()
     }
 
     private var closeButton: some View {
