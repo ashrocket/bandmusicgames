@@ -195,6 +195,26 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
         }
     }
 
+    func fetchPlaybackState() async {
+        guard let token = await validToken() else { return }
+        var req = URLRequest(url: URL(string: "https://api.spotify.com/v1/me/player")!)
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        do {
+            let (data, response) = try await URLSession.shared.data(for: req)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { return }
+            struct PlayerState: Decodable {
+                let is_playing: Bool
+                struct Item: Decodable { let uri: String }
+                let item: Item?
+            }
+            let state = try JSONDecoder().decode(PlayerState.self, from: data)
+            isPlaying = state.is_playing
+            if let uri = state.item?.uri { currentTrackUri = uri }
+        } catch {
+            // Non-critical — isPlaying stays at last known value
+        }
+    }
+
     // MARK: - Private
 
     private func validToken() async -> String? {
