@@ -14,6 +14,9 @@ struct LizzyMcGuireGameView: View {
     @State private var hudOpacity: Double = 0
     @State private var zoomLevel: CGFloat = 1.0
     @State private var isFrozen: Bool = false
+    @State private var panOffset: CGSize = .zero
+    @State private var dragBase: CGSize = .zero
+    @State private var overlayPinchBase: CGFloat = 1.0
 
     var body: some View {
         ZStack {
@@ -25,6 +28,7 @@ struct LizzyMcGuireGameView: View {
             )
             .ignoresSafeArea()
             .scaleEffect(zoomLevel, anchor: .center)
+            .offset(x: panOffset.width, y: panOffset.height)
             .gesture(
                 MagnificationGesture(minimumScaleDelta: 0.03)
                     .onChanged { value in
@@ -32,7 +36,7 @@ struct LizzyMcGuireGameView: View {
                         var tx = Transaction()
                         tx.disablesAnimations = true
                         withTransaction(tx) {
-                            zoomLevel = max(1.0, min(3.5, value))
+                            zoomLevel = max(1.0, min(5.0, value))
                         }
                         if !isFrozen {
                             isFrozen = true
@@ -42,8 +46,7 @@ struct LizzyMcGuireGameView: View {
                     }
                     .onEnded { value in
                         guard scene.phase == .playing else { return }
-                        zoomLevel = max(1.0, min(3.5, value))
-                        // stay frozen — explicit tap needed to resume
+                        zoomLevel = max(1.0, min(5.0, value))
                     }
             )
 
@@ -93,10 +96,11 @@ struct LizzyMcGuireGameView: View {
                 }
             } else {
                 hudOpacity = 0
-                // clear any zoom if game phase exits
                 if isFrozen {
                     isFrozen = false
                     zoomLevel = 1.0
+                    panOffset = .zero
+                    dragBase = .zero
                     scene.isPaused = false
                 }
             }
@@ -347,6 +351,19 @@ struct LizzyMcGuireGameView: View {
         }
     }
 
+    private func resumeFromFreeze() {
+        withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+            zoomLevel = 1.0
+            isFrozen = false
+        }
+        panOffset = .zero
+        dragBase = .zero
+        scene.isPaused = false
+        if auth.accessToken != nil {
+            Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
+        }
+    }
+
     private var freezeOverlay: some View {
         ZStack {
             Color.black.opacity(0.48).ignoresSafeArea()
@@ -356,27 +373,48 @@ struct LizzyMcGuireGameView: View {
                     .font(.system(size: 36, weight: .light))
                     .foregroundColor(.white.opacity(0.75))
 
-                Text("TAP TO RESUME")
+                Text("DOUBLE-TAP TO RESUME")
                     .font(.system(size: 16, weight: .black, design: .monospaced))
                     .tracking(3.5)
                     .foregroundColor(.white)
 
-                Text("zoom · \(String(format: "%.1f", zoomLevel))×")
+                Text("zoom · \(String(format: "%.1f", zoomLevel))×  ·  drag to pan")
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundColor(.white.opacity(0.45))
             }
+            .allowsHitTesting(false)
         }
         .contentShape(Rectangle())
-        .onTapGesture {
-            withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
-                zoomLevel = 1.0
-                isFrozen = false
-            }
-            scene.isPaused = false
-            if auth.accessToken != nil {
-                Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
-            }
+        .onTapGesture(count: 2) {
+            resumeFromFreeze()
         }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 8)
+                .onChanged { value in
+                    panOffset = CGSize(
+                        width: dragBase.width + value.translation.width,
+                        height: dragBase.height + value.translation.height
+                    )
+                }
+                .onEnded { _ in
+                    dragBase = panOffset
+                }
+        )
+        .simultaneousGesture(
+            MagnificationGesture(minimumScaleDelta: 0.03)
+                .onChanged { value in
+                    let delta = value / overlayPinchBase
+                    overlayPinchBase = value
+                    var tx = Transaction()
+                    tx.disablesAnimations = true
+                    withTransaction(tx) {
+                        zoomLevel = max(1.0, min(5.0, zoomLevel * delta))
+                    }
+                }
+                .onEnded { _ in
+                    overlayPinchBase = 1.0
+                }
+        )
     }
 
     private var controlsHUD: some View {
@@ -425,6 +463,7 @@ struct LizzyMcGuireGameView: View {
             .overlay(Rectangle().fill(Color.white.opacity(0.1)).frame(height: 1), alignment: .top)
         }
         .ignoresSafeArea(edges: .bottom)
+        .allowsHitTesting(false)
     }
 
     @ViewBuilder
