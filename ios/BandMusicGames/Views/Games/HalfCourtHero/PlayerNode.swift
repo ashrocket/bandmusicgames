@@ -82,7 +82,9 @@ final class PlayerNode: SKNode {
     }
 
     private func installSpriteBody() {
-        let imageName = "hch_\(heroID.rawValue)"
+        let teamKey = team == .home ? "knicks" : "spurs"
+        let teamImageName = "hch_\(heroID.rawValue)_\(teamKey)"
+        let imageName = UIImage(named: teamImageName) != nil ? teamImageName : "hch_\(heroID.rawValue)"
         guard UIImage(named: imageName) != nil else { return }
 
         let texture = SKTexture(imageNamed: imageName)
