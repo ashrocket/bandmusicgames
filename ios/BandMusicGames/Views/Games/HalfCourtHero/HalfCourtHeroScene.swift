@@ -17,7 +17,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private let seriesWinTarget = 3
     private let winScore = 11
     private let beatBPM: Double = 112          // Nara's Room tempo — tune to taste
-    private let onBeatWindow: TimeInterval = 0.14
+    private let onBeatWindow: TimeInterval = 0.175
     private let powerUpDuration: TimeInterval = 12
     private var shotClockSeconds: TimeInterval = 10
     private var chargeRate: CGFloat = 1.55

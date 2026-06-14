@@ -17,6 +17,7 @@ struct LizzyMcGuireGameView: View {
     @State private var panOffset: CGSize = .zero
     @State private var dragBase: CGSize = .zero
     @State private var overlayPinchBase: CGFloat = 1.0
+    @State private var beatSynced: Bool = false
 
     var body: some View {
         ZStack {
@@ -90,12 +91,19 @@ struct LizzyMcGuireGameView: View {
         }
         .onChange(of: scene.phase) { newPhase in
             if newPhase == .playing {
+                // Restart track on first game of a series so the beat clock
+                // aligns with the audio rather than drifting from title-screen time.
+                if !beatSynced, auth.accessToken != nil {
+                    beatSynced = true
+                    Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
+                }
                 withAnimation(.easeIn(duration: 0.5)) { hudOpacity = 1.0 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
                     withAnimation(.easeInOut(duration: 2.5)) { hudOpacity = 0.18 }
                 }
             } else {
                 hudOpacity = 0
+                if newPhase == .characterSelect { beatSynced = false }
                 if isFrozen {
                     isFrozen = false
                     zoomLevel = 1.0
