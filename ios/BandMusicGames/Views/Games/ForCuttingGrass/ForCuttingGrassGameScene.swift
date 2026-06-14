@@ -558,6 +558,24 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         HapticManager.notification(.error)
         flashRed()
 
+        let warn = SKLabelNode(text: "🌸 FLOWER HIT!")
+        warn.fontName = "AvenirNext-Heavy"
+        warn.fontSize = 26
+        warn.fontColor = SKColor(red: 1, green: 0.3, blue: 0.55, alpha: 1)
+        warn.position = CGPoint(x: size.width / 2, y: size.height * 0.55)
+        warn.zPosition = 901
+        addChild(warn)
+        warn.run(SKAction.sequence([
+            SKAction.group([
+                SKAction.sequence([
+                    SKAction.scale(to: 1.15, duration: 0.1),
+                    SKAction.scale(to: 1.0, duration: 0.1),
+                ]),
+                SKAction.sequence([SKAction.wait(forDuration: 0.6), SKAction.fadeOut(withDuration: 0.5)]),
+            ]),
+            SKAction.removeFromParent()
+        ]))
+
         let pulse = SKAction.sequence([
             SKAction.scale(to: 1.18, duration: 0.35),
             SKAction.scale(to: 1.0, duration: 0.35)
