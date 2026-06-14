@@ -98,6 +98,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var playState: PlayState = .homeLive
     private var cpuState: CPUState = .idle
     private var shotClockRemaining: TimeInterval = 10
+    private var lastShotClockInt: Int = 100
     private var lastUpdate: TimeInterval?
     private var nowTime: TimeInterval = 0
 
@@ -451,6 +452,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         ball?.hold()
         ball?.setOnFire(false)
         shotClockRemaining = shotClockSeconds
+        lastShotClockInt = 100
         resetTapMeter()
         hideStealHint()
 
@@ -829,6 +831,11 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private func updateShotClock(dt: TimeInterval) {
         guard playState == .homeLive else { return }
         shotClockRemaining -= dt
+        let currentInt = Int(ceil(shotClockRemaining))
+        if currentInt < lastShotClockInt, (1...3).contains(currentInt) {
+            HapticManager.impact(.rigid)
+        }
+        lastShotClockInt = currentInt
         if shotClockRemaining <= 0 {
             showCallout("SHOT CLOCK!", color: .red)
             HapticManager.notification(.error)
