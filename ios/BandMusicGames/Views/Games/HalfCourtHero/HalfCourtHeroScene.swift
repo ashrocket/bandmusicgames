@@ -1097,11 +1097,10 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let error = shotError(charge: charge, dist: dist, beyondArc: beyondArc,
                               contested: contested, hero: player.heroID.character)
 
+        // Priority: ON FIRE > CONTESTED (danger) > perfect quip
         if contested {
             showCallout("CONTESTED!", color: SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1))
-        }
-        // ON FIRE callout takes priority over per-shot quips — don't overwrite the big moment
-        if !activatedPower, charge >= perfectLow && charge <= perfectHigh {
+        } else if !activatedPower, charge >= perfectLow && charge <= perfectHigh {
             showCallout(player.heroID.character.quip, color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
         }
 

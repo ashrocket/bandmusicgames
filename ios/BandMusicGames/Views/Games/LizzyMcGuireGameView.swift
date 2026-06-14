@@ -458,9 +458,9 @@ struct LizzyMcGuireGameView: View {
                         .foregroundColor(.white.opacity(0.45))
                     HStack(spacing: 12) {
                         rightAction(gesture: "TAP", label: "SHOOT")
-                        rightAction(gesture: "←→", label: "STEAL")
-                        rightAction(gesture: "↑↓", label: "BLOCK")
-                        rightAction(gesture: "360°", label: "PASS")
+                        rightAction(gesture: "TAP", label: "BLOCK")
+                        rightAction(gesture: "→", label: "STEAL")
+                        rightAction(gesture: "←", label: "PASS")
                     }
                 }
                 .frame(maxWidth: .infinity)
