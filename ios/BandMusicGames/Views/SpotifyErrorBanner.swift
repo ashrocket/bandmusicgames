@@ -28,7 +28,8 @@ struct SpotifyErrorBanner: View {
                         auth.playbackError = nil
                         Task {
                             try? await Task.sleep(nanoseconds: 4_000_000_000)
-                            await auth.retryLastPlayback()
+                            // Skip retry if they already hit play in Spotify manually
+                            if !auth.isPlaying { await auth.retryLastPlayback() }
                         }
                     } label: {
                         Text("OPEN")
