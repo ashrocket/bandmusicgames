@@ -11,6 +11,7 @@ final class PlayerNode: SKNode {
     let team: HalfCourtTeam
     /// Standing height of the character on screen, in points.
     let playerHeight: CGFloat
+    private var nbaJerseysEnabled: Bool
     private var character: HalfCourtHero { heroID.character }
 
     /// The web game's animation constants are in pixels for a ~175px-tall
@@ -50,10 +51,11 @@ final class PlayerNode: SKNode {
         }
     }
 
-    init(heroID: HalfCourtHeroID, team: HalfCourtTeam, spriteSize: CGFloat = 170) {
+    init(heroID: HalfCourtHeroID, team: HalfCourtTeam, spriteSize: CGFloat = 170, nbaJerseys: Bool = false) {
         self.heroID = heroID
         self.team = team
         self.playerHeight = spriteSize
+        self.nbaJerseysEnabled = nbaJerseys
         let shadowW = spriteSize * 0.42
         shadowNode = SKShapeNode(ellipseIn: CGRect(x: -shadowW / 2, y: -7, width: shadowW, height: 14))
         let ringW = spriteSize * 0.5
@@ -82,7 +84,14 @@ final class PlayerNode: SKNode {
     }
 
     private func installSpriteBody() {
-        let imageName = "hch_\(heroID.rawValue)"
+        let imageName: String
+        if nbaJerseysEnabled {
+            let teamKey = team == .home ? "knicks" : "spurs"
+            let teamImageName = "hch_\(heroID.rawValue)_\(teamKey)"
+            imageName = UIImage(named: teamImageName) != nil ? teamImageName : "hch_\(heroID.rawValue)"
+        } else {
+            imageName = "hch_\(heroID.rawValue)"
+        }
         guard UIImage(named: imageName) != nil else { return }
 
         let texture = SKTexture(imageNamed: imageName)
@@ -98,6 +107,13 @@ final class PlayerNode: SKNode {
 
     func setSelectionActive(_ active: Bool) {
         selectionRing.isHidden = !active
+    }
+
+    func reloadSprite(nbaJerseys: Bool) {
+        nbaJerseysEnabled = nbaJerseys
+        spriteNode?.removeFromParent()
+        spriteNode = nil
+        installSpriteBody()
     }
 
     // MARK: - Animation state

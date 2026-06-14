@@ -55,6 +55,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var streakPips: StreakPipsNode?
     private var calloutNode: SKNode?
     private var rimNode: SKShapeNode?
+    private var posterNode: SKNode?
+    private var nbaJerseysEnabled: Bool = false
     private var ballTrailActive = false
     private var trailFrameCounter = 0
 
@@ -172,6 +174,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         physicsWorld.gravity = CGVector(dx: 0, dy: -9.0)
         physicsWorld.contactDelegate = self
+        nbaJerseysEnabled = UserDefaults.standard.bool(forKey: "hch_nba_jerseys_mod")
 
         layoutScene()
     }
@@ -334,6 +337,38 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             wall.physicsBody = wallBody
             courtLayer.addChild(wall)
         }
+
+        // Knicks poster easter egg — small decoration on the wall above the court band
+        let poster = SKNode()
+        poster.position = CGPoint(x: w * 0.15, y: size.height * 0.42)
+        poster.zPosition = -8
+
+        let posterBg = SKShapeNode(rectOf: CGSize(width: 32, height: 44), cornerRadius: 2)
+        posterBg.fillColor = SKColor(red: 0.0, green: 0.42, blue: 0.71, alpha: 0.88)
+        posterBg.strokeColor = nbaJerseysEnabled
+            ? SKColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0)
+            : SKColor(red: 1.0, green: 0.55, blue: 0.0, alpha: 0.85)
+        posterBg.lineWidth = nbaJerseysEnabled ? 3.5 : 2.0
+        poster.addChild(posterBg)
+
+        let nyLabel = SKLabelNode(text: "NY")
+        nyLabel.fontName = "AvenirNext-Heavy"
+        nyLabel.fontSize = 14
+        nyLabel.fontColor = .white
+        nyLabel.verticalAlignmentMode = .center
+        nyLabel.position = CGPoint(x: 0, y: 5)
+        poster.addChild(nyLabel)
+
+        let knickLabel = SKLabelNode(text: "KNICKS")
+        knickLabel.fontName = "AvenirNext-Bold"
+        knickLabel.fontSize = 5.5
+        knickLabel.fontColor = SKColor(red: 1.0, green: 0.55, blue: 0.0, alpha: 1)
+        knickLabel.verticalAlignmentMode = .center
+        knickLabel.position = CGPoint(x: 0, y: -9)
+        poster.addChild(knickLabel)
+
+        courtLayer.addChild(poster)
+        posterNode = poster
     }
 
     // MARK: - Match management
@@ -396,7 +431,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     }
 
     private func spawnPlayer(id: HalfCourtHeroID, team: HalfCourtTeam, pos: CGPoint) {
-        let node = PlayerNode(heroID: id, team: team, spriteSize: playerSpriteSize)
+        let node = PlayerNode(heroID: id, team: team, spriteSize: playerSpriteSize, nbaJerseys: nbaJerseysEnabled)
         node.position = pos
         clampToCourt(node)
         playersLayer.addChild(node)
@@ -776,6 +811,13 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
+            if let poster = posterNode {
+                let p = touch.location(in: self)
+                if hypot(p.x - poster.position.x, p.y - poster.position.y) < 20 {
+                    toggleJerseyMod()
+                    continue
+                }
+            }
             if phase == .ended {
                 _ = resultCard?.handleTouch(touch)
                 continue
@@ -1073,6 +1115,36 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             SKAction.removeFromParent(),
         ])
         label.run(SKAction.sequence([pop, out]))
+    }
+
+    // MARK: - Jersey mod
+
+    private func toggleJerseyMod() {
+        nbaJerseysEnabled.toggle()
+        UserDefaults.standard.set(nbaJerseysEnabled, forKey: "hch_nba_jerseys_mod")
+
+        if let poster = posterNode, let bg = poster.children.first as? SKShapeNode {
+            bg.strokeColor = nbaJerseysEnabled
+                ? SKColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0)
+                : SKColor(red: 1.0, green: 0.55, blue: 0.0, alpha: 0.85)
+            bg.lineWidth = nbaJerseysEnabled ? 3.5 : 2.0
+            let pulse = SKAction.sequence([
+                SKAction.scale(to: 1.3, duration: 0.08),
+                SKAction.scale(to: 0.92, duration: 0.08),
+                SKAction.scale(to: 1.0, duration: 0.06),
+            ])
+            poster.run(pulse)
+        }
+
+        let msg = nbaJerseysEnabled ? "NBA JERSEYS ON" : "NBA JERSEYS OFF"
+        let color = nbaJerseysEnabled
+            ? SKColor(red: 0.0, green: 0.58, blue: 0.9, alpha: 1)
+            : SKColor.white.withAlphaComponent(0.65)
+        showCallout(msg, color: color)
+
+        for player in players.values {
+            player.reloadSprite(nbaJerseys: nbaJerseysEnabled)
+        }
     }
 }
 

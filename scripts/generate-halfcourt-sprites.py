@@ -80,6 +80,12 @@ def adjust(color: tuple[int, int, int, int], factor: float) -> tuple[int, int, i
     )
 
 
+def jersey_text_fill(shirt_hex: str) -> tuple[int, int, int, int]:
+    shirt = rgba(shirt_hex)
+    luminance = (0.2126 * shirt[0]) + (0.7152 * shirt[1]) + (0.0722 * shirt[2])
+    return (24, 18, 24, 230) if luminance > 185 else (255, 255, 255, 220)
+
+
 def scaled_point(point: tuple[float, float]) -> tuple[int, int]:
     return (round(point[0] * SCALE), round(point[1] * SCALE))
 
@@ -425,7 +431,7 @@ def draw_player_frame(hero: Hero, animation: str, frame: int, total: int) -> Ima
 
     # Jersey number.
     font = load_font(16, bold=True)
-    canvas.text((cx, shoulder_y + 33), hero.number, font, (255, 255, 255, 220))
+    canvas.text((cx, shoulder_y + 33), hero.number, font, jersey_text_fill(hero.shirt))
 
     # Ball carried by some poses.
     ball = p["ball"]
@@ -528,7 +534,6 @@ def generate() -> None:
         "fps": 16,
         "frames": ball_names,
     }
-
     MANIFEST_PATH.parent.mkdir(parents=True, exist_ok=True)
     MANIFEST_PATH.write_text(json.dumps(manifest, indent=2) + "\n")
 
