@@ -209,7 +209,13 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
         ].joined(separator: "&").data(using: .utf8)
 
         do {
-            let (data, _) = try await URLSession.shared.data(for: req)
+            let (data, response) = try await URLSession.shared.data(for: req)
+            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+            if status == 400 || status == 401 {
+                // Refresh token revoked or expired — force re-login
+                disconnect()
+                return
+            }
             struct TokenResponse: Decodable {
                 let access_token: String
                 let expires_in: Int
