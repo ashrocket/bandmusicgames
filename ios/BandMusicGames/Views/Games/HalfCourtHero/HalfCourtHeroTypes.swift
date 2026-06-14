@@ -123,6 +123,16 @@ enum HalfCourtDifficulty: String, CaseIterable, Identifiable {
         case .hard: return 7
         }
     }
+
+    /// How much each right-thumb tap pumps the shot meter (0–1 scale).
+    /// Smaller = finer granularity, more taps to reach green, more margin before overshooting.
+    var tapPumpAmount: CGFloat {
+        switch self {
+        case .easy: return 0.10   // ~5 taps of room inside the wide easy window
+        case .normal: return 0.07 // ~3 taps of room in the normal window
+        case .hard: return 0.05   // ~3 taps of room in the tight hard window
+        }
+    }
 }
 
 enum HalfCourtHeroID: String, CaseIterable, Identifiable {

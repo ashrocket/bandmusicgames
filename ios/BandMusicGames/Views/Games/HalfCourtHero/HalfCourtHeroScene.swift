@@ -111,7 +111,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var rightTouchStart: CGPoint = .zero
     private var rightTouchStartTime: TimeInterval = 0
     private var tapMeterFill: CGFloat = 0
-    private let tapPumpAmount: CGFloat = 0.12
+    private var tapPumpAmount: CGFloat = 0.10
     private let meterDecayRate: CGFloat = 0.18
     private let meterResetDelay: TimeInterval = 2.0
     private var lastTapTime: TimeInterval = 0
@@ -374,6 +374,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         chargeRate = d.chargeRate
         cpuShotMult = d.cpuShotMultiplier
         shotClockSeconds = d.shotClockSeconds
+        tapPumpAmount = d.tapPumpAmount
 
         tapMeterNode?.reconfigure(greenLow: greenLow, greenHigh: greenHigh,
                                    perfectLow: perfectLow, perfectHigh: perfectHigh)
