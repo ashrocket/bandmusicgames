@@ -175,7 +175,8 @@ struct ContentView: View {
                         auth.playbackError = nil
                         Task {
                             try? await Task.sleep(nanoseconds: 4_000_000_000)
-                            await auth.retryLastPlayback()
+                            await auth.fetchPlaybackState()
+                            if !auth.isPlaying { await auth.retryLastPlayback() }
                         }
                     } label: {
                         Text("WAKE SPOTIFY")
