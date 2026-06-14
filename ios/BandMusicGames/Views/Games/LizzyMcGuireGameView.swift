@@ -11,6 +11,7 @@ struct LizzyMcGuireGameView: View {
     @State private var selectStep = 1
     @State private var scoutedHero: HalfCourtHeroID?
     @State private var difficulty: HalfCourtDifficulty = .normal
+    @State private var hudOpacity: Double = 0
 
     var body: some View {
         ZStack {
@@ -50,7 +51,21 @@ struct LizzyMcGuireGameView: View {
                 .zIndex(10)
             }
 
+            if scene.phase == .playing {
+                controlsHUD.opacity(hudOpacity)
+            }
+
             closeButton
+        }
+        .onChange(of: scene.phase) { newPhase in
+            if newPhase == .playing {
+                withAnimation(.easeIn(duration: 0.5)) { hudOpacity = 1.0 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+                    withAnimation(.easeInOut(duration: 2.5)) { hudOpacity = 0.18 }
+                }
+            } else {
+                hudOpacity = 0
+            }
         }
         .onAppear {
             scene.onDismiss = { dismiss() }
@@ -295,6 +310,66 @@ struct LizzyMcGuireGameView: View {
             .frame(maxWidth: 430)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(hex: "#1a0a3e").opacity(0.95))
+        }
+    }
+
+    private var controlsHUD: some View {
+        VStack {
+            Spacer()
+            HStack(alignment: .center, spacing: 0) {
+                // Left thumb: movement
+                HStack(spacing: 10) {
+                    Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundColor(Color(hex: "#FFD700").opacity(0.9))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("LEFT THUMB")
+                            .font(.system(size: 8, weight: .black, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.45))
+                        Text("DRAG TO MOVE")
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.9))
+                    }
+                }
+                .frame(maxWidth: .infinity)
+
+                Rectangle()
+                    .fill(Color.white.opacity(0.2))
+                    .frame(width: 1, height: 46)
+                    .padding(.horizontal, 8)
+
+                // Right thumb: actions
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("RIGHT THUMB")
+                        .font(.system(size: 8, weight: .black, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.45))
+                    HStack(spacing: 12) {
+                        rightAction(gesture: "TAP", label: "SHOOT")
+                        rightAction(gesture: "←→", label: "STEAL")
+                        rightAction(gesture: "↑↓", label: "BLOCK")
+                        rightAction(gesture: "360°", label: "PASS")
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(.horizontal, 18)
+            .padding(.top, 10)
+            .padding(.bottom, 14)
+            .background(Color(hex: "#0a051e").opacity(0.82))
+            .overlay(Rectangle().fill(Color.white.opacity(0.1)).frame(height: 1), alignment: .top)
+        }
+        .ignoresSafeArea(edges: .bottom)
+    }
+
+    @ViewBuilder
+    private func rightAction(gesture: String, label: String) -> some View {
+        VStack(spacing: 2) {
+            Text(gesture)
+                .font(.system(size: 12, weight: .black))
+                .foregroundColor(Color(hex: "#FFD700"))
+            Text(label)
+                .font(.system(size: 8, weight: .bold, design: .monospaced))
+                .foregroundColor(.white.opacity(0.75))
         }
     }
 }

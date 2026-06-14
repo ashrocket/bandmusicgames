@@ -4,22 +4,28 @@ struct ForCuttingGrassControlOverlay: View {
     @ObservedObject var input: ForCuttingGrassInputController
 
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            Spacer(minLength: 0)
+        ZStack(alignment: .trailing) {
+            HStack(alignment: .center, spacing: 16) {
+                Spacer(minLength: 0)
 
-            steeringControl
-                .frame(width: controlSize.width, height: controlSize.height)
-                .overlay(alignment: .bottom) {
-                    ControlStyleCaption(style: input.controlStyle)
-                        .offset(y: captionOffset)
+                steeringControl
+                    .frame(width: controlSize.width, height: controlSize.height)
+                    .overlay(alignment: .bottom) {
+                        ControlStyleCaption(style: input.controlStyle)
+                            .offset(y: captionOffset)
+                    }
+
+                if input.canDig {
+                    DigButton(isPressed: $input.digging)
+                        .frame(width: 58, height: 58)
                 }
 
-            if input.canDig {
-                DigButton(isPressed: $input.digging)
-                    .frame(width: 58, height: 58)
+                Spacer(minLength: 0)
             }
 
-            Spacer(minLength: 0)
+            SpeedCapSliderView(speedCap: $input.speedCap)
+                .frame(width: 30, height: 80)
+                .padding(.trailing, 14)
         }
         .padding(.horizontal, 12)
         .padding(.top, 8)
@@ -525,6 +531,58 @@ private func clamped(_ value: CGFloat) -> CGFloat {
 
 private func unitClamped(_ value: CGFloat) -> CGFloat {
     min(1, max(0, value))
+}
+
+private struct SpeedCapSliderView: View {
+    @Binding var speedCap: CGFloat
+    @State private var lastTranslation: CGFloat = 0
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text("\(Int(speedCap * 100))%")
+                .font(.system(size: 7, weight: .black, design: .monospaced))
+                .foregroundColor(.white.opacity(0.72))
+                .frame(height: 14)
+
+            Spacer(minLength: 3)
+
+            GeometryReader { geo in
+                ZStack(alignment: .bottom) {
+                    Capsule()
+                        .fill(Color.white.opacity(0.1))
+                    Capsule()
+                        .fill(LinearGradient(
+                            gradient: Gradient(colors: [Color(hex: "#4aab5f"), Color(hex: "#ffd27a")]),
+                            startPoint: .bottom,
+                            endPoint: .top
+                        ))
+                        .frame(height: max(4, geo.size.height * speedCap))
+                }
+                .frame(width: 8)
+                .frame(maxWidth: .infinity)
+            }
+
+            Spacer(minLength: 3)
+
+            Text("SPD")
+                .font(.system(size: 7, weight: .black, design: .monospaced))
+                .foregroundColor(Color(hex: "#ffd27a").opacity(0.6))
+                .frame(height: 12)
+        }
+        .contentShape(Rectangle())
+        .gesture(
+            DragGesture(minimumDistance: 1)
+                .onChanged { v in
+                    let currentT = v.translation.height
+                    let delta = -(currentT - lastTranslation) / 100
+                    lastTranslation = currentT
+                    speedCap = max(0.2, min(1.0, speedCap + delta))
+                }
+                .onEnded { _ in
+                    lastTranslation = 0
+                }
+        )
+    }
 }
 
 private func vectorMagnitude(_ vector: CGVector) -> CGFloat {

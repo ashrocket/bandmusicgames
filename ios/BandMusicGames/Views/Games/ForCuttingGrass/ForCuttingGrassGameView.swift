@@ -7,6 +7,7 @@ struct ForCuttingGrassGameView: View {
     @StateObject private var scene = ForCuttingGrassGameScene.make()
     @State private var canvasZoom: CGFloat = 1
     @State private var controlsMenuOpen = false
+    @AppStorage("fcg_l1_tutorial_shown") private var tutorialShown = false
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -32,6 +33,14 @@ struct ForCuttingGrassGameView: View {
 
                     if scene.phase != .playing {
                         phaseOverlay
+                    }
+
+                    if scene.phase == .playing && scene.levelNum == 1 && !tutorialShown {
+                        ZStack {
+                            Color.black.opacity(0.45).ignoresSafeArea()
+                            levelOneTutorialCard
+                        }
+                        .transition(.opacity)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -210,17 +219,18 @@ struct ForCuttingGrassGameView: View {
                                 .tracking(2.5)
                                 .foregroundColor(Color(hex: "#8bc44a").opacity(0.8))
                             Text(next.sub.uppercased())
-                                .font(.system(size: 15, weight: .black, design: .monospaced))
+                                .font(.system(size: 20, weight: .black, design: .monospaced))
                                 .foregroundColor(.white)
                             Text(next.desc)
-                                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                                .font(.system(size: 12, weight: .semibold, design: .monospaced))
                                 .multilineTextAlignment(.center)
-                                .foregroundColor(.white.opacity(0.55))
+                                .foregroundColor(.white.opacity(0.8))
                         }
                         .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .background(Color.white.opacity(0.07))
+                        .padding(.vertical, 14)
+                        .background(Color.white.opacity(0.14))
                         .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color(hex: "#8bc44a").opacity(0.4), lineWidth: 1))
                     }
 
                     Button(nextConfig != nil ? "NEXT LEVEL" : "FINISH") {
@@ -269,6 +279,40 @@ struct ForCuttingGrassGameView: View {
                     .padding(16)
             }
         }
+    }
+
+    private var levelOneTutorialCard: some View {
+        VStack(spacing: 12) {
+            Text("🌸  DON'T CUT THE FLOWERS!  🌸")
+                .font(.system(size: 15, weight: .black, design: .rounded))
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+
+            Text("Mow the green grass but stay off\nthe flower beds — hit one and\nyou'll lose a try.")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundColor(.white.opacity(0.82))
+                .multilineTextAlignment(.center)
+                .lineSpacing(2)
+
+            Button("GOT IT!") {
+                withAnimation(.easeOut(duration: 0.25)) {
+                    tutorialShown = true
+                }
+            }
+            .font(.system(size: 13, weight: .black, design: .monospaced))
+            .foregroundColor(Color(hex: "#0a1a0a"))
+            .padding(.horizontal, 28)
+            .padding(.vertical, 10)
+            .background(Color(hex: "#8bc44a"))
+            .clipShape(Capsule())
+        }
+        .padding(.horizontal, 24)
+        .padding(.vertical, 20)
+        .background(Color(red: 0.05, green: 0.12, blue: 0.05).opacity(0.96))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color(hex: "#8bc44a").opacity(0.5), lineWidth: 1.5))
+        .padding(.horizontal, 40)
+        .shadow(color: .black.opacity(0.5), radius: 14, x: 0, y: 6)
     }
 
     private var hudCloseButton: some View {

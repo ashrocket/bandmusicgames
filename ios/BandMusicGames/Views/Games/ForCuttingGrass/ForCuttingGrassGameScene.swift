@@ -314,7 +314,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
             ? CGVector(dx: rawDirection.dx / directionMagnitude, dy: rawDirection.dy / directionMagnitude)
             : .zero
         let isDriving = throttle > 0.01 && directionMagnitude > 0.01
-        let speed = Self.mowerSpeed * deltaSeconds * throttle
+        let speed = Self.mowerSpeed * deltaSeconds * throttle * input.speedCap
         mower.velocity = CGVector(dx: dir.dx * speed, dy: -dir.dy * speed)
         if isDriving {
             mower.facing = atan2(mower.velocity.dy, mower.velocity.dx)

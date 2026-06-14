@@ -2,6 +2,10 @@ import SpriteKit
 import Combine
 import CoreMotion
 
+enum FrancisHintStage: Equatable {
+    case mythos, shape, name
+}
+
 enum FrancisPhase {
     case pressPlay
     case intro
@@ -40,6 +44,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
     private var startTime: Date?
     private var elapsedTime: TimeInterval = 0
     private var isPreviewActive = false
+    @Published var hintStage: FrancisHintStage? = nil
 
     var correctCount: Int {
         links.filter { link in
@@ -87,6 +92,8 @@ final class FrancisGameScene: SKScene, ObservableObject {
         startTime = nil
         elapsedTime = 0
         isPreviewActive = true
+        hintStage = nil
+        removeAction(forKey: "hintSequence")
         linksLayer.removeAllActions()
         resetLevel()
         showConstellationPreview()
@@ -94,28 +101,53 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
     private func showConstellationPreview() {
         hud?.update(level: config, correct: 0, total: config.edges.count, timeRemaining: trackDuration, progress: 0)
+        run(SKAction.sequence([
+            SKAction.run { [weak self] in self?.hintStage = .mythos },
+            SKAction.wait(forDuration: 3.5),
+            SKAction.run { [weak self] in self?.hintStage = .shape },
+            SKAction.wait(forDuration: 3.5),
+            SKAction.run { [weak self] in self?.hintStage = .name },
+            SKAction.wait(forDuration: 2.0),
+            SKAction.run { [weak self] in self?.hintStage = nil },
+            SKAction.run { [weak self] in self?.blinkEdgesInOrder() },
+        ]), withKey: "hintSequence")
+    }
+
+    private func blinkEdgesInOrder() {
+        linksLayer.removeAllChildren()
+        linksLayer.alpha = 1
+
+        var seq: [SKAction] = []
         for (a, b) in config.edges {
-            let start = config.stars[a]
-            let end = config.stars[b]
-            let path = CGMutablePath()
-            path.move(to: CGPoint(x: start.nx * size.width, y: (1.0 - start.ny) * size.height))
-            path.addLine(to: CGPoint(x: end.nx * size.width, y: (1.0 - end.ny) * size.height))
-            let node = SKShapeNode(path: path)
-            node.strokeColor = SKColor(red: 0.55, green: 0.80, blue: 1.0, alpha: 0.9)
-            node.lineWidth = 2.5
-            node.name = "preview_line"
-            linksLayer.addChild(node)
+            seq.append(.run { [weak self] in self?.flashSingleEdge(a: a, b: b) })
+            seq.append(.wait(forDuration: 0.9))
         }
-        linksLayer.run(SKAction.sequence([
-            SKAction.wait(forDuration: 1.6),
-            SKAction.fadeOut(withDuration: 0.4),
-            SKAction.run { [weak self] in
-                guard let self else { return }
-                self.linksLayer.removeAllChildren()
-                self.linksLayer.alpha = 1
-                self.isPreviewActive = false
-                self.startTime = Date()
-            },
+        seq.append(.run { [weak self] in
+            guard let self else { return }
+            self.linksLayer.removeAllChildren()
+            self.isPreviewActive = false
+            self.startTime = Date()
+        })
+        linksLayer.run(SKAction.sequence(seq), withKey: "blink")
+    }
+
+    private func flashSingleEdge(a: Int, b: Int) {
+        let start = config.stars[a]
+        let end = config.stars[b]
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: start.nx * size.width, y: (1.0 - start.ny) * size.height))
+        path.addLine(to: CGPoint(x: end.nx * size.width, y: (1.0 - end.ny) * size.height))
+        let node = SKShapeNode(path: path)
+        node.strokeColor = SKColor(red: 0.55, green: 0.80, blue: 1.0, alpha: 0.9)
+        node.lineWidth = 2.5
+        node.glowWidth = 3
+        node.alpha = 0
+        linksLayer.addChild(node)
+        node.run(SKAction.sequence([
+            .fadeIn(withDuration: 0.2),
+            .wait(forDuration: 0.4),
+            .fadeOut(withDuration: 0.25),
+            .removeFromParent(),
         ]))
     }
 
@@ -128,6 +160,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
         resultCard = nil
 
         setupAmbientStars()
+        setupNamedStars()
         setupTargetStars()
     }
 
@@ -143,6 +176,43 @@ final class FrancisGameScene: SKScene, ObservableObject {
             node.strokeColor = .clear
             node.position = CGPoint(x: nx * size.width, y: (1.0 - ny) * size.height)
             ambientLayer.addChild(node)
+        }
+    }
+
+    private func setupNamedStars() {
+        for i in 0..<30 {
+            let nx = CGFloat(AmbientStar.pseudo(i * 7 + 1001))
+            let ny = CGFloat(AmbientStar.pseudo(i * 7 + 1002))
+            let r = 1.5 + CGFloat(AmbientStar.pseudo(i * 7 + 1003)) * 1.2
+
+            let starNode = SKNode()
+            starNode.position = CGPoint(x: nx * size.width, y: (1.0 - ny) * size.height)
+
+            let glow = SKShapeNode(circleOfRadius: r * 2.8)
+            glow.fillColor = SKColor(red: 1.0, green: 0.82, blue: 0.48, alpha: 0.18)
+            glow.strokeColor = .clear
+            starNode.addChild(glow)
+
+            let core = SKShapeNode(circleOfRadius: r)
+            core.fillColor = SKColor(red: 1.0, green: 0.86, blue: 0.52, alpha: 0.92)
+            core.strokeColor = .clear
+            starNode.addChild(core)
+
+            let minAlpha = CGFloat(AmbientStar.pseudo(i * 7 + 1004)) * 0.25 + 0.35
+            let maxAlpha = CGFloat(AmbientStar.pseudo(i * 7 + 1005)) * 0.20 + 0.80
+            let dur1 = AmbientStar.pseudo(i * 7 + 1006) * 2.5 + 1.5
+            let dur2 = AmbientStar.pseudo(i * 7 + 1007) * 2.0 + 1.2
+            let offset = AmbientStar.pseudo(i * 7 + 1008) * 5.0
+
+            let twinkle = SKAction.repeatForever(SKAction.sequence([
+                SKAction.fadeAlpha(to: minAlpha, duration: dur1),
+                SKAction.fadeAlpha(to: maxAlpha, duration: dur2),
+            ]))
+            starNode.run(SKAction.sequence([
+                SKAction.wait(forDuration: offset),
+                twinkle,
+            ]))
+            ambientLayer.addChild(starNode)
         }
     }
 

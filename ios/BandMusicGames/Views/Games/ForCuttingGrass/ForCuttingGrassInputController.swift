@@ -46,6 +46,7 @@ final class ForCuttingGrassInputController: ObservableObject {
     @Published var throttle: CGFloat = 0         // speed scalar, 0...1
     @Published var digging: Bool = false
     @Published var canDig: Bool = false
+    @Published var speedCap: CGFloat = 1.0
     @Published var controlStyle: ForCuttingGrassControlStyle {
         didSet {
             UserDefaults.standard.set(controlStyle.rawValue, forKey: Self.savedControlStyleKey)
