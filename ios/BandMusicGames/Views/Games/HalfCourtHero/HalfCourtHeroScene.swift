@@ -212,8 +212,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         buildCourt()
         hud?.layout(size: size)
         tapMeterNode?.layout(barWidth: w)
-        tapMeterNode?.position = CGPoint(x: w / 2, y: h - 46)
-        streakPips?.position = CGPoint(x: w / 2, y: h - 72)
+        tapMeterNode?.position = CGPoint(x: w / 2, y: courtBandMaxY + 8)
+        streakPips?.position = CGPoint(x: w / 2, y: courtBandMaxY + 26)
         resultCard?.position = CGPoint(x: w / 2, y: h / 2)
 
         for player in players.values {
