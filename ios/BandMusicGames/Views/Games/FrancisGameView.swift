@@ -18,6 +18,12 @@ struct FrancisGameView: View {
             )
             .ignoresSafeArea()
 
+            if let stage = scene.hintStage {
+                FrancisHintCard(stage: stage, config: scene.config)
+                    .transition(.opacity)
+                    .animation(.easeInOut(duration: 0.4), value: scene.hintStage)
+            }
+
             if scene.phase == .pressPlay {
                 pressPlayOverlay
             } else if scene.phase == .intro {
@@ -197,6 +203,83 @@ private struct DogIntroView: View {
         if name == "thought3" {
             DispatchQueue.main.asyncAfter(deadline: .now() + hide + 0.5) {
                 finish()
+            }
+        }
+    }
+}
+
+private struct FrancisHintCard: View {
+    let stage: FrancisHintStage
+    let config: FrancisLevelConfig
+
+    var body: some View {
+        VStack {
+            Spacer()
+            VStack(spacing: 14) {
+                stageIndicators
+                content
+            }
+            .padding(.horizontal, 28)
+            .padding(.vertical, 22)
+            .background(Color(hex: "#080d1c").opacity(0.94))
+            .clipShape(RoundedRectangle(cornerRadius: 18))
+            .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color(hex: "#ffd27a").opacity(0.28), lineWidth: 1))
+            .padding(.horizontal, 20)
+            .shadow(color: .black.opacity(0.65), radius: 18, x: 0, y: 6)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var stageIndicators: some View {
+        HStack(spacing: 7) {
+            dot(.mythos)
+            dot(.shape)
+            dot(.name)
+        }
+    }
+
+    private func dot(_ s: FrancisHintStage) -> some View {
+        Circle()
+            .fill(stage == s ? Color(hex: "#ffd27a") : Color.white.opacity(0.22))
+            .frame(width: 7, height: 7)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch stage {
+        case .mythos:
+            VStack(spacing: 12) {
+                Image(systemName: "scroll.fill")
+                    .font(.system(size: 26))
+                    .foregroundColor(Color(hex: "#ffd27a").opacity(0.85))
+                Text(config.description)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.90))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+            }
+        case .shape:
+            VStack(spacing: 12) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 26))
+                    .foregroundColor(Color(hex: "#ffd27a").opacity(0.85))
+                Text(config.lore.replacingOccurrences(of: "**", with: ""))
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.90))
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(3)
+            }
+        case .name:
+            VStack(spacing: 8) {
+                Text(config.constellationName.uppercased())
+                    .font(.system(size: 40, weight: .black, design: .rounded))
+                    .foregroundColor(Color(hex: "#ffd27a"))
+                    .shadow(color: Color(hex: "#ffd27a").opacity(0.6), radius: 12)
+                Text(config.subtitle)
+                    .font(.system(size: 16, weight: .medium))
+                    .italic()
+                    .foregroundColor(.white.opacity(0.68))
             }
         }
     }
