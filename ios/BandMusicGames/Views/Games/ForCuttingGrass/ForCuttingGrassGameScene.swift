@@ -542,6 +542,23 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                 triesRemaining -= 1
                 HapticManager.notification(.error)
                 flashRed()
+                let stinkLabel = SKLabelNode(text: triesRemaining > 0 ? "🦨 SKUNKED! \(triesRemaining) LEFT" : "🦨 SKUNKED OUT!")
+                stinkLabel.fontName = "AvenirNext-Heavy"
+                stinkLabel.fontSize = 22
+                stinkLabel.fontColor = SKColor(red: 0.75, green: 0.35, blue: 0.8, alpha: 1)
+                stinkLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.55)
+                stinkLabel.zPosition = 901
+                addChild(stinkLabel)
+                stinkLabel.run(SKAction.sequence([
+                    SKAction.group([
+                        SKAction.sequence([
+                            SKAction.scale(to: 1.15, duration: 0.1),
+                            SKAction.scale(to: 1.0, duration: 0.1),
+                        ]),
+                        SKAction.sequence([SKAction.wait(forDuration: 0.8), SKAction.fadeOut(withDuration: 0.5)]),
+                    ]),
+                    SKAction.removeFromParent()
+                ]))
                 if triesRemaining <= 0 {
                     gameOverTitle = "SKUNKED OUT!"
                     phase = .gameOver
