@@ -40,6 +40,21 @@ struct SpotifyErrorBanner: View {
                             .clipShape(Capsule())
                     }
                 }
+                if case .notPremium = error, let uri = auth.lastAttemptedUri,
+                   let url = URL(string: uri) {
+                    Button {
+                        UIApplication.shared.open(url)
+                        auth.playbackError = nil
+                    } label: {
+                        Text("OPEN IN SPOTIFY")
+                            .font(.system(size: 9, weight: .black, design: .monospaced))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 6)
+                            .background(Color(red: 0.11, green: 0.73, blue: 0.33))
+                            .foregroundColor(.black)
+                            .clipShape(Capsule())
+                    }
+                }
 
                 Button { auth.playbackError = nil } label: {
                     Image(systemName: "xmark")
