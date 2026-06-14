@@ -6,6 +6,7 @@ struct ContentView: View {
     private static let autoLaunchLizzyLobby = true
 
     @EnvironmentObject private var auth: SpotifyAuthManager
+    @StateObject private var previewPlayer = LobbyPreviewPlayer()
     @State private var selectedIndex    = 0
     @State private var launchingSong: Song? = nil
     @State private var selectionTrigger = 0
@@ -66,13 +67,29 @@ struct ContentView: View {
         }
         .onDisappear {
             launchTask?.cancel()
+            previewPlayer.stop()
         }
         .onAppear {
+            if !auth.isConnected { previewPlayer.start() }
             guard Self.autoLaunchLizzyLobby, !didAutoLaunch else { return }
             didAutoLaunch = true
             if let song = songs.first(where: { nativeGame(for: $0) == .lizzyMcGuire }) {
                 selectedIndex = songs.firstIndex(of: song) ?? selectedIndex
                 launchingSong = song
+            }
+        }
+        .onChange(of: auth.isConnected) { connected in
+            if connected {
+                previewPlayer.stop()
+            } else if launchingSong == nil {
+                previewPlayer.start()
+            }
+        }
+        .onChange(of: launchingSong) { song in
+            if song == nil, !auth.isConnected {
+                previewPlayer.start()
+            } else if song != nil {
+                previewPlayer.stop()
             }
         }
     }
