@@ -120,6 +120,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private let meterResetDelay: TimeInterval = 2.0
     private var lastTapTime: TimeInterval = 0
     private var cpuBlockFill: CGFloat = 0
+    private var blockWindowOpened = false
     // Green zone (0.52–0.76) opens at 0.52s, closes at 0.76s — ball launches at 0.29s
     // so the block window sits squarely during the ball's flight, not after it scores.
     private let cpuBlockFillRate: CGFloat = 1.0
@@ -627,6 +628,10 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         switch playState {
         case .awayShot:
             cpuBlockFill = min(cpuBlockFill + cpuBlockFillRate * dt, 1.1)
+            if !blockWindowOpened && cpuBlockFill >= greenLow {
+                blockWindowOpened = true
+                HapticManager.impact(.rigid)
+            }
             tapMeterNode?.setFill(cpuBlockFill, mode: .block)
             stormSky?.setCharge(cpuBlockFill)
         case .homeLive where possession == .home:
@@ -647,6 +652,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private func resetTapMeter() {
         tapMeterFill = 0
         cpuBlockFill = 0
+        blockWindowOpened = false
         lastTapTime = 0
         tapMeterNode?.setFill(0, mode: .shoot)
         stormSky?.setCharge(nil)
@@ -1003,7 +1009,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private func handleBlockAttempt() {
         guard playState == .awayShot else { return }
         guard cpuBlockFill >= greenLow && cpuBlockFill <= greenHigh else {
-            showCallout("TIMING!", color: SKColor.white.withAlphaComponent(0.5))
+            showCallout(cpuBlockFill < greenLow ? "TOO EARLY!" : "TOO LATE!",
+                        color: SKColor.white.withAlphaComponent(0.5))
             HapticManager.impact(.light)
             return
         }
