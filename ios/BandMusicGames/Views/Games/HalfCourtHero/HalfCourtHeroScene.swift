@@ -422,8 +422,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         homeScore = 0
         awayScore = 0
-        beatAnchor = nil
-        lastBeatIndex = -1
+        // Don't reset beatAnchor — audio plays continuously through the series,
+        // so the visual beat clock must also carry over for games 2–5 to stay in sync.
         onBeatStreak = 0
         poweredUntil = 0
         isPowered = false
@@ -520,8 +520,16 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     override func update(_ currentTime: TimeInterval) {
         nowTime = currentTime
         let rawDt = lastUpdate.map { currentTime - $0 } ?? 1.0 / 60.0
-        let dt = CGFloat(min(max(rawDt, 0), 1.0 / 20.0))
         lastUpdate = currentTime
+
+        // When the scene was paused (zoom freeze), SpriteKit's currentTime kept
+        // advancing with wall-clock time. Compensate by shifting beatAnchor forward
+        // so the visual beat clock stays aligned with the resumed audio.
+        if rawDt > 0.5, let anchor = beatAnchor {
+            beatAnchor = anchor + rawDt
+        }
+
+        let dt = CGFloat(min(max(rawDt, 0), 1.0 / 20.0))
 
         guard phase == .playing else {
             hud?.isHidden = true

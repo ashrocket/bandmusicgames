@@ -179,6 +179,22 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
         }
     }
 
+    func resumePlayback() async {
+        guard let token = await validToken() else { return }
+        var req = URLRequest(url: URL(string: "https://api.spotify.com/v1/me/player/play")!)
+        req.httpMethod = "PUT"
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        // No body = resume from current position (don't restart the track)
+        do {
+            let (_, response) = try await URLSession.shared.data(for: req)
+            if (response as? HTTPURLResponse)?.statusCode == 204 {
+                isPlaying = true
+            }
+        } catch {
+            print("SpotifyAuth: resume failed: \(error)")
+        }
+    }
+
     // MARK: - Private
 
     private func validToken() async -> String? {

@@ -67,6 +67,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     // MARK: - Runtime state
     @Published private(set) var gas: CGFloat = 0
     private var gasLowWarned = false
+    @Published private(set) var needsReplant: Bool = false
     private var wallHapticCooldownUntil: TimeInterval = 0
     var grid = ForCuttingGrassGrid(cells: ContiguousArray<ForCuttingGrassTile>(repeating: .tall, count: ForCuttingGrassGrid.width * ForCuttingGrassGrid.height))
     var score: Int = 0
@@ -82,6 +83,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     private let gridLayer = SKNode()
     private let entitiesLayer = SKNode()
     private var mowerNode: SKNode?
+    private var shedMarkerNode: SKNode?
     private var lastUpdate: TimeInterval?
 
     private struct GridMetrics {
@@ -156,6 +158,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         mower.velocity = .zero
         mower.facing = 0
 
+        needsReplant = false
         input.canDig = config.stumps > 0
         input.reset()
 
@@ -166,6 +169,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
 
         phase = .playing
         drawGrid()
+        placeShedNode()
         placeMowerNode()
     }
 
@@ -259,6 +263,76 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         mowerNode = node
     }
 
+    private var shedWorldPosition: CGPoint {
+        worldPositionForTile(x: ForCuttingGrassGrid.width / 2, y: 3)
+    }
+
+    private func placeShedNode() {
+        shedMarkerNode?.removeFromParent()
+        let unit = objectUnit * 1.4
+        let node = SKNode()
+        node.name = "shed-marker"
+
+        let body = SKShapeNode(rectOf: CGSize(width: unit * 0.9, height: unit * 0.7), cornerRadius: 2)
+        body.fillColor = SKColor(red: 0.50, green: 0.30, blue: 0.10, alpha: 1)
+        body.strokeColor = SKColor(red: 0.30, green: 0.18, blue: 0.06, alpha: 1)
+        body.lineWidth = 1.5
+        node.addChild(body)
+
+        let roofPath = CGMutablePath()
+        roofPath.move(to: CGPoint(x: -unit * 0.52, y: unit * 0.35))
+        roofPath.addLine(to: CGPoint(x: unit * 0.52, y: unit * 0.35))
+        roofPath.addLine(to: CGPoint(x: 0, y: unit * 0.72))
+        roofPath.closeSubpath()
+        let roof = SKShapeNode(path: roofPath)
+        roof.fillColor = SKColor(red: 0.55, green: 0.15, blue: 0.08, alpha: 1)
+        roof.strokeColor = SKColor(red: 0.35, green: 0.08, blue: 0.04, alpha: 1)
+        roof.lineWidth = 1.5
+        node.addChild(roof)
+
+        let door = SKShapeNode(rectOf: CGSize(width: unit * 0.22, height: unit * 0.32), cornerRadius: 1)
+        door.fillColor = SKColor(red: 0.22, green: 0.13, blue: 0.05, alpha: 1)
+        door.strokeColor = .clear
+        door.position = CGPoint(x: 0, y: -unit * 0.19)
+        node.addChild(door)
+
+        let label = SKLabelNode(text: "SHED")
+        label.fontName = "AvenirNext-Heavy"
+        label.fontSize = max(7, unit * 0.32)
+        label.fontColor = SKColor(red: 0.95, green: 0.9, blue: 0.7, alpha: 0.9)
+        label.position = CGPoint(x: 0, y: unit * 0.78)
+        label.verticalAlignmentMode = .bottom
+        node.addChild(label)
+
+        node.position = shedWorldPosition
+        node.zPosition = 8
+        gridLayer.addChild(node)
+        shedMarkerNode = node
+    }
+
+    private func completeReplant() {
+        needsReplant = false
+        shedMarkerNode?.removeAllActions()
+        shedMarkerNode?.setScale(1.0)
+        shedMarkerNode?.alpha = 1.0
+        HapticManager.notification(.success)
+
+        let popup = SKLabelNode(text: "🌸 REPLANTED!")
+        popup.fontName = "AvenirNext-Heavy"
+        popup.fontSize = 26
+        popup.fontColor = SKColor(red: 0.5, green: 0.9, blue: 0.3, alpha: 1)
+        popup.position = CGPoint(x: size.width / 2, y: size.height * 0.5)
+        popup.zPosition = 900
+        addChild(popup)
+        popup.run(SKAction.sequence([
+            SKAction.group([
+                SKAction.moveBy(x: 0, y: 40, duration: 0.8),
+                SKAction.sequence([SKAction.wait(forDuration: 0.3), SKAction.fadeOut(withDuration: 0.5)])
+            ]),
+            SKAction.removeFromParent()
+        ]))
+    }
+
     private func redrawTile(atWorldPos pos: CGPoint) {
         guard let tile = tileCoordinate(atWorldPos: pos) else { return }
         let center = worldPositionForTile(x: tile.x, y: tile.y)
@@ -323,7 +397,14 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         mowerNode?.position = mower.position
         mowerNode?.zRotation = mower.facing
 
-        if throttle > 0.01 && isCuttingFlowers(at: mower.position) {
+        if needsReplant {
+            let shedRadius = objectUnit * 2.8
+            if distanceSq(mower.position, shedWorldPosition) < shedRadius * shedRadius {
+                completeReplant()
+            }
+        }
+
+        if !needsReplant && throttle > 0.01 && isCuttingFlowers(at: mower.position) {
             restartAfterCuttingFlowers()
             return
         }
@@ -443,17 +524,15 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     }
 
     private func restartAfterCuttingFlowers() {
-        triesRemaining -= 1
+        needsReplant = true
         HapticManager.notification(.error)
         flashRed()
 
-        guard triesRemaining > 0 else {
-            gameOverTitle = "NO TRIES LEFT"
-            phase = .gameOver
-            return
-        }
-
-        startLevel(levelNum, resetTries: false)
+        let pulse = SKAction.sequence([
+            SKAction.scale(to: 1.18, duration: 0.35),
+            SKAction.scale(to: 1.0, duration: 0.35)
+        ])
+        shedMarkerNode?.run(SKAction.repeatForever(pulse), withKey: "pulse")
     }
 
     private func flashRed() {

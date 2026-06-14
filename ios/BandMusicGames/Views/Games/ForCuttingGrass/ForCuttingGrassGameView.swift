@@ -78,7 +78,7 @@ struct ForCuttingGrassGameView: View {
             if needs {
                 Task { await auth.pausePlayback() }
             } else if auth.accessToken != nil {
-                Task { await auth.playTrack("spotify:track:6EJAb3oTjDFwrt1dpIJPbr") }
+                Task { await auth.resumePlayback() }
             }
         }
         .spotifyErrorBanner()

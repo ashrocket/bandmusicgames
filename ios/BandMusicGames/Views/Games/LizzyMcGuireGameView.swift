@@ -369,7 +369,7 @@ struct LizzyMcGuireGameView: View {
         dragBase = .zero
         scene.isPaused = false
         if auth.accessToken != nil {
-            Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
+            Task { await auth.resumePlayback() }
         }
     }
 
