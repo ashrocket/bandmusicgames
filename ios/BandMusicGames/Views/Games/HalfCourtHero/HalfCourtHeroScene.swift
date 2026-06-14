@@ -630,6 +630,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             cpuBlockFill = min(cpuBlockFill + cpuBlockFillRate * dt, 1.1)
             if !blockWindowOpened && cpuBlockFill >= greenLow {
                 blockWindowOpened = true
+                showCallout("BLOCK!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1))
                 HapticManager.impact(.rigid)
             }
             tapMeterNode?.setFill(cpuBlockFill, mode: .block)
