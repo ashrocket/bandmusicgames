@@ -51,10 +51,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var players: [HalfCourtHeroID: PlayerNode] = [:]
     private var hud: HalfCourtHUDNode?
     private var resultCard: HalfCourtResultCardNode?
-    private var shootButton: ShootButtonNode?
     private var stormSky: StormSkyNode?
-    private var joystick: JoystickNode?
     private var streakPips: StreakPipsNode?
+    private var tapMeterNode: TapShotMeterNode?
     private var calloutNode: SKNode?
     private var rimNode: SKShapeNode?
     private var ballTrailActive = false
@@ -101,11 +100,23 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var lastUpdate: TimeInterval?
     private var nowTime: TimeInterval = 0
 
-    // Touch routing
-    private var shootTouch: UITouch?
-    private var joystickTouch: UITouch?
-    private var chargeActive = false
-    private var charge: CGFloat = 0
+    // Touch routing — left thumb moves player, right thumb shoots/blocks/steals/passes
+    private var leftTouch: UITouch?
+    private var leftTouchPrev: CGPoint = .zero
+    private var leftTouchStartPos: CGPoint = .zero
+    private var leftTouchStartTime: TimeInterval = 0
+    private var leftImpulse: CGVector = .zero
+    private var lastLeftInputTime: TimeInterval = 0
+    private var rightTouch: UITouch?
+    private var rightTouchStart: CGPoint = .zero
+    private var rightTouchStartTime: TimeInterval = 0
+    private var tapMeterFill: CGFloat = 0
+    private let tapPumpAmount: CGFloat = 0.12
+    private let meterDecayRate: CGFloat = 0.18
+    private let meterResetDelay: TimeInterval = 2.0
+    private var lastTapTime: TimeInterval = 0
+    private var cpuBlockFill: CGFloat = 0
+    private let cpuBlockFillRate: CGFloat = 0.42
 
     // Beat + power-up
     private var beatAnchor: TimeInterval?
@@ -150,13 +161,14 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             hud = hudNode
         }
 
-        if shootButton == nil {
-            let btn = ShootButtonNode(greenLow: greenLow, greenHigh: greenHigh,
-                                      perfectLow: perfectLow, perfectHigh: perfectHigh)
-            btn.zPosition = 110
-            btn.isHidden = true
-            uiLayer.addChild(btn)
-            shootButton = btn
+        if tapMeterNode == nil {
+            let meter = TapShotMeterNode(barWidth: size.width,
+                                         greenLow: greenLow, greenHigh: greenHigh,
+                                         perfectLow: perfectLow, perfectHigh: perfectHigh)
+            meter.zPosition = 115
+            meter.isHidden = true
+            uiLayer.addChild(meter)
+            tapMeterNode = meter
         }
 
         if streakPips == nil {
@@ -165,14 +177,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             pips.isHidden = true
             uiLayer.addChild(pips)
             streakPips = pips
-        }
-
-        if joystick == nil {
-            let stick = JoystickNode()
-            stick.zPosition = 120
-            stick.isHidden = true
-            uiLayer.addChild(stick)
-            joystick = stick
         }
 
         physicsWorld.gravity = CGVector(dx: 0, dy: -9.0)
@@ -205,8 +209,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         buildCourt()
         hud?.layout(size: size)
-        shootButton?.position = CGPoint(x: w - 82, y: 112)
-        streakPips?.position = CGPoint(x: w - 82, y: 112 + 84)
+        tapMeterNode?.layout(barWidth: w)
+        tapMeterNode?.position = CGPoint(x: w / 2, y: h - 46)
+        streakPips?.position = CGPoint(x: w / 2, y: h - 72)
         resultCard?.position = CGPoint(x: w / 2, y: h / 2)
 
         for player in players.values {
@@ -243,7 +248,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         storm.zPosition = -5
         courtLayer.addChild(storm)
         stormSky = storm
-        storm.prime(charge: chargeActive ? charge : nil)
+        storm.prime(charge: tapMeterFill > 0.01 ? tapMeterFill : nil)
 
         // Three-point marker
         let tpLine = SKShapeNode()
@@ -370,8 +375,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         cpuShotMult = d.cpuShotMultiplier
         shotClockSeconds = d.shotClockSeconds
 
-        shootButton?.reconfigureArcs(greenLow: greenLow, greenHigh: greenHigh,
-                                      perfectLow: perfectLow, perfectHigh: perfectHigh)
+        tapMeterNode?.reconfigure(greenLow: greenLow, greenHigh: greenHigh,
+                                   perfectLow: perfectLow, perfectHigh: perfectHigh)
 
         homeIDs = [playerID, teammateID]
         awayIDs = HalfCourtHeroID.allCases.filter { !homeIDs.contains($0) }
@@ -444,6 +449,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         ball?.hold()
         ball?.setOnFire(false)
         shotClockRemaining = shotClockSeconds
+        resetTapMeter()
 
         if team == .home {
             playState = .homeLive
@@ -452,7 +458,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             playState = .awayLive
             cpuHandlerID = awayIDs.randomElement()
             cpuState = .bringUp(pickCPUSpot())
-            cancelCharge()
         }
     }
 
@@ -480,19 +485,18 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         guard phase == .playing else {
             hud?.isHidden = true
-            shootButton?.isHidden = true
+            tapMeterNode?.isHidden = true
             streakPips?.isHidden = true
-            joystick?.end()
             return
         }
         hud?.isHidden = false
-        shootButton?.isHidden = false
+        tapMeterNode?.isHidden = !((playState == .homeLive && possession == .home) || playState == .awayShot)
         streakPips?.isHidden = false
 
         updateBeat(currentTime)
         updatePowerState(currentTime)
         firePendingTransitions(currentTime)
-        updateCharge(dt)
+        updateTapMeter(dt: dt, now: currentTime)
         updateHuman(dt)
         updateCPU(dt: dt, now: currentTime)
         updateOffBall(dt: dt)
@@ -505,8 +509,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
         updateDepthSorting()
 
-        shootButton?.setEnabled(playState == .homeLive || playState == .awayLive)
-        shootButton?.setMode(stealing: playState == .awayLive)
         hud?.update(
             homeScore: homeScore,
             awayScore: awayScore,
@@ -528,7 +530,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let idx = Int(((now - anchor) / interval).rounded(.down))
         if idx > lastBeatIndex {
             lastBeatIndex = idx
-            shootButton?.beatPulse()
+            tapMeterNode?.beatPulse()
             if playState == .homeLive {
                 HapticManager.selection()
             }
@@ -570,46 +572,68 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
     }
 
-    private func updateCharge(_ dt: CGFloat) {
-        guard chargeActive else { return }
-        guard playState == .homeLive else {
-            cancelCharge()
-            return
+    private func updateTapMeter(dt: CGFloat, now: TimeInterval) {
+        switch playState {
+        case .awayShot:
+            cpuBlockFill = min(cpuBlockFill + cpuBlockFillRate * dt, 1.1)
+            tapMeterNode?.setFill(cpuBlockFill, mode: .block)
+            stormSky?.setCharge(cpuBlockFill)
+        case .homeLive where possession == .home:
+            if lastTapTime > 0 && now - lastTapTime > meterResetDelay {
+                tapMeterFill = 0
+            } else {
+                tapMeterFill = max(0, tapMeterFill - meterDecayRate * dt)
+            }
+            tapMeterNode?.setFill(tapMeterFill, mode: .shoot)
+            stormSky?.setCharge(tapMeterFill > 0.01 ? tapMeterFill : nil)
+        default:
+            tapMeterFill = 0
+            tapMeterNode?.setFill(0, mode: .shoot)
+            stormSky?.setCharge(nil)
         }
-        charge = min(charge + chargeRate * dt, 1.18)
-        shootButton?.setCharge(charge)
-        stormSky?.setCharge(charge)
     }
 
-    private func cancelCharge() {
-        chargeActive = false
-        charge = 0
-        shootButton?.setCharge(nil)
+    private func resetTapMeter() {
+        tapMeterFill = 0
+        cpuBlockFill = 0
+        lastTapTime = 0
+        tapMeterNode?.setFill(0, mode: .shoot)
         stormSky?.setCharge(nil)
     }
 
     private func updateHuman(_ dt: CGFloat) {
         guard let id = activeHumanID, let player = players[id] else { return }
-        let v = joystick?.vector ?? .zero
-        let mag = hypot(v.dx, v.dy)
         var moving = false
+        let canMove = playState == .homeLive || playState == .awayLive || playState == .awayShot
 
-        if mag > 0.14, playState == .homeLive || playState == .awayLive || playState == .awayShot {
-            let speed = 250 * player.heroID.character.speed
-            player.position.x += v.dx * speed * dt
-            player.position.y += v.dy * 200 * dt
-            clampToCourt(player)
-            if abs(v.dx) > 0.1 {
-                player.facing = v.dx > 0 ? 1 : -1
+        if canMove {
+            var dx: CGFloat = 0
+            var dy: CGFloat = 0
+            if let lt = leftTouch {
+                let curr = lt.location(in: self)
+                dx = (curr.x - leftTouchPrev.x) * 1.8
+                dy = (curr.y - leftTouchPrev.y) * 1.3
+                leftTouchPrev = curr
+                lastLeftInputTime = nowTime
             }
-            player.moveIntensity = min(1, mag * 1.2)
-            moving = true
+            let decayFactor = max(0, 1 - 3.5 * dt)
+            leftImpulse.dx *= decayFactor
+            leftImpulse.dy *= decayFactor
+            if hypot(leftImpulse.dx, leftImpulse.dy) < 3 { leftImpulse = .zero }
+            dx += leftImpulse.dx * dt
+            dy += leftImpulse.dy * dt
+            if abs(dx) > 0.3 || abs(dy) > 0.3 {
+                player.position.x += dx
+                player.position.y += dy
+                clampToCourt(player)
+                moving = true
+                if abs(dx) > 0.5 { player.facing = dx > 0 ? 1 : -1 }
+            }
+            player.moveIntensity = moving ? min(1, hypot(dx, dy) / 5.0) : 0
         }
 
         let hasBall = possession == .home && (ball?.isHeld ?? false)
-        if !moving && hasBall {
-            player.facing = 1 // square up to the hoop
-        }
+        if !moving && hasBall && nowTime - lastLeftInputTime > 0.8 { player.facing = 1 }
         player.updateLocomotion(moving: moving, hasBall: hasBall)
     }
 
@@ -637,6 +661,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                     error += 18 * (1 + lockdownBonus)
                     showCallout("CONTESTED!", color: SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 1))
                 }
+                cpuBlockFill = 0
                 playState = .awayShot
                 handler.playAnimationOnce(.shoot)
                 pendingLaunch = PendingLaunch(
@@ -801,7 +826,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         if shotClockRemaining <= 0 {
             showCallout("SHOT CLOCK!", color: .red)
             HapticManager.notification(.error)
-            cancelCharge()
             givePossession(to: .away)
         }
     }
@@ -823,6 +847,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     }
 
     // MARK: - Touch handling
+    // Left half of screen = move player; right half = shoot/block/steal/pass
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
@@ -833,38 +858,30 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             guard phase == .playing else { continue }
 
             let p = touch.location(in: self)
-            if shootTouch == nil,
-               playState == .homeLive,
-               let btn = shootButton,
-               hypot(p.x - btn.position.x, p.y - btn.position.y) <= 86 {
-                shootTouch = touch
-                chargeActive = true
-                charge = 0
-                shootButton?.setCharge(0)
-                stormSky?.setCharge(0)
-                HapticManager.impact(.light)
-            } else if shootTouch == nil,
-                      playState == .awayLive,
-                      let btn = shootButton,
-                      hypot(p.x - btn.position.x, p.y - btn.position.y) <= 86 {
-                shootTouch = touch
-                tryHumanSteal()
-            } else if shootTouch == nil,
-                      let btn = shootButton,
-                      hypot(p.x - btn.position.x, p.y - btn.position.y) <= 86 {
-                // Consume button-area taps during non-interactive states so they
-                // don't accidentally spawn the joystick at the shoot button position
-                shootTouch = touch
-            } else if joystickTouch == nil, p.y < size.height - 140 {
-                joystickTouch = touch
-                joystick?.begin(at: p)
+            if p.x > size.width * 0.5 {
+                if rightTouch == nil {
+                    rightTouch = touch
+                    rightTouchStart = p
+                    rightTouchStartTime = nowTime
+                    if playState == .homeLive && possession == .home {
+                        handleShootMeterTap()
+                    } else if playState == .awayShot {
+                        handleBlockAttempt()
+                    }
+                }
+            } else {
+                if leftTouch == nil {
+                    leftTouch = touch
+                    leftTouchPrev = p
+                    leftTouchStartPos = p
+                    leftTouchStartTime = nowTime
+                }
             }
         }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let stickTouch = joystickTouch, touches.contains(stickTouch) else { return }
-        joystick?.move(to: stickTouch.location(in: self))
+        // Left thumb movement is sampled per-frame in updateHuman
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -877,22 +894,112 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
     private func handleTouchesFinished(_ touches: Set<UITouch>) {
         for touch in touches {
-            if touch == shootTouch {
-                shootTouch = nil
-                if chargeActive {
-                    let released = charge
-                    cancelCharge()
-                    releaseShot(charge: released)
+            if touch == rightTouch {
+                rightTouch = nil
+                let endPos = touch.location(in: self)
+                let delta = CGPoint(x: endPos.x - rightTouchStart.x, y: endPos.y - rightTouchStart.y)
+                let dist = hypot(delta.x, delta.y)
+                if dist > 36 && nowTime - rightTouchStartTime < 0.45 {
+                    handleRightThumbSwipe(delta: delta)
                 }
             }
-            if touch == joystickTouch {
-                joystickTouch = nil
-                joystick?.end()
+            if touch == leftTouch {
+                leftTouch = nil
+                let endPos = touch.location(in: self)
+                let delta = CGPoint(x: endPos.x - leftTouchStartPos.x,
+                                    y: endPos.y - leftTouchStartPos.y)
+                let dist = hypot(delta.x, delta.y)
+                let dur = max(0.01, nowTime - leftTouchStartTime)
+                if dist > 28 && dur < 0.35 {
+                    let speed = min(dist / CGFloat(dur), 900)
+                    let nx = delta.x / dist
+                    let ny = delta.y / dist
+                    leftImpulse = CGVector(dx: nx * speed * 0.55, dy: ny * speed * 0.40)
+                }
             }
         }
     }
 
     // MARK: - Shooting
+
+    private func handleShootMeterTap() {
+        guard playState == .homeLive, possession == .home else { return }
+        lastTapTime = nowTime
+        tapMeterFill = min(tapMeterFill + tapPumpAmount, 1.2)
+        tapMeterNode?.pumpFlash()
+        HapticManager.impact(.light)
+        if tapMeterFill >= greenLow && tapMeterFill <= greenHigh {
+            let captured = tapMeterFill
+            tapMeterFill = 0
+            releaseShot(charge: captured)
+        }
+    }
+
+    private func handleBlockAttempt() {
+        guard playState == .awayShot else { return }
+        guard cpuBlockFill >= greenLow && cpuBlockFill <= greenHigh else {
+            showCallout("TIMING!", color: SKColor.white.withAlphaComponent(0.5))
+            HapticManager.impact(.light)
+            return
+        }
+        if CGFloat.random(in: 0...1) < 0.72 {
+            pendingLaunch = nil
+            ball?.hold()
+            showCallout("BLOCKED!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1), big: true)
+            HapticManager.notification(.success)
+            shakeWorld(7)
+            scheduleGivePossession(to: .home, after: 0.35)
+        } else {
+            showCallout("MISSED IT!", color: SKColor.white.withAlphaComponent(0.60))
+            HapticManager.impact(.rigid)
+        }
+    }
+
+    private func handleRightThumbSwipe(delta: CGPoint) {
+        if delta.x < -50 {
+            tryHumanPass()
+        } else if playState == .awayLive {
+            tryGestureSteal()
+        }
+    }
+
+    private func tryGestureSteal() {
+        guard nowTime > humanStealCooldownUntil,
+              let handlerID = cpuHandlerID, let handler = players[handlerID],
+              let humanID = activeHumanID, let human = players[humanID] else { return }
+
+        let dist = hypot(handler.position.x - human.position.x, handler.position.y - human.position.y)
+        humanStealCooldownUntil = nowTime + 3.0
+        guard dist < 52 else {
+            showCallout("GET CLOSER!", color: SKColor.white.withAlphaComponent(0.55))
+            return
+        }
+
+        let chance = (0.15 + human.heroID.character.stealBonus * 2.0) / (1.0 + difficulty.cpuStealRate * 0.5)
+        if CGFloat.random(in: 0...1) < chance {
+            showCallout("STEAL!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1))
+            HapticManager.notification(.success)
+            givePossession(to: .home)
+        } else {
+            showCallout("NO GOOD", color: SKColor.white.withAlphaComponent(0.5))
+            HapticManager.impact(.rigid)
+        }
+    }
+
+    private func tryHumanPass() {
+        guard playState == .homeLive, possession == .home,
+              let humanID = activeHumanID,
+              let mateID = homeIDs.first(where: { $0 != humanID }),
+              let _ = players[mateID] else { return }
+
+        showCallout("PASS!", color: SKColor(red: 0.4, green: 0.85, blue: 1.0, alpha: 1))
+        HapticManager.impact(.medium)
+        players[humanID]?.setSelectionActive(false)
+        players[mateID]?.setSelectionActive(true)
+        activeHumanID = mateID
+        leftTouch = nil
+        leftImpulse = .zero
+    }
 
     private func releaseShot(charge: CGFloat) {
         guard phase == .playing,
@@ -932,29 +1039,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             errorOffset: CGFloat.random(in: -error...error)
         )
         HapticManager.impact(.medium)
-    }
-
-    private func tryHumanSteal() {
-        guard nowTime > humanStealCooldownUntil,
-              let handlerID = cpuHandlerID, let handler = players[handlerID],
-              let humanID = activeHumanID, let human = players[humanID] else { return }
-
-        let dist = hypot(handler.position.x - human.position.x, handler.position.y - human.position.y)
-        humanStealCooldownUntil = nowTime + 3.0
-        guard dist < 52 else {
-            showCallout("GET CLOSER!", color: SKColor.white.withAlphaComponent(0.55))
-            return
-        }
-
-        let chance = (0.15 + human.heroID.character.stealBonus * 2.0) / (1.0 + difficulty.cpuStealRate * 0.5)
-        if CGFloat.random(in: 0...1) < chance {
-            showCallout("STEAL!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1))
-            HapticManager.notification(.success)
-            givePossession(to: .home)
-        } else {
-            showCallout("NO GOOD", color: SKColor.white.withAlphaComponent(0.5))
-            HapticManager.impact(.rigid)
-        }
     }
 
     private func shotError(charge: CGFloat, dist: CGFloat, beyondArc: Bool,
@@ -1193,7 +1277,174 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     }
 }
 
-// MARK: - Shoot button with charge meter + beat ring
+// MARK: - Tap-pump shot meter (horizontal bar across top of screen)
+
+enum TapMeterMode { case shoot, block }
+
+@MainActor
+final class TapShotMeterNode: SKNode {
+    private let barHeight: CGFloat = 16
+    private var barWidth: CGFloat
+    private var greenLow: CGFloat
+    private var greenHigh: CGFloat
+    private var perfectLow: CGFloat
+    private var perfectHigh: CGFloat
+
+    private let background = SKShapeNode()
+    private let fillNode = SKShapeNode()
+    private let greenZone = SKShapeNode()
+    private let perfectZone = SKShapeNode()
+    private let flashOverlay = SKShapeNode()
+    private let modeLabel = SKLabelNode()
+    private let beatRing = SKShapeNode()
+
+    init(barWidth: CGFloat, greenLow: CGFloat, greenHigh: CGFloat, perfectLow: CGFloat, perfectHigh: CGFloat) {
+        self.barWidth = barWidth
+        self.greenLow = greenLow
+        self.greenHigh = greenHigh
+        self.perfectLow = perfectLow
+        self.perfectHigh = perfectHigh
+        super.init()
+        setup()
+    }
+
+    required init?(coder aDecoder: NSCoder) { fatalError() }
+
+    func layout(barWidth: CGFloat) {
+        self.barWidth = barWidth
+        rebuildZones()
+    }
+
+    func reconfigure(greenLow: CGFloat, greenHigh: CGFloat, perfectLow: CGFloat, perfectHigh: CGFloat) {
+        self.greenLow = greenLow
+        self.greenHigh = greenHigh
+        self.perfectLow = perfectLow
+        self.perfectHigh = perfectHigh
+        rebuildZones()
+    }
+
+    private func setup() {
+        background.fillColor = SKColor.black.withAlphaComponent(0.45)
+        background.strokeColor = SKColor.white.withAlphaComponent(0.18)
+        background.lineWidth = 1
+        addChild(background)
+
+        fillNode.strokeColor = .clear
+        addChild(fillNode)
+
+        greenZone.fillColor = SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 0.30)
+        greenZone.strokeColor = .clear
+        addChild(greenZone)
+
+        perfectZone.fillColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.45)
+        perfectZone.strokeColor = .clear
+        addChild(perfectZone)
+
+        flashOverlay.fillColor = .white
+        flashOverlay.strokeColor = .clear
+        flashOverlay.alpha = 0
+        addChild(flashOverlay)
+
+        modeLabel.fontName = "AvenirNext-Bold"
+        modeLabel.fontSize = 10
+        modeLabel.fontColor = SKColor.white.withAlphaComponent(0.55)
+        modeLabel.verticalAlignmentMode = .center
+        modeLabel.horizontalAlignmentMode = .right
+        modeLabel.text = "SHOOT"
+        addChild(modeLabel)
+
+        beatRing.strokeColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.9)
+        beatRing.lineWidth = 2
+        beatRing.fillColor = .clear
+        beatRing.alpha = 0
+        addChild(beatRing)
+
+        rebuildZones()
+    }
+
+    private func rebuildZones() {
+        let w = barWidth
+        let h = barHeight
+        let r: CGFloat = h / 2
+
+        background.path = CGPath(roundedRect: CGRect(x: -w / 2, y: -h / 2, width: w, height: h),
+                                  cornerWidth: r, cornerHeight: r, transform: nil)
+
+        let gx = -w / 2 + greenLow * w
+        let gw = (greenHigh - greenLow) * w
+        greenZone.path = CGPath(rect: CGRect(x: gx, y: -h / 2, width: gw, height: h), transform: nil)
+
+        let px = -w / 2 + perfectLow * w
+        let pw = (perfectHigh - perfectLow) * w
+        perfectZone.path = CGPath(rect: CGRect(x: px, y: -h / 2, width: pw, height: h), transform: nil)
+
+        flashOverlay.path = CGPath(roundedRect: CGRect(x: -w / 2, y: -h / 2, width: w, height: h),
+                                    cornerWidth: r, cornerHeight: r, transform: nil)
+
+        beatRing.path = CGPath(roundedRect: CGRect(x: -w / 2 - 4, y: -h / 2 - 4, width: w + 8, height: h + 8),
+                                cornerWidth: r + 4, cornerHeight: r + 4, transform: nil)
+
+        modeLabel.position = CGPoint(x: w / 2 - 8, y: 0)
+
+        setFill(0, mode: .shoot)
+    }
+
+    func setFill(_ fill: CGFloat, mode: TapMeterMode) {
+        let w = barWidth
+        let h = barHeight
+        let r: CGFloat = h / 2
+        let clamped = min(fill, 1.0)
+
+        if clamped <= 0.01 {
+            fillNode.path = nil
+        } else {
+            let fw = clamped * w
+            fillNode.path = CGPath(roundedRect: CGRect(x: -w / 2, y: -h / 2, width: fw, height: h),
+                                    cornerWidth: min(r, fw / 2), cornerHeight: min(r, fw / 2), transform: nil)
+        }
+
+        switch mode {
+        case .shoot:
+            modeLabel.text = "SHOOT"
+            if fill >= perfectLow && fill <= perfectHigh {
+                fillNode.fillColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 1)
+            } else if fill >= greenLow && fill <= greenHigh {
+                fillNode.fillColor = SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 1)
+            } else if fill > greenHigh {
+                fillNode.fillColor = SKColor(red: 1, green: 0.25, blue: 0.2, alpha: 1)
+            } else {
+                fillNode.fillColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.65)
+            }
+        case .block:
+            modeLabel.text = "BLOCK"
+            if fill >= greenLow && fill <= greenHigh {
+                fillNode.fillColor = SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1)
+            } else if fill > greenHigh {
+                fillNode.fillColor = SKColor(red: 1, green: 0.35, blue: 0.2, alpha: 1)
+            } else {
+                fillNode.fillColor = SKColor(red: 0.85, green: 0.55, blue: 0.15, alpha: 1)
+            }
+        }
+    }
+
+    func pumpFlash() {
+        flashOverlay.removeAllActions()
+        flashOverlay.alpha = 0.35
+        flashOverlay.run(SKAction.fadeOut(withDuration: 0.12))
+    }
+
+    func beatPulse() {
+        beatRing.removeAllActions()
+        beatRing.alpha = 0.9
+        beatRing.setScale(1)
+        beatRing.run(SKAction.group([
+            SKAction.scale(to: 1.08, duration: 0.28),
+            SKAction.fadeOut(withDuration: 0.28),
+        ]))
+    }
+}
+
+// MARK: - Legacy shoot button (kept for reference, no longer active)
 
 @MainActor
 final class ShootButtonNode: SKNode {

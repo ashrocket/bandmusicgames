@@ -5,7 +5,7 @@ final class BallNode: SKNode {
     /// Physics radius — rim-bounce and scoring tuning depend on this; don't grow it for looks.
     let ballRadius: CGFloat = 11
     /// Drawn radius — larger than physics so the ball reads clearly on a phone screen.
-    let visualRadius: CGFloat = 16
+    let visualRadius: CGFloat = 22
     private var spriteNode: SKSpriteNode?
     private var fireGlow: SKShapeNode?
 
