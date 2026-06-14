@@ -365,8 +365,21 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         }
         for s in skunks {
             let node = ForCuttingGrassRenderer.sprite(named: "skunk-walk-1", size: CGSize(width: unit * 0.88, height: unit * 0.88), fallbackColor: .black)
+            if s.alarm > 0.5, let sprite = node as? SKSpriteNode {
+                sprite.color = SKColor(red: 1, green: 0.2, blue: 0.1, alpha: 1)
+                sprite.colorBlendFactor = min(0.65, (s.alarm - 0.5) * 1.3)
+            }
             node.position = s.position; node.zPosition = 7
             entitiesLayer.addChild(node)
+            if s.alarm > 0.5 {
+                let bang = SKLabelNode(text: "!")
+                bang.fontName = "AvenirNext-Heavy"
+                bang.fontSize = unit * 0.75
+                bang.fontColor = SKColor(red: 1, green: 0.25, blue: 0.1, alpha: min(1, (s.alarm - 0.5) * 4))
+                bang.position = CGPoint(x: s.position.x, y: s.position.y + unit * 0.62)
+                bang.zPosition = 8
+                entitiesLayer.addChild(bang)
+            }
         }
     }
 
