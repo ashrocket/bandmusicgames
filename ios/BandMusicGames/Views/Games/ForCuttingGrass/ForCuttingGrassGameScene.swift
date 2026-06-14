@@ -67,6 +67,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     // MARK: - Runtime state
     @Published private(set) var gas: CGFloat = 0
     private var gasLowWarned = false
+    private var levelCompleteTriggered = false
     @Published private(set) var needsReplant: Bool = false
     private var wallHapticCooldownUntil: TimeInterval = 0
     var grid = ForCuttingGrassGrid(cells: ContiguousArray<ForCuttingGrassTile>(repeating: .tall, count: ForCuttingGrassGrid.width * ForCuttingGrassGrid.height))
@@ -151,6 +152,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         grid = ForCuttingGrassGrid.make(for: config)
         gas = config.gasMax
         gasLowWarned = false
+        levelCompleteTriggered = false
         wallHapticCooldownUntil = 0
         score = 0
 
@@ -476,10 +478,32 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         checkPickupsAndHazards(now: now, delta: deltaSeconds)
 
         // Win condition
-        if grid.cutPercentage >= config.win {
+        if !levelCompleteTriggered, grid.cutPercentage >= config.win {
+            levelCompleteTriggered = true
             HapticManager.notification(.success)
-            if levelNum >= ForCuttingGrassLevels.all.count { saveWon(); phase = .win }
-            else { phase = .levelComplete }
+            HapticManager.impact(.heavy)
+            let done = SKLabelNode(text: "YARD DONE! ✓")
+            done.fontName = "AvenirNext-Heavy"
+            done.fontSize = 32
+            done.fontColor = SKColor(red: 0.55, green: 0.95, blue: 0.4, alpha: 1)
+            done.position = CGPoint(x: size.width / 2, y: size.height * 0.5)
+            done.zPosition = 920
+            addChild(done)
+            done.run(SKAction.sequence([
+                SKAction.group([
+                    SKAction.sequence([
+                        SKAction.scale(to: 1.25, duration: 0.12),
+                        SKAction.scale(to: 1.0, duration: 0.15),
+                    ]),
+                    SKAction.sequence([SKAction.wait(forDuration: 0.55), SKAction.fadeOut(withDuration: 0.35)]),
+                ]),
+                SKAction.removeFromParent()
+            ]))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { [weak self] in
+                guard let self else { return }
+                if self.levelNum >= ForCuttingGrassLevels.all.count { self.saveWon(); self.phase = .win }
+                else { self.phase = .levelComplete }
+            }
         }
 
         syncEntityNodes()
@@ -496,6 +520,23 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                 gas = config.gasMax
                 gasLowWarned = false
                 HapticManager.impact(.medium)
+                let refuel = SKLabelNode(text: "⛽ REFUELED!")
+                refuel.fontName = "AvenirNext-Heavy"
+                refuel.fontSize = 22
+                refuel.fontColor = SKColor(red: 0.35, green: 0.9, blue: 0.45, alpha: 1)
+                refuel.position = CGPoint(x: size.width / 2, y: size.height * 0.55)
+                refuel.zPosition = 900
+                addChild(refuel)
+                refuel.run(SKAction.sequence([
+                    SKAction.group([
+                        SKAction.sequence([
+                            SKAction.scale(to: 1.15, duration: 0.08),
+                            SKAction.scale(to: 1.0, duration: 0.08),
+                        ]),
+                        SKAction.sequence([SKAction.wait(forDuration: 0.5), SKAction.fadeOut(withDuration: 0.5)]),
+                    ]),
+                    SKAction.removeFromParent()
+                ]))
             }
         }
 
@@ -516,6 +557,23 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                         }
                         redrawTile(atWorldPos: stumps[i].position)
                         HapticManager.notification(.success)
+                        let cleared = SKLabelNode(text: "STUMP CLEAR!")
+                        cleared.fontName = "AvenirNext-Heavy"
+                        cleared.fontSize = 22
+                        cleared.fontColor = SKColor(red: 0.55, green: 0.9, blue: 0.4, alpha: 1)
+                        cleared.position = CGPoint(x: size.width / 2, y: size.height * 0.55)
+                        cleared.zPosition = 900
+                        addChild(cleared)
+                        cleared.run(SKAction.sequence([
+                            SKAction.group([
+                                SKAction.sequence([
+                                    SKAction.scale(to: 1.2, duration: 0.08),
+                                    SKAction.scale(to: 1.0, duration: 0.1),
+                                ]),
+                                SKAction.sequence([SKAction.wait(forDuration: 0.5), SKAction.fadeOut(withDuration: 0.5)]),
+                            ]),
+                            SKAction.removeFromParent()
+                        ]))
                     }
                 }
             }

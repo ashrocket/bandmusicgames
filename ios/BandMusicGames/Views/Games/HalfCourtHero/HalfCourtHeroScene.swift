@@ -605,6 +605,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
         if !powered {
             showCallout("COOLED OFF", color: SKColor.white.withAlphaComponent(0.7))
+            HapticManager.impact(.rigid)
             streakPips?.set(count: onBeatStreak, powered: false)
         }
     }
