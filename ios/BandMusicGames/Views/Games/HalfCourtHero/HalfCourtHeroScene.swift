@@ -1042,11 +1042,11 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
               let humanID = activeHumanID, let human = players[humanID] else { return }
 
         let dist = hypot(handler.position.x - human.position.x, handler.position.y - human.position.y)
-        humanStealCooldownUntil = nowTime + 3.0
         guard dist < 52 else {
             showCallout("GET CLOSER!", color: SKColor.white.withAlphaComponent(0.55))
             return
         }
+        humanStealCooldownUntil = nowTime + 3.0
 
         let chance = (0.15 + human.heroID.character.stealBonus * 2.0) / (1.0 + difficulty.cpuStealRate * 0.5)
         if CGFloat.random(in: 0...1) < chance {
