@@ -120,7 +120,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private let meterResetDelay: TimeInterval = 2.0
     private var lastTapTime: TimeInterval = 0
     private var cpuBlockFill: CGFloat = 0
-    private let cpuBlockFillRate: CGFloat = 0.42
+    // Green zone (0.52–0.76) opens at 0.52s, closes at 0.76s — ball launches at 0.29s
+    // so the block window sits squarely during the ball's flight, not after it scores.
+    private let cpuBlockFillRate: CGFloat = 1.0
 
     // Beat + power-up
     private var beatAnchor: TimeInterval?
@@ -1007,6 +1009,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
         if CGFloat.random(in: 0...1) < 0.72 {
             pendingLaunch = nil
+            ball?.missResolved = true  // prevent contact-based scoring if ball is mid-flight
             ball?.hold()
             showCallout("BLOCKED!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1), big: true)
             HapticManager.notification(.success)
