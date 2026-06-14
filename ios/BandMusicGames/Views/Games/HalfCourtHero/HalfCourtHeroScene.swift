@@ -1300,8 +1300,10 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 } else {
                     self.homeScore = 0
                     self.awayScore = 0
-                    self.resetMatch()
+                    // phase must be .playing before resetMatch so givePossession
+                    // doesn't short-circuit its guard check
                     self.phase = .playing
+                    self.resetMatch()
                 }
             }
         )
