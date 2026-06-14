@@ -17,7 +17,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
     // MARK: - Constants
     private let ambientCount = 75
-    private let trackDuration: TimeInterval = 212 // 3:32
+    private var trackDuration: TimeInterval { config.timeLimit }
 
     // MARK: - Nodes
     private let worldNode = SKNode()
@@ -39,6 +39,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
     private var dragStartStar: Int?
     private var startTime: Date?
     private var elapsedTime: TimeInterval = 0
+    private var isPreviewActive = false
 
     var correctCount: Int {
         links.filter { link in
@@ -83,9 +84,39 @@ final class FrancisGameScene: SKScene, ObservableObject {
     func startLevel(_ n: Int) {
         levelNum = max(1, min(n, FrancisLevels.all.count))
         phase = .playing
-        startTime = Date()
+        startTime = nil
         elapsedTime = 0
+        isPreviewActive = true
+        linksLayer.removeAllActions()
         resetLevel()
+        showConstellationPreview()
+    }
+
+    private func showConstellationPreview() {
+        hud?.update(level: config, correct: 0, total: config.edges.count, timeRemaining: trackDuration, progress: 0)
+        for (a, b) in config.edges {
+            let start = config.stars[a]
+            let end = config.stars[b]
+            let path = CGMutablePath()
+            path.move(to: CGPoint(x: start.nx * size.width, y: (1.0 - start.ny) * size.height))
+            path.addLine(to: CGPoint(x: end.nx * size.width, y: (1.0 - end.ny) * size.height))
+            let node = SKShapeNode(path: path)
+            node.strokeColor = SKColor(red: 0.55, green: 0.80, blue: 1.0, alpha: 0.9)
+            node.lineWidth = 2.5
+            node.name = "preview_line"
+            linksLayer.addChild(node)
+        }
+        linksLayer.run(SKAction.sequence([
+            SKAction.wait(forDuration: 1.6),
+            SKAction.fadeOut(withDuration: 0.4),
+            SKAction.run { [weak self] in
+                guard let self else { return }
+                self.linksLayer.removeAllChildren()
+                self.linksLayer.alpha = 1
+                self.isPreviewActive = false
+                self.startTime = Date()
+            },
+        ]))
     }
 
     private func resetLevel() {
@@ -145,7 +176,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
 
-        if phase == .playing {
+        if phase == .playing, !isPreviewActive {
             let location = touch.location(in: targetsLayer)
             if let starIndex = findNearestStar(to: location) {
                 dragStartStar = starIndex
@@ -168,9 +199,15 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
         if let endIdx = findNearestStar(to: location), startIdx != endIdx {
             tryConnect(startIdx, endIdx)
+            clearDragLine()
+        } else {
+            fadeDragLine()
         }
+        dragStartStar = nil
+    }
 
-        clearDragLine()
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        fadeDragLine()
         dragStartStar = nil
     }
 
@@ -206,13 +243,53 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
         let node = SKShapeNode(path: path)
         let isCorrect = config.edges.contains { ($0.0 == a && $0.1 == b) || ($0.0 == b && $0.1 == a) }
-        node.strokeColor = isCorrect ? SKColor(red: 0.65, green: 0.94, blue: 0.65, alpha: 0.85) : SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 0.6)
+        node.strokeColor = isCorrect
+            ? SKColor(red: 0.65, green: 0.94, blue: 0.65, alpha: 0.85)
+            : SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 0.6)
         node.lineWidth = 2
         linksLayer.addChild(node)
+
+        if isCorrect {
+            HapticManager.impact(.soft)
+            for idx in [a, b] {
+                if let starNode = targetsLayer.childNode(withName: "star_\(idx)") {
+                    starNode.removeAction(forKey: "starPop")
+                    // Pop up then settle at 1.25x — stars stay "lit" once connected
+                    starNode.run(.sequence([
+                        .scale(to: 1.5, duration: 0.07),
+                        .scale(to: 1.25, duration: 0.14),
+                    ]), withKey: "starPop")
+                }
+            }
+        } else {
+            HapticManager.impact(.rigid)
+        }
+
+        if !isCorrect {
+            let key = (min(a, b), max(a, b))
+            let nudge: CGFloat = 3
+            node.run(SKAction.sequence([
+                SKAction.moveBy(x: -nudge, y: 0, duration: 0.05),
+                SKAction.moveBy(x: nudge * 2, y: 0, duration: 0.06),
+                SKAction.moveBy(x: -nudge, y: 0, duration: 0.05),
+                SKAction.wait(forDuration: 1.0),
+                SKAction.fadeOut(withDuration: 0.4),
+                SKAction.removeFromParent(),
+            ]))
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.65) { [weak self] in
+                self?.links.removeAll { $0 == key }
+            }
+        }
     }
 
     private func endLevel() {
+        guard phase == .playing else { return }
         phase = .ended
+        let won = correctCount == config.edges.count
+        HapticManager.notification(won ? .success : .error)
+
+        let cardDelay: TimeInterval = won ? 0.55 : 0.0
+        if won { burstStars() }
 
         let isLast = levelNum == FrancisLevels.all.count
         let card = FrancisResultCardNode(
@@ -221,12 +298,33 @@ final class FrancisGameScene: SKScene, ObservableObject {
             correct: correctCount,
             total: config.edges.count,
             isLast: isLast,
-            onNext: { [weak self] in self?.startLevel(self!.levelNum + 1) },
+            onNext: { [weak self] in guard let self else { return }; self.startLevel(self.levelNum + 1) },
             onFinish: { [weak self] in self?.onDismiss?() }
         )
         card.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        card.alpha = 0
+        card.setScale(0.88)
         addChild(card)
         resultCard = card
+        card.run(SKAction.sequence([
+            SKAction.wait(forDuration: cardDelay),
+            SKAction.group([
+                SKAction.fadeIn(withDuration: 0.3),
+                SKAction.scale(to: 1.0, duration: 0.3),
+            ]),
+        ]))
+    }
+
+    private func burstStars() {
+        for i in 0..<config.stars.count {
+            guard let starNode = targetsLayer.childNode(withName: "star_\(i)") else { continue }
+            let delay = TimeInterval(i) * 0.04
+            starNode.run(.sequence([
+                .wait(forDuration: delay),
+                .scale(to: 2.0, duration: 0.12),
+                .scale(to: 1.4, duration: 0.18),
+            ]))
+        }
     }
 
     private func createDragLine(from: CGPoint) {
@@ -235,8 +333,10 @@ final class FrancisGameScene: SKScene, ObservableObject {
         path.addLine(to: from)
 
         let node = SKShapeNode(path: path)
-        node.strokeColor = SKColor(red: 0.96, green: 0.7, blue: 0.38, alpha: 0.6)
-        node.lineWidth = 1.5
+        node.strokeColor = SKColor(red: 0.96, green: 0.7, blue: 0.38, alpha: 0.75)
+        node.lineWidth = 2
+        node.glowWidth = 5
+        node.lineCap = .round
         targetsLayer.addChild(node)
         dragLine = node
     }
@@ -255,11 +355,20 @@ final class FrancisGameScene: SKScene, ObservableObject {
         dragLine = nil
     }
 
+    private func fadeDragLine() {
+        guard let line = dragLine else { return }
+        dragLine = nil
+        line.run(.sequence([
+            .fadeOut(withDuration: 0.18),
+            .removeFromParent(),
+        ]))
+    }
+
     // MARK: - Updates
     override func update(_ currentTime: TimeInterval) {
         updateMotion()
 
-        if phase == .playing, let start = startTime {
+        if phase == .playing, let start = startTime, !isPreviewActive {
             elapsedTime = -start.timeIntervalSinceNow
             let remaining = max(0, trackDuration - elapsedTime)
             hud?.update(

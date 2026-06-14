@@ -66,6 +66,8 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
 
     // MARK: - Runtime state
     @Published private(set) var gas: CGFloat = 0
+    private var gasLowWarned = false
+    private var wallHapticCooldownUntil: TimeInterval = 0
     var grid = ForCuttingGrassGrid(cells: ContiguousArray<ForCuttingGrassTile>(repeating: .tall, count: ForCuttingGrassGrid.width * ForCuttingGrassGrid.height))
     var score: Int = 0
     var mower: ForCuttingGrassMower = ForCuttingGrassMower(position: .zero, velocity: .zero, facing: 0)
@@ -146,6 +148,8 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         gameOverTitle = "NO TRIES LEFT"
         grid = ForCuttingGrassGrid.make(for: config)
         gas = config.gasMax
+        gasLowWarned = false
+        wallHapticCooldownUntil = 0
         score = 0
 
         mower.position = startPosition(for: config)
@@ -183,7 +187,6 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     func replayFromWin() {
         clearProgress()
         startLevel(1)
-        phase = .title
     }
 
     // MARK: - Entity Placement
@@ -343,8 +346,13 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                 gas = max(0, gas - drain * drainScale * throttle)
             }
 
+            if !gasLowWarned, config.gasMax > 0, gas / config.gasMax < 0.2 {
+                gasLowWarned = true
+                HapticManager.impact(.heavy)
+            }
             if gas <= 0 {
                 gameOverTitle = "GAS OUT"
+                HapticManager.notification(.error)
                 phase = .gameOver
                 return
             }
@@ -358,6 +366,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
 
         // Win condition
         if grid.cutPercentage >= config.win {
+            HapticManager.notification(.success)
             if levelNum >= ForCuttingGrassLevels.all.count { saveWon(); phase = .win }
             else { phase = .levelComplete }
         }
@@ -374,6 +383,8 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
             if distanceSq(gasCans[i].position, mower.position) < pickupRadius * pickupRadius {
                 gasCans[i].collected = true
                 gas = config.gasMax
+                gasLowWarned = false
+                HapticManager.impact(.medium)
             }
         }
 
@@ -382,12 +393,18 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
             for i in stumps.indices where !stumps[i].dug {
                 let digRadius = unit * 1.6
                 if distanceSq(stumps[i].position, mower.position) < digRadius * digRadius {
+                    let prevProgress = stumps[i].progress
                     stumps[i].progress += delta * 0.6
+                    if prevProgress < 0.5 && stumps[i].progress >= 0.5 {
+                        HapticManager.impact(.light)
+                    }
                     if stumps[i].progress >= 1.0 {
                         stumps[i].dug = true
                         if let tile = tileCoordinate(atWorldPos: stumps[i].position) {
                             grid.set(tile.x, tile.y, .cut)
                         }
+                        redrawTile(atWorldPos: stumps[i].position)
+                        HapticManager.notification(.success)
                     }
                 }
             }
@@ -402,14 +419,33 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                 let dx = crickets[i].position.x - mower.position.x, dy = crickets[i].position.y - mower.position.y
                 let dist = sqrt(dx*dx + dy*dy)
                 if dist > 0.01 { crickets[i].velocity = CGVector(dx: (dx/dist)*200, dy: (dy/dist)*200) }
+                HapticManager.impact(.light)
             }
         }
         // Skunks
         ForCuttingGrassHazards.tickSkunks(&skunks, delta: delta, now: now, bounds: bounds, mowerPos: mower.position)
+        for i in skunks.indices where now >= skunks[i].hitCooldownUntil {
+            let hitRadius = unit * 1.5
+            if distanceSq(skunks[i].position, mower.position) < hitRadius * hitRadius {
+                skunks[i].hitCooldownUntil = now + 3.0
+                triesRemaining -= 1
+                HapticManager.notification(.error)
+                flashRed()
+                if triesRemaining <= 0 {
+                    gameOverTitle = "SKUNKED OUT!"
+                    phase = .gameOver
+                } else {
+                    startLevel(levelNum, resetTries: false)
+                }
+                return
+            }
+        }
     }
 
     private func restartAfterCuttingFlowers() {
         triesRemaining -= 1
+        HapticManager.notification(.error)
+        flashRed()
 
         guard triesRemaining > 0 else {
             gameOverTitle = "NO TRIES LEFT"
@@ -418,6 +454,18 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         }
 
         startLevel(levelNum, resetTries: false)
+    }
+
+    private func flashRed() {
+        let flash = SKShapeNode(rect: CGRect(origin: .zero, size: size))
+        flash.fillColor = SKColor(red: 1, green: 0.1, blue: 0.1, alpha: 0.55)
+        flash.strokeColor = .clear
+        flash.zPosition = 900
+        addChild(flash)
+        flash.run(SKAction.sequence([
+            SKAction.fadeOut(withDuration: 0.35),
+            SKAction.removeFromParent()
+        ]))
     }
 
     private func clampToLawn(_ p: CGPoint) -> CGPoint {
@@ -430,14 +478,22 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     }
 
     private func moveMower(by displacement: CGVector) {
+        var hitWall = false
+
         let nextX = clampToLawn(CGPoint(x: mower.position.x + displacement.dx, y: mower.position.y))
         if !isBlocked(nextX) {
             mower.position.x = nextX.x
-        }
+        } else { hitWall = true }
 
         let nextY = clampToLawn(CGPoint(x: mower.position.x, y: mower.position.y + displacement.dy))
         if !isBlocked(nextY) {
             mower.position.y = nextY.y
+        } else { hitWall = true }
+
+        let now = lastUpdate ?? 0
+        if hitWall, now > wallHapticCooldownUntil {
+            wallHapticCooldownUntil = now + 0.45
+            HapticManager.impact(.rigid)
         }
     }
 

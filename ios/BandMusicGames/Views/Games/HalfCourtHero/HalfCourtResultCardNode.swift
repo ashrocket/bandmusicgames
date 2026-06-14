@@ -11,17 +11,17 @@ final class HalfCourtResultCardNode: SKNode {
 
     private var onAction: (() -> Void)?
 
-    init(homeWins: Int, awayWins: Int, isSeriesOver: Bool, onAction: @escaping () -> Void) {
+    init(homeScore: Int, awayScore: Int, homeWins: Int, awayWins: Int, isSeriesOver: Bool, onAction: @escaping () -> Void) {
         self.onAction = onAction
         super.init()
-        setup(homeWins: homeWins, awayWins: awayWins, isSeriesOver: isSeriesOver)
+        setup(homeScore: homeScore, awayScore: awayScore, homeWins: homeWins, awayWins: awayWins, isSeriesOver: isSeriesOver)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setup(homeWins: Int, awayWins: Int, isSeriesOver: Bool) {
+    private func setup(homeScore: Int, awayScore: Int, homeWins: Int, awayWins: Int, isSeriesOver: Bool) {
         zPosition = 1000
         
         // Background
@@ -31,25 +31,42 @@ final class HalfCourtResultCardNode: SKNode {
         addChild(bgNode)
         
         // Title
-        let won = homeWins >= 3
-        titleLabel.text = isSeriesOver ? (won ? "SERIES CHAMPIONS!" : "SERIES LOST") : (homeWins > awayWins ? "GAME WON!" : "GAME LOST")
+        let gameWon = homeScore > awayScore
+        let seriesWon = homeWins >= 3
+        if isSeriesOver {
+            titleLabel.text = seriesWon ? "SERIES CHAMPIONS!" : "SERIES LOST"
+            titleLabel.fontColor = seriesWon
+                ? SKColor(red: 1, green: 0.84, blue: 0, alpha: 1)
+                : SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1)
+        } else {
+            titleLabel.text = gameWon ? "GAME WON!" : "GAME LOST"
+            titleLabel.fontColor = gameWon
+                ? SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1)
+                : SKColor(red: 1, green: 0.42, blue: 0.21, alpha: 1)
+        }
         titleLabel.fontSize = 32
-        titleLabel.fontColor = won ? .yellow : .orange
         titleLabel.position = CGPoint(x: 0, y: 180)
         addChild(titleLabel)
         
+        // Game score
+        scoreLabel.text = "YOU \(homeScore) – \(awayScore) CPU"
+        scoreLabel.fontSize = 22
+        scoreLabel.fontColor = .white.withAlphaComponent(0.85)
+        scoreLabel.position = CGPoint(x: 0, y: 130)
+        addChild(scoreLabel)
+
         // Series Score
-        seriesLabel.text = "SERIES: \(homeWins) - \(awayWins)"
-        seriesLabel.fontSize = 24
-        seriesLabel.fontColor = .white
-        seriesLabel.position = CGPoint(x: 0, y: 120)
+        seriesLabel.text = "SERIES: \(homeWins)–\(awayWins)"
+        seriesLabel.fontSize = 18
+        seriesLabel.fontColor = .white.withAlphaComponent(0.65)
+        seriesLabel.position = CGPoint(x: 0, y: 100)
         addChild(seriesLabel)
-        
+
         // Details
-        let sub = SKLabelNode(text: isSeriesOver ? "Best of 5 Complete" : "Next game starting...")
-        sub.fontSize = 16
-        sub.fontColor = .white.withAlphaComponent(0.6)
-        sub.position = CGPoint(x: 0, y: 80)
+        let sub = SKLabelNode(text: isSeriesOver ? "Best of 5 Complete" : "Next game →")
+        sub.fontSize = 14
+        sub.fontColor = .white.withAlphaComponent(0.5)
+        sub.position = CGPoint(x: 0, y: 70)
         addChild(sub)
         
         // Action Button

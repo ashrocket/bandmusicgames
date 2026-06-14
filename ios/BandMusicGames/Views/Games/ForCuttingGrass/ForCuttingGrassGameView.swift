@@ -50,8 +50,17 @@ struct ForCuttingGrassGameView: View {
             }
         }
         .background(Color(hex: "#0a1a0a").ignoresSafeArea())
-        .onAppear { scene.activate() }
-        .onDisappear { scene.deactivate() }
+        .onAppear {
+            scene.activate()
+            let uri = "spotify:track:6EJAb3oTjDFwrt1dpIJPbr"
+            if auth.accessToken != nil, !(auth.isPlaying && auth.currentTrackUri == uri) {
+                Task { await auth.playTrack(uri) }
+            }
+        }
+        .onDisappear {
+            scene.deactivate()
+            Task { await auth.pausePlayback() }
+        }
     }
 
     private var canvasZoomGesture: some Gesture {
@@ -181,16 +190,40 @@ struct ForCuttingGrassGameView: View {
     }
 
     private var phaseOverlay: some View {
-        ZStack {
+        ZStack(alignment: .topTrailing) {
             Color.black.opacity(0.6).ignoresSafeArea()
 
             VStack(spacing: 24) {
                 if scene.phase == .levelComplete {
+                    let nextIdx = scene.levelNum  // levelNum is 1-indexed; after completion next = levelNum
+                    let nextConfig = nextIdx < ForCuttingGrassLevels.all.count
+                        ? ForCuttingGrassLevels.all[nextIdx] : nil
+
                     Text("LEVEL COMPLETE")
                         .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(.white)
 
-                    Button("NEXT LEVEL") {
+                    if let next = nextConfig {
+                        VStack(spacing: 6) {
+                            Text("NEXT UP")
+                                .font(.system(size: 10, weight: .black, design: .monospaced))
+                                .tracking(2.5)
+                                .foregroundColor(Color(hex: "#8bc44a").opacity(0.8))
+                            Text(next.sub.uppercased())
+                                .font(.system(size: 15, weight: .black, design: .monospaced))
+                                .foregroundColor(.white)
+                            Text(next.desc)
+                                .font(.system(size: 11, weight: .semibold, design: .monospaced))
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.white.opacity(0.55))
+                        }
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(Color.white.opacity(0.07))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+
+                    Button(nextConfig != nil ? "NEXT LEVEL" : "FINISH") {
                         scene.nextLevel()
                     }
                     .buttonStyle(ForCuttingGrassButtonStyle())
@@ -198,6 +231,10 @@ struct ForCuttingGrassGameView: View {
                     Text(scene.gameOverTitle)
                         .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(.red)
+
+                    Text("\(Int(scene.grid.cutPercentage * 100))% mowed")
+                        .font(.system(size: 14, weight: .semibold, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.6))
 
                     Button("RETRY") {
                         scene.retry()
@@ -208,11 +245,28 @@ struct ForCuttingGrassGameView: View {
                         .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(Color(hex: "#ffd27a"))
 
+                    Text("ALL 5 YARDS MOWED")
+                        .font(.system(size: 12, weight: .black, design: .monospaced))
+                        .tracking(2)
+                        .foregroundColor(.white.opacity(0.52))
+
                     Button("PLAY AGAIN") {
                         scene.replayFromWin()
                     }
                     .buttonStyle(ForCuttingGrassButtonStyle())
                 }
+
+                Button("QUIT") { dismiss() }
+                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.52))
+            }
+
+            Button { dismiss() } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 28))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color.white, Color.black.opacity(0.5))
+                    .padding(16)
             }
         }
     }

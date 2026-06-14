@@ -28,9 +28,13 @@ struct FrancisGameView: View {
         }
         .onAppear {
             scene.onDismiss = { dismiss() }
-            if auth.accessToken != nil {
-                Task { await auth.playTrack("spotify:track:64h0585a6LWXOdsCD2pOiW") }
+            let uri = "spotify:track:64h0585a6LWXOdsCD2pOiW"
+            if auth.accessToken != nil, !(auth.isPlaying && auth.currentTrackUri == uri) {
+                Task { await auth.playTrack(uri) }
             }
+        }
+        .onDisappear {
+            Task { await auth.pausePlayback() }
         }
     }
 
@@ -96,6 +100,13 @@ private struct DogIntroView: View {
     @State private var thought1 = false
     @State private var thought2 = false
     @State private var thought3 = false
+    @State private var done = false
+
+    private func finish() {
+        guard !done else { return }
+        done = true
+        onDone()
+    }
 
     var body: some View {
         ZStack {
@@ -139,6 +150,8 @@ private struct DogIntroView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .contentShape(Rectangle())
+        .onTapGesture { finish() }
         .onAppear { runSequence() }
     }
 
@@ -183,7 +196,7 @@ private struct DogIntroView: View {
         }
         if name == "thought3" {
             DispatchQueue.main.asyncAfter(deadline: .now() + hide + 0.5) {
-                onDone()
+                finish()
             }
         }
     }

@@ -115,6 +115,14 @@ enum HalfCourtDifficulty: String, CaseIterable, Identifiable {
         case .hard: return 0.32
         }
     }
+
+    var shotClockSeconds: TimeInterval {
+        switch self {
+        case .easy: return 13
+        case .normal: return 10
+        case .hard: return 7
+        }
+    }
 }
 
 enum HalfCourtHeroID: String, CaseIterable, Identifiable {
@@ -133,6 +141,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 fullName: "NARA AVAKIAN",
                 role: "VOCALS / GUITAR",
                 ability: "3PT SHOOTER",
+                abilityBlurb: "Deadeye from beyond the arc. Leave her open out there and it's MONEY.",
                 hue: Color(hex: "#FF1493"),
                 skin: Color(hex: "#FDBCB4"),
                 hair: Color(hex: "#1C0A00"),
@@ -141,6 +150,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shoes: Color(hex: "#2A2A2A"),
                 hairStyle: .bob,
                 threeBonus: 0.10,
+                closeBonus: 0,
                 stealBonus: 0,
                 speed: 1.0,
                 height: 175,
@@ -152,6 +162,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 fullName: "ETHAN NASH",
                 role: "BASS",
                 ability: "LOCKDOWN",
+                abilityBlurb: "A glove on defense — quick feet and a hand in every passing lane. Straight FIRE.",
                 hue: Color(hex: "#32CD32"),
                 skin: Color(hex: "#C68642"),
                 hair: Color(hex: "#3D2B1F"),
@@ -160,6 +171,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shoes: .white,
                 hairStyle: .long,
                 threeBonus: 0,
+                closeBonus: 0,
                 stealBonus: 0.20,
                 speed: 1.05,
                 height: 180,
@@ -171,6 +183,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 fullName: "BRENDAN JONES",
                 role: "DRUMS",
                 ability: "PAINT BEAST",
+                abilityBlurb: "Owns the paint. Strong drives, stronger finishes. BOOM.",
                 hue: Color(hex: "#FF6B35"),
                 skin: Color(hex: "#FDBCB4"),
                 hair: Color(hex: "#CC2200"),
@@ -179,6 +192,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shoes: Color(hex: "#222222"),
                 hairStyle: .beanie,
                 threeBonus: 0,
+                closeBonus: 0.18,
                 stealBonus: 0,
                 speed: 1.0,
                 height: 185,
@@ -190,6 +204,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 fullName: "WILL FISHER",
                 role: "KEYS",
                 ability: "DEEP RANGE",
+                abilityBlurb: "Limitless range off the keys — pulls from the logo like it's a layup. PERFECT.",
                 hue: Color(hex: "#9B59B6"),
                 skin: Color(hex: "#8D5524"),
                 hair: Color(hex: "#111111"),
@@ -198,6 +213,7 @@ enum HalfCourtHeroID: String, CaseIterable, Identifiable {
                 shoes: Color(hex: "#9B59B6"),
                 hairStyle: .glasses,
                 threeBonus: 0.08,
+                closeBonus: 0,
                 stealBonus: 0,
                 speed: 0.95,
                 height: 174,
@@ -212,6 +228,7 @@ struct HalfCourtHero {
     let fullName: String
     let role: String
     let ability: String
+    let abilityBlurb: String
     let hue: Color
     let skin: Color
     let hair: Color
@@ -220,7 +237,8 @@ struct HalfCourtHero {
     let shoes: Color
     let hairStyle: HairStyle
     let threeBonus: CGFloat
-    let stealBonus: CGFloat
+    let closeBonus: CGFloat  // error reduction on non-arc shots
+    let stealBonus: CGFloat  // extra contest pressure on CPU shots
     let speed: CGFloat
     let height: CGFloat
     let quip: String

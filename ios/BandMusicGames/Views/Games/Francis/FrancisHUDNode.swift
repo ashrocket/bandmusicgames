@@ -68,14 +68,25 @@ final class FrancisHUDNode: SKNode {
     }
 
     func update(level: FrancisLevelConfig, correct: Int, total: Int, timeRemaining: TimeInterval, progress: Double) {
-        titleLabel.text = "Francis" // Or level.constellationName
-        artistLabel.text = "Darger"
+        titleLabel.text = level.constellationName
+        artistLabel.text = level.subtitle
         matchLabel.text = "\(correct) / \(total)"
 
         let seconds = Int(timeRemaining)
         timeLabel.text = "\(seconds / 60):\(String(format: "%02d", seconds % 60)) left"
-        if timeRemaining < 30 {
-            timeLabel.fontColor = SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 1)
+        timeLabel.fontColor = timeRemaining < 30
+            ? SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 1)
+            : SKColor(red: 1.0, green: 0.82, blue: 0.48, alpha: 1)
+
+        if timeRemaining < 10 && timeLabel.action(forKey: "pulse") == nil {
+            let pulse = SKAction.sequence([
+                SKAction.scale(to: 1.2, duration: 0.25),
+                SKAction.scale(to: 1.0, duration: 0.25),
+            ])
+            timeLabel.run(SKAction.repeatForever(pulse), withKey: "pulse")
+        } else if timeRemaining >= 10 {
+            timeLabel.removeAction(forKey: "pulse")
+            timeLabel.setScale(1.0)
         }
 
         let barWidth = size.width - 48

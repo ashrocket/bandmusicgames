@@ -30,10 +30,11 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
 
     private let clientId    = "aa16f7f72c04485fb93d86d2f7ee33d1"
     private let redirectUri = "bandmusicgames://spotify-callback"
-    private let scope       = "streaming user-read-email user-read-private"
+    private let scope       = "user-modify-playback-state user-read-playback-state user-read-email user-read-private"
 
     private var pendingVerifier: String?
     private var authSession: ASWebAuthenticationSession?
+    private(set) var lastAttemptedUri: String?
 
     override init() {
         super.init()
@@ -117,7 +118,14 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
 
     // MARK: - Playback
 
+    func retryLastPlayback() async {
+        guard let uri = lastAttemptedUri else { return }
+        await playTrack(uri)
+    }
+
     func playTrack(_ uri: String) async {
+        lastAttemptedUri = uri
+        playbackError = nil
         guard let token = await validToken() else { return }
         var req = URLRequest(url: URL(string: "https://api.spotify.com/v1/me/player/play")!)
         req.httpMethod = "PUT"
@@ -145,7 +153,16 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
             case 403:
                 playbackError = .notPremium
             case 404:
-                playbackError = .noDevice
+                // Try opening Spotify app then retry once
+                wakeSpotify()
+                try await Task.sleep(nanoseconds: 1_800_000_000)
+                let (_, r3) = try await URLSession.shared.data(for: req)
+                if (r3 as? HTTPURLResponse)?.statusCode == 204 {
+                    isPlaying = true
+                    currentTrackUri = uri
+                } else {
+                    playbackError = .noDevice
+                }
             case let code:
                 playbackError = .unknown("HTTP \(code ?? 0)")
             }
