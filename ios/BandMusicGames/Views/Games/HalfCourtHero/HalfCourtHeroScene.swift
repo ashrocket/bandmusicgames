@@ -1082,7 +1082,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
               let player = players[id],
               let ball, ball.isHeld else { return }
 
-        registerBeatTiming(nowTime)
+        let activatedPower = registerBeatTiming(nowTime)
 
         let dist = abs(rimX - player.position.x)
         let beyondArc = player.position.x < threePointX
@@ -1100,7 +1100,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         if contested {
             showCallout("CONTESTED!", color: SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1))
         }
-        if charge >= perfectLow && charge <= perfectHigh {
+        // ON FIRE callout takes priority over per-shot quips — don't overwrite the big moment
+        if !activatedPower, charge >= perfectLow && charge <= perfectHigh {
             showCallout(player.heroID.character.quip, color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
         }
 
@@ -1136,13 +1137,16 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             : CGFloat.random(in: 20...55)
     }
 
-    private func registerBeatTiming(_ now: TimeInterval) {
+    @discardableResult
+    private func registerBeatTiming(_ now: TimeInterval) -> Bool {
         let delta = nearestBeatDelta(now)
         if delta <= onBeatWindow {
             onBeatStreak += 1
             if onBeatStreak >= 3 {
                 onBeatStreak = 0
                 activatePowerUp(now)
+                streakPips?.set(count: onBeatStreak, powered: isPowered)
+                return true
             } else {
                 showCallout("ON BEAT ×\(onBeatStreak)", color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
                 HapticManager.impact(.rigid)
@@ -1154,6 +1158,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             onBeatStreak = 0
         }
         streakPips?.set(count: onBeatStreak, powered: isPowered)
+        return false
     }
 
     private func activatePowerUp(_ now: TimeInterval) {
