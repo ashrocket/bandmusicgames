@@ -40,6 +40,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
     // MARK: - Game State
     private var links: [(Int, Int)] = []
+    private var connectedStars = Set<Int>()
     private var dragStartStar: Int?
     private var startTime: Date?
     private var elapsedTime: TimeInterval = 0
@@ -153,6 +154,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
     private func resetLevel() {
         links.removeAll()
+        connectedStars.removeAll()
         linksLayer.removeAllChildren()
         targetsLayer.removeAllChildren()
         ambientLayer.removeAllChildren()
@@ -251,6 +253,13 @@ final class FrancisGameScene: SKScene, ObservableObject {
             if let starIndex = findNearestStar(to: location) {
                 dragStartStar = starIndex
                 createDragLine(from: location)
+                if let starNode = targetsLayer.childNode(withName: "star_\(starIndex)") {
+                    starNode.removeAction(forKey: "dragPick")
+                    starNode.run(.sequence([
+                        .scale(to: 1.65, duration: 0.06),
+                        .scale(to: 1.35, duration: 0.08),
+                    ]), withKey: "dragPick")
+                }
             }
         } else if phase == .ended {
             _ = resultCard?.handleTouch(touch, in: self)
@@ -273,12 +282,23 @@ final class FrancisGameScene: SKScene, ObservableObject {
         } else {
             fadeDragLine()
         }
+        // Reset source star unless it became connected (renderLink already ran, so connectedStars is up to date)
+        resetDragSourceStar(startIdx)
         dragStartStar = nil
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let idx = dragStartStar { resetDragSourceStar(idx) }
         fadeDragLine()
         dragStartStar = nil
+    }
+
+    private func resetDragSourceStar(_ idx: Int) {
+        guard !connectedStars.contains(idx) else { return }
+        if let starNode = targetsLayer.childNode(withName: "star_\(idx)") {
+            starNode.removeAction(forKey: "dragPick")
+            starNode.run(.scale(to: 1.0, duration: 0.12), withKey: "dragPick")
+        }
     }
 
     private func findNearestStar(to point: CGPoint) -> Int? {
@@ -320,6 +340,8 @@ final class FrancisGameScene: SKScene, ObservableObject {
         linksLayer.addChild(node)
 
         if isCorrect {
+            connectedStars.insert(a)
+            connectedStars.insert(b)
             HapticManager.impact(.soft)
             for idx in [a, b] {
                 if let starNode = targetsLayer.childNode(withName: "star_\(idx)") {
