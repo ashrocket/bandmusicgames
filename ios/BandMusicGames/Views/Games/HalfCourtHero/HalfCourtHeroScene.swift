@@ -55,6 +55,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var streakPips: StreakPipsNode?
     private var tapMeterNode: TapShotMeterNode?
     private var calloutNode: SKNode?
+    private var stealHintNode: SKNode?
     private var rimNode: SKShapeNode?
     private var ballTrailActive = false
     private var trailFrameCounter = 0
@@ -451,6 +452,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         ball?.setOnFire(false)
         shotClockRemaining = shotClockSeconds
         resetTapMeter()
+        hideStealHint()
 
         if team == .home {
             playState = .homeLive
@@ -517,7 +519,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             awayWins: awaySeriesWins,
             shotClock: playState == .homeLive ? Int(ceil(shotClockRemaining)) : 0,
             powered: isPowered,
-            powerRemaining: max(0, Int(ceil(poweredUntil - currentTime)))
+            powerRemaining: max(0, Int(ceil(poweredUntil - currentTime))),
+            heroName: activeHumanID?.character.name ?? "YOU"
         )
     }
 
@@ -647,6 +650,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         case .bringUp(let spot):
             if !steer(handler, toward: spot, speed: 150 * difficulty.cpuDriveSpeed / 2.2, dt: dt) {
                 cpuState = .dribbling(now + TimeInterval.random(in: 0.8...1.5))
+                showStealHint()
             }
             handler.updateLocomotion(moving: true, hasBall: true)
         case .dribbling(let until):
@@ -654,6 +658,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             handler.updateLocomotion(moving: false, hasBall: true)
             if now >= until {
                 cpuState = .shooting
+                hideStealHint()
                 let dist = abs(rimX - handler.position.x)
                 var error: CGFloat = (17 + dist * 0.05) * cpuShotMult
                 if let humanID = activeHumanID, let human = players[humanID],
@@ -1241,6 +1246,38 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 SKAction.scale(to: min(1, size.width / 440), duration: 0.14),
             ]),
         ]))
+    }
+
+    // MARK: - Steal hint
+
+    private func showStealHint() {
+        stealHintNode?.removeFromParent()
+        let hint = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+        hint.text = "SWIPE \u{2192} STEAL"
+        hint.fontSize = 14
+        hint.fontColor = SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1)
+        hint.horizontalAlignmentMode = .right
+        hint.position = CGPoint(x: size.width - 18, y: size.height * 0.30)
+        hint.zPosition = 195
+        hint.alpha = 0
+        fxLayer.addChild(hint)
+        stealHintNode = hint
+
+        hint.run(SKAction.sequence([
+            SKAction.fadeAlpha(to: 0.85, duration: 0.22),
+            SKAction.wait(forDuration: 1.0),
+            SKAction.group([
+                SKAction.fadeOut(withDuration: 0.45),
+                SKAction.moveBy(x: 14, y: 0, duration: 0.45),
+            ]),
+            SKAction.removeFromParent(),
+        ]))
+    }
+
+    private func hideStealHint() {
+        stealHintNode?.removeAllActions()
+        stealHintNode?.removeFromParent()
+        stealHintNode = nil
     }
 
     // MARK: - Callouts

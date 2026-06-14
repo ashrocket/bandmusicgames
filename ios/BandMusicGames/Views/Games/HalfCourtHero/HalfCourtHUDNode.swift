@@ -43,7 +43,6 @@ final class HalfCourtHUDNode: SKNode {
         awayScoreLabel.horizontalAlignmentMode = .left
         addChild(awayScoreLabel)
 
-        homeTagLabel.text = "YOU"
         homeTagLabel.fontSize = 9
         homeTagLabel.fontColor = .white.withAlphaComponent(0.55)
         homeTagLabel.horizontalAlignmentMode = .right
@@ -105,8 +104,10 @@ final class HalfCourtHUDNode: SKNode {
         awayWins: Int,
         shotClock: Int,
         powered: Bool,
-        powerRemaining: Int
+        powerRemaining: Int,
+        heroName: String = "YOU"
     ) {
+        homeTagLabel.text = heroName
         if homeScore != lastHomeScore {
             lastHomeScore = homeScore
             homeScoreLabel.text = "\(homeScore)"
