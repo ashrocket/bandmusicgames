@@ -299,7 +299,8 @@ final class FrancisGameScene: SKScene, ObservableObject {
             total: config.edges.count,
             isLast: isLast,
             onNext: { [weak self] in guard let self else { return }; self.startLevel(self.levelNum + 1) },
-            onFinish: { [weak self] in self?.onDismiss?() }
+            onFinish: { [weak self] in self?.onDismiss?() },
+            onRetry: { [weak self] in guard let self else { return }; self.startLevel(self.levelNum) }
         )
         card.position = CGPoint(x: size.width / 2, y: size.height / 2)
         card.alpha = 0
