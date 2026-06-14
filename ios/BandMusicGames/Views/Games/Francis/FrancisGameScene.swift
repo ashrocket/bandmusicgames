@@ -45,6 +45,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
     private var startTime: Date?
     private var elapsedTime: TimeInterval = 0
     private var isPreviewActive = false
+    private var lastCountdownInt = 999
     @Published var hintStage: FrancisHintStage? = nil
 
     var correctCount: Int {
@@ -94,6 +95,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
         elapsedTime = 0
         isPreviewActive = true
         hintStage = nil
+        lastCountdownInt = 999
         removeAction(forKey: "hintSequence")
         linksLayer.removeAllActions()
         resetLevel()
@@ -472,6 +474,11 @@ final class FrancisGameScene: SKScene, ObservableObject {
                 progress: elapsedTime / trackDuration
             )
 
+            let countdownInt = Int(ceil(remaining))
+            if countdownInt < lastCountdownInt, (1...10).contains(countdownInt) {
+                HapticManager.impact(.rigid)
+            }
+            lastCountdownInt = countdownInt
             if remaining <= 0 {
                 endLevel()
             }
