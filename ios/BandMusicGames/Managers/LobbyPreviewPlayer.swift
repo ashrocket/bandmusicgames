@@ -73,6 +73,8 @@ final class LobbyPreviewPlayer: ObservableObject {
     }
 
     /// Searches iTunes for a 30s preview URL matching the song's title + artist.
+    /// Uses soft artist-word matching to avoid playing the wrong track when the
+    /// top result is an unrelated song with a similar title.
     private func fetchPreview(for song: Song) async -> URL? {
         let term = "\(song.title) \(song.artist)"
         guard let encoded = term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
@@ -83,11 +85,22 @@ final class LobbyPreviewPlayer: ObservableObject {
             let (data, _) = try await URLSession.shared.data(from: requestURL)
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let results = json["results"] as? [[String: Any]] else { return nil }
+
+            let ourWords = song.artist.lowercased().components(separatedBy: .whitespaces)
+
+            // Pass 1: prefer results where the artist name shares a word with ours
+            for result in results {
+                guard let previewStr = result["previewUrl"] as? String,
+                      let previewURL = URL(string: previewStr),
+                      let trackArtist = result["artistName"] as? String else { continue }
+                let theirWords = trackArtist.lowercased().components(separatedBy: .whitespaces)
+                if ourWords.contains(where: theirWords.contains) { return previewURL }
+            }
+
+            // Pass 2: fallback — return first result with any previewUrl (better than silence)
             for result in results {
                 if let previewStr = result["previewUrl"] as? String,
-                   let previewURL = URL(string: previewStr) {
-                    return previewURL
-                }
+                   let previewURL = URL(string: previewStr) { return previewURL }
             }
         } catch {}
         return nil

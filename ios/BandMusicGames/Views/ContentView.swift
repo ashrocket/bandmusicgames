@@ -187,7 +187,22 @@ struct ContentView: View {
                             .clipShape(Capsule())
                     }
                 }
-                
+
+                if case .notPremium = error, let uri = auth.lastAttemptedUri,
+                   let spotifyUrl = URL(string: uri) {
+                    Button {
+                        UIApplication.shared.open(spotifyUrl)
+                    } label: {
+                        Text("OPEN IN SPOTIFY")
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color(red: 0.11, green: 0.73, blue: 0.33))
+                            .foregroundColor(.black)
+                            .clipShape(Capsule())
+                    }
+                }
+
                 Button {
                     auth.playbackError = nil
                 } label: {
