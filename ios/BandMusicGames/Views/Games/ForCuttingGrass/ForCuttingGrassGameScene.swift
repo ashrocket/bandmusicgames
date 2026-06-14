@@ -443,6 +443,23 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
             if !gasLowWarned, config.gasMax > 0, gas / config.gasMax < 0.2 {
                 gasLowWarned = true
                 HapticManager.impact(.heavy)
+                let warn = SKLabelNode(text: "⛽ GAS LOW!")
+                warn.fontName = "AvenirNext-Heavy"
+                warn.fontSize = 24
+                warn.fontColor = SKColor(red: 1, green: 0.25, blue: 0.1, alpha: 1)
+                warn.position = CGPoint(x: size.width / 2, y: size.height * 0.55)
+                warn.zPosition = 900
+                addChild(warn)
+                warn.run(SKAction.sequence([
+                    SKAction.group([
+                        SKAction.sequence([
+                            SKAction.scale(to: 1.2, duration: 0.1),
+                            SKAction.scale(to: 1.0, duration: 0.1),
+                        ]),
+                        SKAction.sequence([SKAction.wait(forDuration: 0.5), SKAction.fadeOut(withDuration: 0.6)]),
+                    ]),
+                    SKAction.removeFromParent()
+                ]))
             }
             if gas <= 0 {
                 gameOverTitle = "GAS OUT"
