@@ -12,6 +12,8 @@ struct LizzyMcGuireGameView: View {
     @State private var scoutedHero: HalfCourtHeroID?
     @State private var difficulty: HalfCourtDifficulty = .normal
     @State private var hudOpacity: Double = 0
+    @State private var zoomLevel: CGFloat = 1.0
+    @State private var isFrozen: Bool = false
 
     var body: some View {
         ZStack {
@@ -22,6 +24,28 @@ struct LizzyMcGuireGameView: View {
                 options: [.ignoresSiblingOrder, .shouldCullNonVisibleNodes]
             )
             .ignoresSafeArea()
+            .scaleEffect(zoomLevel, anchor: .center)
+            .gesture(
+                MagnificationGesture(minimumScaleDelta: 0.03)
+                    .onChanged { value in
+                        guard scene.phase == .playing else { return }
+                        var tx = Transaction()
+                        tx.disablesAnimations = true
+                        withTransaction(tx) {
+                            zoomLevel = max(1.0, min(3.5, value))
+                        }
+                        if !isFrozen {
+                            isFrozen = true
+                            scene.isPaused = true
+                            Task { await auth.pausePlayback() }
+                        }
+                    }
+                    .onEnded { value in
+                        guard scene.phase == .playing else { return }
+                        zoomLevel = max(1.0, min(3.5, value))
+                        // stay frozen — explicit tap needed to resume
+                    }
+            )
 
             if scene.phase == .title {
                 titleOverlay
@@ -55,6 +79,10 @@ struct LizzyMcGuireGameView: View {
                 controlsHUD.opacity(hudOpacity)
             }
 
+            if isFrozen {
+                freezeOverlay
+            }
+
             closeButton
         }
         .onChange(of: scene.phase) { newPhase in
@@ -65,6 +93,12 @@ struct LizzyMcGuireGameView: View {
                 }
             } else {
                 hudOpacity = 0
+                // clear any zoom if game phase exits
+                if isFrozen {
+                    isFrozen = false
+                    zoomLevel = 1.0
+                    scene.isPaused = false
+                }
             }
         }
         .onAppear {
@@ -310,6 +344,38 @@ struct LizzyMcGuireGameView: View {
             .frame(maxWidth: 430)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(hex: "#1a0a3e").opacity(0.95))
+        }
+    }
+
+    private var freezeOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.48).ignoresSafeArea()
+
+            VStack(spacing: 14) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 36, weight: .light))
+                    .foregroundColor(.white.opacity(0.75))
+
+                Text("TAP TO RESUME")
+                    .font(.system(size: 16, weight: .black, design: .monospaced))
+                    .tracking(3.5)
+                    .foregroundColor(.white)
+
+                Text("zoom · \(String(format: "%.1f", zoomLevel))×")
+                    .font(.system(size: 11, weight: .medium, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.45))
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.spring(response: 0.28, dampingFraction: 0.78)) {
+                zoomLevel = 1.0
+                isFrozen = false
+            }
+            scene.isPaused = false
+            if auth.accessToken != nil {
+                Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
+            }
         }
     }
 
