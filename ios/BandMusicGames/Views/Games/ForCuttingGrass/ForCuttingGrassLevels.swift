@@ -29,6 +29,7 @@ struct ForCuttingGrassSkunk: Identifiable, Equatable {
     var alarm: CGFloat   // 0..1
     var changeDirAt: TimeInterval
     var hitCooldownUntil: TimeInterval = 0
+    var alarmHapticFired: Bool = false
 }
 
 struct ForCuttingGrassLevelConfig {

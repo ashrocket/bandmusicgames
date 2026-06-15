@@ -724,6 +724,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 }
                 cpuBlockFill = 0
                 playState = .awayShot
+                showCallout("INCOMING!", color: SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 1))
+                HapticManager.impact(.light)
                 handler.playAnimationOnce(.shoot)
                 pendingLaunch = PendingLaunch(
                     at: now + shootWindupDelay,

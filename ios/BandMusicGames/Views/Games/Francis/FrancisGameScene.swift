@@ -104,6 +104,16 @@ final class FrancisGameScene: SKScene, ObservableObject {
 
     private func showConstellationPreview() {
         hud?.update(level: config, correct: 0, total: config.edges.count, timeRemaining: trackDuration, progress: 0)
+
+        let skipLabel = SKLabelNode(text: "TAP TO SKIP")
+        skipLabel.name = "skipHint"
+        skipLabel.fontName = "AvenirNext-Medium"
+        skipLabel.fontSize = 14
+        skipLabel.fontColor = SKColor.white.withAlphaComponent(0.45)
+        skipLabel.position = CGPoint(x: size.width / 2, y: 28)
+        skipLabel.zPosition = 80
+        addChild(skipLabel)
+
         run(SKAction.sequence([
             SKAction.run { [weak self] in self?.hintStage = .mythos },
             SKAction.wait(forDuration: 3.5),
@@ -114,6 +124,16 @@ final class FrancisGameScene: SKScene, ObservableObject {
             SKAction.run { [weak self] in self?.hintStage = nil },
             SKAction.run { [weak self] in self?.blinkEdgesInOrder() },
         ]), withKey: "hintSequence")
+    }
+
+    private func skipPreview() {
+        removeAction(forKey: "hintSequence")
+        linksLayer.removeAction(forKey: "blink")
+        linksLayer.removeAllChildren()
+        hintStage = nil
+        childNode(withName: "skipHint")?.removeFromParent()
+        isPreviewActive = false
+        startTime = Date()
     }
 
     private func blinkEdgesInOrder() {
@@ -128,6 +148,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
         seq.append(.run { [weak self] in
             guard let self else { return }
             self.linksLayer.removeAllChildren()
+            self.childNode(withName: "skipHint")?.removeFromParent()
             self.isPreviewActive = false
             self.startTime = Date()
         })
@@ -250,7 +271,9 @@ final class FrancisGameScene: SKScene, ObservableObject {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
 
-        if phase == .playing, !isPreviewActive {
+        if phase == .playing, isPreviewActive {
+            skipPreview()
+        } else if phase == .playing, !isPreviewActive {
             let location = touch.location(in: targetsLayer)
             if let starIndex = findNearestStar(to: location) {
                 dragStartStar = starIndex
@@ -357,6 +380,20 @@ final class FrancisGameScene: SKScene, ObservableObject {
             }
         } else {
             HapticManager.impact(.rigid)
+            for idx in [a, b] {
+                if let starNode = targetsLayer.childNode(withName: "star_\(idx)") {
+                    let flash = SKShapeNode(circleOfRadius: 12)
+                    flash.fillColor = SKColor(red: 1, green: 0.15, blue: 0.1, alpha: 0.75)
+                    flash.strokeColor = .clear
+                    flash.zPosition = 5
+                    starNode.addChild(flash)
+                    flash.run(.sequence([
+                        .wait(forDuration: 0.08),
+                        .fadeOut(withDuration: 0.22),
+                        .removeFromParent(),
+                    ]))
+                }
+            }
         }
 
         if !isCorrect {

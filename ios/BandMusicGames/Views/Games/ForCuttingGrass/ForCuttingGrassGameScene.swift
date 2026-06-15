@@ -598,6 +598,12 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         }
         // Skunks
         ForCuttingGrassHazards.tickSkunks(&skunks, delta: delta, now: now, bounds: bounds, mowerPos: mower.position)
+        for i in skunks.indices {
+            if !skunks[i].alarmHapticFired, skunks[i].alarm > 0.5 {
+                skunks[i].alarmHapticFired = true
+                HapticManager.impact(.light)
+            }
+        }
         for i in skunks.indices where now >= skunks[i].hitCooldownUntil {
             let hitRadius = unit * 1.5
             if distanceSq(skunks[i].position, mower.position) < hitRadius * hitRadius {
