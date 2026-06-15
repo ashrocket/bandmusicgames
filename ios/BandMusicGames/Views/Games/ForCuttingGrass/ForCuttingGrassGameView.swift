@@ -151,19 +151,32 @@ struct ForCuttingGrassGameView: View {
             .layoutPriority(1)
 
             hudBlock {
-                VStack(spacing: 1) {
-                    Image(systemName: "fuelpump.fill")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(.red)
-                    Text(scene.config.usesGas ? "GAS" : "GAS INF")
-                        .font(.system(size: 6.5, weight: .bold))
-                        .foregroundColor(.white.opacity(0.7))
-                    Text(scene.config.usesGas ? "\(Int(gasRatio * 100))%" : "∞")
-                        .font(.system(size: 14, weight: .black, design: .monospaced))
-                        .foregroundColor(scene.config.usesGas ? gasColor : .orange)
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(alignment: .lastTextBaseline, spacing: 3) {
+                        Image(systemName: "fuelpump.fill")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundColor(scene.config.usesGas ? gasColor : .orange)
+                        Spacer(minLength: 2)
+                        Text(scene.config.usesGas ? "\(Int(gasRatio * 100))%" : "∞")
+                            .font(.system(size: 13, weight: .black, design: .monospaced))
+                            .foregroundColor(scene.config.usesGas ? gasColor : .orange)
+                    }
+                    if scene.config.usesGas {
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(Color.black.opacity(0.42))
+                                Capsule()
+                                    .fill(gasColor)
+                                    .frame(width: max(2, geo.size.width * gasRatio))
+                                    .animation(.linear(duration: 0.12), value: gasRatio)
+                            }
+                        }
+                        .frame(height: 5)
+                        .clipShape(Capsule())
+                    }
                 }
             }
-            .frame(width: 40, height: 44)
+            .frame(width: 52, height: 44)
 
             hudBlock {
                 VStack(spacing: 1) {
