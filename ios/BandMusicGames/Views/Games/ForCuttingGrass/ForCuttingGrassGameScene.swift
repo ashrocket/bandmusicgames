@@ -543,7 +543,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                 SKAction.removeFromParent()
             ]))
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) { [weak self] in
-                guard let self else { return }
+                guard let self, self.levelCompleteTriggered else { return }
                 if self.levelNum >= ForCuttingGrassLevels.all.count { self.saveWon(); self.phase = .win }
                 else { self.phase = .levelComplete }
             }
