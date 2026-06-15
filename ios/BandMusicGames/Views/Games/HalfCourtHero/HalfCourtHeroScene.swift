@@ -20,7 +20,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private let onBeatWindow: TimeInterval = 0.175
     private let powerUpDuration: TimeInterval = 12
     private var shotClockSeconds: TimeInterval = 10
-    private var chargeRate: CGFloat = 1.55
     private var greenLow: CGFloat = 0.52
     private var greenHigh: CGFloat = 0.76
     private var perfectLow: CGFloat = 0.59
@@ -420,7 +419,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let mid = (greenLow + greenHigh) / 2
         perfectLow = mid - 0.05
         perfectHigh = mid + 0.05
-        chargeRate = d.chargeRate
         cpuShotMult = d.cpuShotMultiplier
         shotClockSeconds = d.shotClockSeconds
         tapPumpAmount = d.tapPumpAmount
@@ -1322,11 +1320,11 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         guard playState == .homeShot || playState == .awayShot else { return }
         ball.missResolved = true
         if ball.shotTeam == .home {
-            showCallout(["MISS!", "OFF THE RIM", "NO GOOD", "IN AND OUT!", "TOO SHORT"].randomElement() ?? "MISS!",
+            showCallout(["MISS!", "OFF THE RIM!", "NO GOOD!", "RATTLED OUT!", "BRICK!"].randomElement() ?? "MISS!",
                         color: SKColor.white.withAlphaComponent(0.6))
             HapticManager.impact(.medium)
         } else {
-            showCallout(["BRICKED!", "WALLED OFF!", "BLOCKED OUT", "NOT TODAY"].randomElement() ?? "BRICKED!",
+            showCallout(["BRICKED!", "WALLED OFF!", "BLOCKED OUT!", "NOT TODAY!"].randomElement() ?? "BRICKED!",
                         color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 0.85))
         }
         scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 0.6)

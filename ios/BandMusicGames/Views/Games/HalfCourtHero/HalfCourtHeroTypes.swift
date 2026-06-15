@@ -60,14 +60,6 @@ enum HalfCourtDifficulty: String, CaseIterable, Identifiable {
         }
     }
 
-    var chargeRate: CGFloat {
-        switch self {
-        case .easy: return 1.35
-        case .normal: return 1.55
-        case .hard: return 1.75
-        }
-    }
-
     var perfectAccuracy: CGFloat {
         switch self {
         case .easy: return 1
@@ -102,9 +94,9 @@ enum HalfCourtDifficulty: String, CaseIterable, Identifiable {
 
     var cpuShotMultiplier: CGFloat {
         switch self {
-        case .easy: return 0.58
+        case .easy: return 1.35   // larger error range → CPU misses more
         case .normal: return 1.0
-        case .hard: return 1.35
+        case .hard: return 0.58   // smaller error range → CPU is accurate
         }
     }
 
