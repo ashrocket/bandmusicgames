@@ -720,6 +720,18 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         ]))
     }
 
+    private func flashRed() {
+        let flash = SKShapeNode(rect: CGRect(origin: .zero, size: size))
+        flash.fillColor = SKColor(red: 1, green: 0.1, blue: 0.1, alpha: 0.55)
+        flash.strokeColor = .clear
+        flash.zPosition = 900
+        addChild(flash)
+        flash.run(SKAction.sequence([
+            SKAction.fadeOut(withDuration: 0.35),
+            SKAction.removeFromParent()
+        ]))
+    }
+
     private func clampToLawn(_ p: CGPoint) -> CGPoint {
         let frame = gridMetrics.frame
         let half = mowerSize.width / 2
