@@ -134,6 +134,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
         childNode(withName: "skipHint")?.removeFromParent()
         isPreviewActive = false
         startTime = Date()
+        HapticManager.impact(.medium)
     }
 
     private func blinkEdgesInOrder() {
@@ -151,6 +152,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
             self.childNode(withName: "skipHint")?.removeFromParent()
             self.isPreviewActive = false
             self.startTime = Date()
+            HapticManager.impact(.medium)
         })
         linksLayer.run(SKAction.sequence(seq), withKey: "blink")
     }

@@ -33,6 +33,7 @@ struct ForCuttingGrassGameView: View {
 
                     if scene.phase != .playing {
                         phaseOverlay
+                            .transition(.opacity.animation(.easeIn(duration: 0.25)))
                     }
 
                     if scene.phase == .playing && scene.levelNum == 1 && !tutorialShown {
@@ -226,6 +227,13 @@ struct ForCuttingGrassGameView: View {
     private var phaseOverlay: some View {
         ZStack(alignment: .topTrailing) {
             Color.black.opacity(0.6).ignoresSafeArea()
+                .onAppear {
+                    if scene.phase == .gameOver {
+                        UINotificationFeedbackGenerator().notificationOccurred(.error)
+                    } else if scene.phase == .levelComplete || scene.phase == .win {
+                        UINotificationFeedbackGenerator().notificationOccurred(.success)
+                    }
+                }
 
             VStack(spacing: 24) {
                 if scene.phase == .levelComplete {

@@ -1069,6 +1069,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         if CGFloat.random(in: 0...1) < chance {
             showCallout("STEAL!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1))
             HapticManager.notification(.success)
+            shakeWorld(7)
             givePossession(to: .home)
         } else {
             showCallout("NO GOOD", color: SKColor.white.withAlphaComponent(0.5))
@@ -1129,7 +1130,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             team: .home,
             errorOffset: CGFloat.random(in: -error...error)
         )
-        HapticManager.impact(.medium)
+        let isPerfect = !contested && !activatedPower && charge >= perfectLow && charge <= perfectHigh
+        HapticManager.impact(isPerfect ? .heavy : .medium)
     }
 
     private func shotError(charge: CGFloat, dist: CGFloat, beyondArc: Bool,
