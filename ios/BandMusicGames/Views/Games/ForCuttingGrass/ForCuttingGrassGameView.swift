@@ -36,14 +36,6 @@ struct ForCuttingGrassGameView: View {
                             .transition(.opacity.animation(.easeIn(duration: 0.25)))
                     }
 
-                    if scene.phase == .playing && scene.levelNum == 1 && !tutorialShown {
-                        ZStack {
-                            Color.black.opacity(0.45).ignoresSafeArea()
-                            levelOneTutorialCard
-                        }
-                        .transition(.opacity)
-                    }
-
                     if scene.phase == .playing && scene.needsReplant {
                         replantBanner
                     }
