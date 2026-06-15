@@ -1268,7 +1268,16 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
 
         if homeScore >= winScore || awayScore >= winScore {
-            if homeScore >= winScore { homeSeriesWins += 1 } else { awaySeriesWins += 1 }
+            if homeScore >= winScore {
+                homeSeriesWins += 1
+                let isMatch = homeSeriesWins >= seriesWinTarget
+                showCallout(isMatch ? "MATCH!" : "GAME!", color: SKColor(red: 1.0, green: 0.86, blue: 0.0, alpha: 1), big: true)
+                HapticManager.impact(.heavy)
+            } else {
+                awaySeriesWins += 1
+                let isMatch = awaySeriesWins >= seriesWinTarget
+                showCallout(isMatch ? "MATCH OVER" : "CPU GAME", color: SKColor(red: 1.0, green: 0.42, blue: 0.21, alpha: 1), big: false)
+            }
             pendingResolveAt = nowTime + 1.0
         } else {
             scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 1.0)
