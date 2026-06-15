@@ -184,20 +184,22 @@ struct ForCuttingGrassGameView: View {
             }
             .frame(width: 52, height: 44)
 
-            hudBlock {
-                VStack(spacing: 1) {
-                    Image(systemName: "leaf.fill")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundColor(Color(hex: "#8bc44a"))
-                    Text("TRIES")
-                        .font(.system(size: 6.5, weight: .bold))
-                        .foregroundColor(.white.opacity(0.7))
-                    Text("\(scene.triesRemaining)")
-                        .font(.system(size: 14, weight: .black, design: .monospaced))
-                        .foregroundColor(scene.triesRemaining == 1 ? .red : scene.triesRemaining == 2 ? .orange : .white)
+            if scene.config.skunks > 0 {
+                hudBlock {
+                    VStack(spacing: 1) {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundColor(scene.triesRemaining == 1 ? .red : scene.triesRemaining == 2 ? .orange : .white)
+                        Text("LIVES")
+                            .font(.system(size: 6.5, weight: .bold))
+                            .foregroundColor(.white.opacity(0.7))
+                        Text("\(scene.triesRemaining)")
+                            .font(.system(size: 14, weight: .black, design: .monospaced))
+                            .foregroundColor(scene.triesRemaining == 1 ? .red : scene.triesRemaining == 2 ? .orange : .white)
+                    }
                 }
+                .frame(width: 38, height: 44)
             }
-            .frame(width: 38, height: 44)
 
             ControlsDropdownButton(input: scene.input, isPresented: $controlsMenuOpen)
                 .frame(width: 58, height: 44)
