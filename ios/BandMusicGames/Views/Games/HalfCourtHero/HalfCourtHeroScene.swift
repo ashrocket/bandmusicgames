@@ -408,6 +408,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     func startSeries() {
         homeSeriesWins = 0
         awaySeriesWins = 0
+        beatAnchor = nil   // reset so next series re-aligns beat clock to the restarted track
         phase = .characterSelect
     }
 
