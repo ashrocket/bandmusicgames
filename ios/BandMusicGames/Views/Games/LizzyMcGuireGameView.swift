@@ -95,7 +95,12 @@ struct LizzyMcGuireGameView: View {
                 // aligns with the audio rather than drifting from title-screen time.
                 if !beatSynced, auth.canAttemptPlayback {
                     beatSynced = true
-                    Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
+                    Task {
+                        await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg")
+                        // Re-anchor after the 204 confirms, so beatAnchor latches to
+                        // when audio actually (re)started, not when the call fired.
+                        scene.realignBeatAnchor()
+                    }
                 }
                 withAnimation(.easeIn(duration: 0.5)) { hudOpacity = 1.0 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 6) {

@@ -411,6 +411,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         phase = .characterSelect
     }
 
+    // Called by the view after playTrack() confirms 204, so the anchor latches
+    // when audio has actually (re)started rather than when the API call was fired.
+    func realignBeatAnchor() {
+        beatAnchor = nil
+    }
+
     func startGame(playerID: HalfCourtHeroID, teammateID: HalfCourtHeroID, difficulty: HalfCourtDifficulty = .normal) {
         self.difficulty = difficulty
         let d = difficulty
