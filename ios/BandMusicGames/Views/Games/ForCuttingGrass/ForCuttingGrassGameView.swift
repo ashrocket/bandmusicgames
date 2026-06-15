@@ -245,6 +245,11 @@ struct ForCuttingGrassGameView: View {
                         .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(.white)
 
+                    Text("\(Int(scene.grid.cutPercentage * 100))% MOWED · \(ForCuttingGrassLevels.all[scene.levelNum - 1].sub.uppercased())")
+                        .font(.system(size: 10, weight: .black, design: .monospaced))
+                        .tracking(1.5)
+                        .foregroundColor(Color(hex: "#8bc44a").opacity(0.7))
+
                     if let next = nextConfig {
                         VStack(spacing: 6) {
                             Text("NEXT UP")

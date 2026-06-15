@@ -40,11 +40,17 @@ final class FrancisResultCardNode: SKNode {
         addChild(bgNode)
 
         let resultLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
-        resultLabel.text = won ? "COMPLETE! ✓" : "TIME'S UP"
-        resultLabel.fontSize = 14
-        resultLabel.fontColor = won
-            ? SKColor(red: 0.5, green: 0.95, blue: 0.55, alpha: 1)
-            : SKColor(red: 1.0, green: 0.42, blue: 0.21, alpha: 1)
+        if isLast && won {
+            resultLabel.text = "ALL 5 CONSTELLATIONS MAPPED! ✓"
+            resultLabel.fontSize = 11
+            resultLabel.fontColor = SKColor(red: 1.0, green: 0.82, blue: 0.48, alpha: 1)
+        } else {
+            resultLabel.text = won ? "COMPLETE! ✓" : "TIME'S UP"
+            resultLabel.fontSize = 14
+            resultLabel.fontColor = won
+                ? SKColor(red: 0.5, green: 0.95, blue: 0.55, alpha: 1)
+                : SKColor(red: 1.0, green: 0.42, blue: 0.21, alpha: 1)
+        }
         resultLabel.position = CGPoint(x: -150, y: 205)
         resultLabel.horizontalAlignmentMode = .left
         addChild(resultLabel)

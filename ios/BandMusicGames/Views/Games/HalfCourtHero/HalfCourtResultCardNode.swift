@@ -7,11 +7,15 @@ final class HalfCourtResultCardNode: SKNode {
     private let scoreLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
     private let actionButton = SKShapeNode(rectOf: CGSize(width: 240, height: 60), cornerRadius: 30)
     private let actionLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+    private let rematchButton = SKShapeNode(rectOf: CGSize(width: 200, height: 40), cornerRadius: 20)
+    private let rematchLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
 
     private var onAction: (() -> Void)?
+    private var onRematch: (() -> Void)?
 
-    init(homeScore: Int, awayScore: Int, homeWins: Int, awayWins: Int, isSeriesOver: Bool, onAction: @escaping () -> Void) {
+    init(homeScore: Int, awayScore: Int, homeWins: Int, awayWins: Int, isSeriesOver: Bool, onAction: @escaping () -> Void, onRematch: (() -> Void)? = nil) {
         self.onAction = onAction
+        self.onRematch = onRematch
         super.init()
         setup(homeScore: homeScore, awayScore: awayScore, homeWins: homeWins, awayWins: awayWins, isSeriesOver: isSeriesOver)
     }
@@ -58,7 +62,13 @@ final class HalfCourtResultCardNode: SKNode {
         addSeriesDots(homeWins: homeWins, awayWins: awayWins)
 
         // Sub text
-        let sub = SKLabelNode(text: isSeriesOver ? "Best of 5 Complete" : "Next game →")
+        let seriesText: String
+        if isSeriesOver {
+            seriesText = seriesWon ? "You win the series \(homeWins)–\(awayWins)!" : "CPU wins the series \(awayWins)–\(homeWins)"
+        } else {
+            seriesText = "Next game →"
+        }
+        let sub = SKLabelNode(text: seriesText)
         sub.fontSize = 14
         sub.fontColor = .white.withAlphaComponent(0.5)
         sub.position = CGPoint(x: 0, y: -20)
@@ -78,6 +88,23 @@ final class HalfCourtResultCardNode: SKNode {
         actionLabel.verticalAlignmentMode = .center
         actionLabel.name = "action_btn"
         addChild(actionLabel)
+
+        if isSeriesOver {
+            rematchButton.fillColor = .clear
+            rematchButton.strokeColor = SKColor.white.withAlphaComponent(0.22)
+            rematchButton.lineWidth = 1.5
+            rematchButton.position = CGPoint(x: 0, y: -228)
+            rematchButton.name = "rematch_btn"
+            addChild(rematchButton)
+
+            rematchLabel.text = "REMATCH →"
+            rematchLabel.fontSize = 13
+            rematchLabel.fontColor = SKColor.white.withAlphaComponent(0.55)
+            rematchLabel.position = CGPoint(x: 0, y: -232)
+            rematchLabel.verticalAlignmentMode = .center
+            rematchLabel.name = "rematch_btn"
+            addChild(rematchLabel)
+        }
     }
 
     private func addSeriesDots(homeWins: Int, awayWins: Int) {
@@ -148,6 +175,10 @@ final class HalfCourtResultCardNode: SKNode {
         let node = atPoint(location)
         if node.name == "action_btn" {
             onAction?()
+            return true
+        }
+        if node.name == "rematch_btn" {
+            onRematch?()
             return true
         }
         return false

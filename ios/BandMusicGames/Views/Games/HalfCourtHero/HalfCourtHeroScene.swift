@@ -1346,7 +1346,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                     self.phase = .playing
                     self.resetMatch()
                 }
-            }
+            },
+            onRematch: isSeriesOver ? { [weak self] in self?.startSeries() } : nil
         )
         card.position = CGPoint(x: size.width / 2, y: size.height / 2)
         card.setScale(min(1, size.width / 440))
