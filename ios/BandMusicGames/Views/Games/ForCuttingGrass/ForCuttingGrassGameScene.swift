@@ -67,6 +67,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
     // MARK: - Runtime state
     @Published private(set) var gas: CGFloat = 0
     private var gasLowWarned = false
+    private var gasCriticalWarned = false
     private var levelCompleteTriggered = false
     @Published private(set) var needsReplant: Bool = false
     private var wallHapticCooldownUntil: TimeInterval = 0
@@ -152,6 +153,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         grid = ForCuttingGrassGrid.make(for: config)
         gas = config.gasMax
         gasLowWarned = false
+        gasCriticalWarned = false
         levelCompleteTriggered = false
         wallHapticCooldownUntil = 0
         score = 0
@@ -468,6 +470,27 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                     SKAction.removeFromParent()
                 ]))
             }
+            if !gasCriticalWarned, config.gasMax > 0, gas / config.gasMax < 0.1 {
+                gasCriticalWarned = true
+                HapticManager.notification(.error)
+                let crit = SKLabelNode(text: "⛽ CRITICAL!")
+                crit.fontName = "AvenirNext-Heavy"
+                crit.fontSize = 24
+                crit.fontColor = SKColor(red: 1, green: 0.1, blue: 0.05, alpha: 1)
+                crit.position = CGPoint(x: size.width / 2, y: size.height * 0.55)
+                crit.zPosition = 900
+                addChild(crit)
+                crit.run(SKAction.sequence([
+                    SKAction.group([
+                        SKAction.sequence([
+                            SKAction.scale(to: 1.3, duration: 0.08),
+                            SKAction.scale(to: 1.0, duration: 0.1),
+                        ]),
+                        SKAction.sequence([SKAction.wait(forDuration: 0.4), SKAction.fadeOut(withDuration: 0.6)]),
+                    ]),
+                    SKAction.removeFromParent()
+                ]))
+            }
             if gas <= 0 {
                 gameOverTitle = "GAS OUT"
                 HapticManager.notification(.error)
@@ -524,6 +547,7 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
                 gasCans[i].collected = true
                 gas = config.gasMax
                 gasLowWarned = false
+        gasCriticalWarned = false
                 HapticManager.impact(.medium)
                 let refuel = SKLabelNode(text: "⛽ REFUELED!")
                 refuel.fontName = "AvenirNext-Heavy"
