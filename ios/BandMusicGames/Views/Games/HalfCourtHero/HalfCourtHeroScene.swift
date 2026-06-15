@@ -724,15 +724,21 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 hideStealHint()
                 let dist = abs(rimX - handler.position.x)
                 var error: CGFloat = (17 + dist * 0.05) * cpuShotMult
+                var cpuContested = false
                 if let humanID = activeHumanID, let human = players[humanID],
                    hypot(human.position.x - handler.position.x, human.position.y - handler.position.y) < 64 {
                     let lockdownBonus = humanID.character.stealBonus
                     error += 18 * (1 + lockdownBonus)
-                    showCallout("CONTESTED!", color: SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 1))
+                    cpuContested = true
                 }
                 cpuBlockFill = 0
                 playState = .awayShot
-                showCallout("INCOMING!", color: SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 1))
+                showCallout(
+                    cpuContested ? "CONTESTED!" : "INCOMING!",
+                    color: cpuContested
+                        ? SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 1)
+                        : SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 1)
+                )
                 HapticManager.impact(.light)
                 handler.playAnimationOnce(.shoot)
                 pendingLaunch = PendingLaunch(
