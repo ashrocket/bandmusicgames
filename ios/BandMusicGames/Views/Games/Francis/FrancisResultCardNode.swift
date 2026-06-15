@@ -42,7 +42,7 @@ final class FrancisResultCardNode: SKNode {
         let resultLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
         if isLast && won {
             resultLabel.text = "ALL 5 CONSTELLATIONS MAPPED! ✓"
-            resultLabel.fontSize = 11
+            resultLabel.fontSize = 14
             resultLabel.fontColor = SKColor(red: 1.0, green: 0.82, blue: 0.48, alpha: 1)
         } else {
             resultLabel.text = won ? "COMPLETE! ✓" : "TIME'S UP"
