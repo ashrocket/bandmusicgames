@@ -177,12 +177,12 @@ private struct DogIntroView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             withAnimation { dogVisible = true }
         }
-        show("thought1", at: 1.4, hide: 3.4)
-        show("thought2", at: 3.6, hide: 5.6)
-        show("thought3", at: 5.8, hide: 8.3)
+        show("thought1", at: 1.4)
+        show("thought2", at: 2.8)
+        show("thought3", at: 4.2, autoFinishAt: 6.5)
     }
 
-    private func show(_ name: String, at showTime: Double, hide: Double) {
+    private func show(_ name: String, at showTime: Double, autoFinishAt: Double? = nil) {
         DispatchQueue.main.asyncAfter(deadline: .now() + showTime) {
             withAnimation(.easeOut(duration: 0.4)) {
                 switch name {
@@ -192,17 +192,8 @@ private struct DogIntroView: View {
                 }
             }
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + hide) {
-            withAnimation(.easeIn(duration: 0.3)) {
-                switch name {
-                case "thought1": thought1 = false
-                case "thought2": thought2 = false
-                default:         thought3 = false
-                }
-            }
-        }
-        if name == "thought3" {
-            DispatchQueue.main.asyncAfter(deadline: .now() + hide + 0.5) {
+        if let finishTime = autoFinishAt {
+            DispatchQueue.main.asyncAfter(deadline: .now() + finishTime) {
                 finish()
             }
         }

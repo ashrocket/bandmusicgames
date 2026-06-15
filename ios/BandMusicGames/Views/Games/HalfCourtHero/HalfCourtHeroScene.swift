@@ -1298,11 +1298,11 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         guard playState == .homeShot || playState == .awayShot else { return }
         ball.missResolved = true
         if ball.shotTeam == .home {
-            showCallout(["MISS", "OFF THE RIM", "NO GOOD"].randomElement() ?? "MISS",
+            showCallout(["MISS!", "OFF THE RIM", "NO GOOD", "IN AND OUT!", "TOO SHORT"].randomElement() ?? "MISS!",
                         color: SKColor.white.withAlphaComponent(0.6))
             HapticManager.impact(.medium)
         } else {
-            showCallout(["BRICKED!", "CPU MISSES", "BLOCKED OUT"].randomElement() ?? "BRICKED!",
+            showCallout(["BRICKED!", "WALLED OFF!", "BLOCKED OUT", "NOT TODAY"].randomElement() ?? "BRICKED!",
                         color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 0.85))
         }
         scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 0.6)
