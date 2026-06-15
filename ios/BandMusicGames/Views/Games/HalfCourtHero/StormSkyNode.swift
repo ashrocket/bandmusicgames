@@ -86,22 +86,23 @@ final class StormSkyNode: SKNode {
         let stage = StormStage.stage(charge: charge,
                                      greenLow: greenLow, greenHigh: greenHigh,
                                      perfectLow: perfectLow, perfectHigh: perfectHigh)
-        let entered = stage.kind != lastKind
+        let priorKind = lastKind
+        let entered = stage.kind != priorKind
         lastKind = stage.kind
 
-        // Invariant: charge increases monotonically during a hold (the scene only
-        // raises it until release/cancel resets via nil), so within one charge cycle
-        // stages only progress building → green → parted — the one-shots rely on this.
+        // One-shot effects (lightning, haptic, cloud animations) only fire when
+        // ascending through stages. With the tap-pump mechanic, charge can decay
+        // back through the green zone — guard against phantom lightning/haptics.
         switch stage {
         case .clear:
             if entered { fadeOutAndRecenter() }
         case .building(let progress):
-            if entered { resetForNewCharge() }
+            if entered && priorKind <= 1 { resetForNewCharge() }  // fresh start only, not descent from green
             let dim = maxDim * progress * progress   // eased — storm accelerates in
             leftCloud.alpha = dim
             rightCloud.alpha = dim
         case .green(let perfect):
-            if entered {
+            if entered && priorKind == 1 {  // ascending from building only, not descending from parted
                 strikeLightning()
                 HapticManager.impact(.heavy)   // thunder — feel the window open
             }
