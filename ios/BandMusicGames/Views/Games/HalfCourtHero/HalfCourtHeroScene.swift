@@ -105,6 +105,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var nowTime: TimeInterval = 0
 
     // Touch routing — left thumb moves player, right thumb shoots/blocks/steals/passes
+    private var joystickNode: JoystickNode?
     private var leftTouch: UITouch?
     private var leftTouchPrev: CGPoint = .zero
     private var leftTouchStartPos: CGPoint = .zero
@@ -184,6 +185,13 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             pips.isHidden = true
             uiLayer.addChild(pips)
             streakPips = pips
+        }
+
+        if joystickNode == nil {
+            let joy = JoystickNode()
+            joy.zPosition = 120
+            uiLayer.addChild(joy)
+            joystickNode = joy
         }
 
         physicsWorld.gravity = CGVector(dx: 0, dy: -9.0)
@@ -950,13 +958,17 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                     leftTouchPrev = p
                     leftTouchStartPos = p
                     leftTouchStartTime = nowTime
+                    let joyPoint = touch.location(in: uiLayer)
+                    joystickNode?.begin(at: joyPoint)
                 }
             }
         }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Left thumb movement is sampled per-frame in updateHuman
+        for touch in touches where touch == leftTouch {
+            joystickNode?.move(to: touch.location(in: uiLayer))
+        }
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -980,6 +992,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
             if touch == leftTouch {
                 leftTouch = nil
+                joystickNode?.end()
                 let endPos = touch.location(in: self)
                 let delta = CGPoint(x: endPos.x - leftTouchStartPos.x,
                                     y: endPos.y - leftTouchStartPos.y)
@@ -1075,6 +1088,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         players[mateID]?.setSelectionActive(true)
         activeHumanID = mateID
         leftTouch = nil
+        joystickNode?.end()
         leftImpulse = .zero
     }
 
