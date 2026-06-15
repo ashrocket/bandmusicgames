@@ -17,18 +17,18 @@ final class FrancisResultCardNode: SKNode {
     private var onRetry: (() -> Void)?
     private var isLast: Bool = false
 
-    init(size: CGSize, config: FrancisLevelConfig, correct: Int, total: Int, isLast: Bool, onNext: @escaping () -> Void, onFinish: @escaping () -> Void, onRetry: @escaping () -> Void) {
+    init(size: CGSize, config: FrancisLevelConfig, correct: Int, total: Int, timeUsed: TimeInterval?, isLast: Bool, onNext: @escaping () -> Void, onFinish: @escaping () -> Void, onRetry: @escaping () -> Void) {
         self.onNext = onNext
         self.onFinish = onFinish
         self.onRetry = onRetry
         self.isLast = isLast
         super.init()
-        setup(config: config, correct: correct, total: total, isLast: isLast)
+        setup(config: config, correct: correct, total: total, timeUsed: timeUsed, isLast: isLast)
     }
 
     required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    private func setup(config: FrancisLevelConfig, correct: Int, total: Int, isLast: Bool) {
+    private func setup(config: FrancisLevelConfig, correct: Int, total: Int, timeUsed: TimeInterval?, isLast: Bool) {
         zPosition = 100
         let won = correct == total
 
@@ -69,6 +69,17 @@ final class FrancisResultCardNode: SKNode {
         scoreLabel.position = CGPoint(x: -150, y: 120)
         scoreLabel.horizontalAlignmentMode = .left
         addChild(scoreLabel)
+
+        if won, let t = timeUsed {
+            let timeLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            let secs = Int(t.rounded())
+            timeLabel.text = "Solved in \(secs)s"
+            timeLabel.fontSize = 12
+            timeLabel.fontColor = SKColor(red: 0.5, green: 0.95, blue: 0.55, alpha: 0.85)
+            timeLabel.position = CGPoint(x: -150, y: 100)
+            timeLabel.horizontalAlignmentMode = .left
+            addChild(timeLabel)
+        }
 
         loreLabel.text = config.lore.replacingOccurrences(of: "**", with: "")
         loreLabel.fontSize = 12

@@ -450,6 +450,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
             config: config,
             correct: correctCount,
             total: config.edges.count,
+            timeUsed: won ? elapsedTime : nil,
             isLast: isLast,
             onNext: { [weak self] in guard let self else { return }; self.startLevel(self.levelNum + 1) },
             onFinish: { [weak self] in self?.onDismiss?() },

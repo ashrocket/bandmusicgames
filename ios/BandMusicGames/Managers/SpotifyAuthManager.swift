@@ -139,6 +139,7 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
             case 204:
                 isPlaying = true
                 currentTrackUri = uri
+                Task { await self.setRepeat("track") }
             case 401:
                 await refreshToken()
                 // Retry once after refresh
@@ -148,6 +149,7 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
                     if (r2 as? HTTPURLResponse)?.statusCode == 204 {
                         isPlaying = true
                         currentTrackUri = uri
+                        Task { await self.setRepeat("track") }
                     }
                 }
             case 403:
@@ -216,6 +218,15 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
     }
 
     // MARK: - Private
+
+    private func setRepeat(_ state: String) async {
+        guard let token = await validToken() else { return }
+        guard let url = URL(string: "https://api.spotify.com/v1/me/player/repeat?state=\(state)") else { return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "PUT"
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        _ = try? await URLSession.shared.data(for: req)
+    }
 
     private func validToken() async -> String? {
         let expiry = UserDefaults.standard.double(forKey: "sp_token_expiry")
