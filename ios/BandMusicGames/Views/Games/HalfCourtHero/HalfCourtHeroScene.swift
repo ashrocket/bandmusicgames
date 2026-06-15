@@ -453,6 +453,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         pendingPossession = nil
         pendingResolveAt = nil
         shotDeadline = .infinity
+        poweredUntil = 0
+        isPowered = false
+        onBeatStreak = 0
         streakPips?.set(count: 0, powered: false)
 
         let bandMid = (courtBandMinY + courtBandMaxY) / 2
