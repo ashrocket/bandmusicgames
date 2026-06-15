@@ -288,10 +288,19 @@ struct ForCuttingGrassGameView: View {
                         .font(.system(size: 32, weight: .black, design: .rounded))
                         .foregroundColor(Color(hex: "#ffd27a"))
 
-                    Text("ALL 5 YARDS MOWED")
-                        .font(.system(size: 12, weight: .black, design: .monospaced))
-                        .tracking(2)
-                        .foregroundColor(.white.opacity(0.52))
+                    HStack(spacing: 10) {
+                        ForEach(0..<3, id: \.self) { _ in
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 24, weight: .black))
+                                .foregroundColor(Color(hex: "#ffd27a"))
+                        }
+                    }
+                    .shadow(color: Color(hex: "#ffd27a").opacity(0.55), radius: 10)
+
+                    Text("ALL 5 YARDS MOWED · \(Int(scene.grid.cutPercentage * 100))% FINAL")
+                        .font(.system(size: 11, weight: .black, design: .monospaced))
+                        .tracking(1.5)
+                        .foregroundColor(.white.opacity(0.5))
 
                     Button("PLAY AGAIN") {
                         scene.replayFromWin()
