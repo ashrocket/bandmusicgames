@@ -175,7 +175,7 @@ struct ForCuttingGrassGameView: View {
                         .foregroundColor(.white.opacity(0.7))
                     Text("\(scene.triesRemaining)")
                         .font(.system(size: 14, weight: .black, design: .monospaced))
-                        .foregroundColor(.white)
+                        .foregroundColor(scene.triesRemaining == 1 ? .red : scene.triesRemaining == 2 ? .orange : .white)
                 }
             }
             .frame(width: 38, height: 44)
