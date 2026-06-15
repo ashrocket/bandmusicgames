@@ -13,6 +13,12 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
     @Published var currentTrackUri: String? = nil
     @Published var playbackError: PlaybackError? = nil
 
+    /// True when the user has real Spotify credentials and playback should be attempted.
+    /// False for skip-mode users so game views don't fire playback calls that silently no-op.
+    var canAttemptPlayback: Bool {
+        isConnected && !UserDefaults.standard.bool(forKey: "sp_skip")
+    }
+
     enum PlaybackError: Identifiable {
         case noDevice, notPremium, unknown(String)
         var id: String { "\(self)" }
@@ -44,9 +50,9 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
             accessToken = token
             isConnected = true
         } else if UserDefaults.standard.string(forKey: "sp_refresh") != nil {
-            // Expired token but refresh available — restore connected state and refresh lazily
+            // Expired token but refresh available — mark connected; validToken() refreshes inline
+            // on the first playTrack() call so there's no eager-refresh race with onAppear.
             isConnected = true
-            Task { await self.refreshToken() }
         } else if UserDefaults.standard.bool(forKey: "sp_skip") {
             isConnected = true
         }

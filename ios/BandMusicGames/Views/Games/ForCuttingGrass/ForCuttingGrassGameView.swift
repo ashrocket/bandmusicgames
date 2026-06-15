@@ -67,7 +67,7 @@ struct ForCuttingGrassGameView: View {
         .onAppear {
             scene.activate()
             let uri = "spotify:track:6EJAb3oTjDFwrt1dpIJPbr"
-            if auth.accessToken != nil, !(auth.isPlaying && auth.currentTrackUri == uri) {
+            if auth.canAttemptPlayback, !(auth.isPlaying && auth.currentTrackUri == uri) {
                 Task { await auth.playTrack(uri) }
             }
         }
@@ -78,7 +78,7 @@ struct ForCuttingGrassGameView: View {
         .onChange(of: scene.needsReplant) { needs in
             if needs {
                 Task { await auth.pausePlayback() }
-            } else if auth.accessToken != nil {
+            } else if auth.canAttemptPlayback {
                 Task { await auth.resumePlayback() }
             }
         }

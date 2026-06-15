@@ -93,7 +93,7 @@ struct LizzyMcGuireGameView: View {
             if newPhase == .playing {
                 // Restart track on first game of a series so the beat clock
                 // aligns with the audio rather than drifting from title-screen time.
-                if !beatSynced, auth.accessToken != nil {
+                if !beatSynced, auth.canAttemptPlayback {
                     beatSynced = true
                     Task { await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg") }
                 }
@@ -116,7 +116,7 @@ struct LizzyMcGuireGameView: View {
         .onAppear {
             scene.onDismiss = { dismiss() }
             let uri = "spotify:track:7kNqAfUxLmrETcwvBTQCkg"
-            if auth.accessToken != nil, !(auth.isPlaying && auth.currentTrackUri == uri) {
+            if auth.canAttemptPlayback, !(auth.isPlaying && auth.currentTrackUri == uri) {
                 Task { await auth.playTrack(uri) }
             }
         }
@@ -368,7 +368,7 @@ struct LizzyMcGuireGameView: View {
         panOffset = .zero
         dragBase = .zero
         scene.isPaused = false
-        if auth.accessToken != nil {
+        if auth.canAttemptPlayback {
             Task { await auth.resumePlayback() }
         }
     }

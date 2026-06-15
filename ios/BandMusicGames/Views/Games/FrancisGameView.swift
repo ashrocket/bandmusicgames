@@ -35,7 +35,7 @@ struct FrancisGameView: View {
         .onAppear {
             scene.onDismiss = { dismiss() }
             let uri = "spotify:track:64h0585a6LWXOdsCD2pOiW"
-            if auth.accessToken != nil, !(auth.isPlaying && auth.currentTrackUri == uri) {
+            if auth.canAttemptPlayback, !(auth.isPlaying && auth.currentTrackUri == uri) {
                 Task { await auth.playTrack(uri) }
             }
         }
