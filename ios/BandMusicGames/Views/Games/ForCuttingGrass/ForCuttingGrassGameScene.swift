@@ -358,9 +358,24 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
             entitiesLayer.addChild(node)
         }
         for s in stumps where !s.dug {
-            let node = ForCuttingGrassRenderer.sprite(named: s.progress > 0.5 ? "stump-half" : "stump-full", size: CGSize(width: unit * 1.1, height: unit * 1.1), fallbackColor: .brown)
+            let stumpScale = CGFloat(1.1 - s.progress * 0.45)
+            let stumpColor = SKColor(red: 0.6 - s.progress * 0.25,
+                                     green: 0.3 - s.progress * 0.1,
+                                     blue: 0.07, alpha: 1)
+            let node = ForCuttingGrassRenderer.sprite(named: s.progress > 0.5 ? "stump-half" : "stump-full",
+                                                       size: CGSize(width: unit * stumpScale, height: unit * stumpScale),
+                                                       fallbackColor: stumpColor)
             node.position = s.position; node.zPosition = 6
             entitiesLayer.addChild(node)
+            if s.progress > 0 {
+                let pct = SKLabelNode(text: "\(Int(s.progress * 100))%")
+                pct.fontName = "AvenirNext-Heavy"
+                pct.fontSize = unit * 0.45
+                pct.fontColor = SKColor(red: 1, green: 0.8, blue: 0.4, alpha: 0.85)
+                pct.position = CGPoint(x: s.position.x, y: s.position.y + unit * 0.62)
+                pct.zPosition = 8
+                entitiesLayer.addChild(pct)
+            }
         }
         for c in crickets {
             let node = ForCuttingGrassRenderer.sprite(named: "cricket-idle", size: CGSize(width: unit * 0.62, height: unit * 0.62), fallbackColor: .green)
