@@ -175,6 +175,7 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
             let (_, response) = try await URLSession.shared.data(for: req)
             if (response as? HTTPURLResponse)?.statusCode == 204 {
                 isPlaying = false
+                Task { await self.setRepeat("off") }
             }
         } catch {
             print("SpotifyAuth: pause failed: \(error)")
@@ -191,6 +192,7 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
             let (_, response) = try await URLSession.shared.data(for: req)
             if (response as? HTTPURLResponse)?.statusCode == 204 {
                 isPlaying = true
+                Task { await self.setRepeat("track") }
             }
         } catch {
             print("SpotifyAuth: resume failed: \(error)")
