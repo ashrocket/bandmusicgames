@@ -114,7 +114,7 @@ struct ContentView: View {
         selectionTrigger &+= 1
 
         // Kick off Spotify playback if available; the center action always cues the game launch.
-        if auth.accessToken != nil {
+        if auth.canAttemptPlayback {
             Task { await auth.playTrack(song.trackUri) }
         }
 
