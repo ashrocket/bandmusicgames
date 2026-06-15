@@ -1171,7 +1171,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             if onBeatStreak >= 3 {
                 onBeatStreak = 0
                 activatePowerUp(now)
-                streakPips?.set(count: onBeatStreak, powered: isPowered)
                 return true
             } else {
                 showCallout("ON BEAT ×\(onBeatStreak)", color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))

@@ -1,4 +1,5 @@
 import SwiftUI
+import CoreMotion
 
 struct ForCuttingGrassControlOverlay: View {
     @ObservedObject var input: ForCuttingGrassInputController
@@ -357,13 +358,14 @@ private struct TrackpadControlView: View {
 private struct LeanControlView: View {
     @Binding var direction: CGVector
     @Binding var throttle: CGFloat
-    @State private var thumb: CGPoint?
+
+    @State private var manager = CMMotionManager()
+    @State private var calibration: (roll: Double, pitch: Double)? = nil
+    @State private var dotX: CGFloat = 0.5
+    @State private var dotY: CGFloat = 0.5
 
     var body: some View {
         GeometryReader { geo in
-            let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
-            let radius = min(geo.size.width, geo.size.height) * 0.45
-
             ZStack {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(Color.white.opacity(0.045))
@@ -372,39 +374,77 @@ private struct LeanControlView: View {
                             .stroke(Color.white.opacity(0.16), lineWidth: 1.5)
                     )
 
-                Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
-                    .font(.system(size: 27, weight: .bold))
-                    .foregroundColor(.white.opacity(thumb == nil ? 0.25 : 0.10))
+                // Crosshair center
+                Image(systemName: "plus")
+                    .font(.system(size: 13, weight: .thin))
+                    .foregroundColor(.white.opacity(0.18))
 
-                if let thumb {
-                    Circle()
-                        .fill(Color(hex: "#ffd27a").opacity(0.76))
-                        .overlay(Circle().stroke(Color.white.opacity(0.5), lineWidth: 2))
-                        .frame(width: 32, height: 32)
-                        .position(thumb)
+                // Tilt indicator dot
+                Circle()
+                    .fill(Color(hex: "#ffd27a").opacity(0.82))
+                    .overlay(Circle().stroke(Color.white.opacity(0.45), lineWidth: 1.5))
+                    .frame(width: 26, height: 26)
+                    .position(x: geo.size.width * dotX, y: geo.size.height * dotY)
+                    .animation(.interactiveSpring(response: 0.08, dampingFraction: 0.65), value: dotX)
+                    .animation(.interactiveSpring(response: 0.08, dampingFraction: 0.65), value: dotY)
+
+                VStack {
+                    Spacer()
+                    Text("TAP TO LEVEL")
+                        .font(.system(size: 5.5, weight: .black, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.25))
+                        .padding(.bottom, 4)
                 }
             }
             .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { value in
-                        let result = controlVector(from: value.location, origin: center, radius: radius)
-                        thumb = result.knob
-                        let speed = min(1, abs(result.vector.dy))
-                        throttle = speed
-                        guard speed > 0.04 else {
-                            direction = .zero
-                            return
-                        }
-                        direction = normalizedVector(CGVector(dx: result.vector.dx * 0.85, dy: result.vector.dy))
-                    }
-                    .onEnded { _ in
-                        thumb = nil
-                        direction = .zero
-                        throttle = 0
-                    }
-            )
+            .onTapGesture {
+                if let data = manager.deviceMotion {
+                    calibration = (data.attitude.roll, data.attitude.pitch)
+                }
+            }
         }
+        .onAppear { startMotion() }
+        .onDisappear { stopMotion() }
+    }
+
+    private func startMotion() {
+        guard manager.isDeviceMotionAvailable else { return }
+        manager.deviceMotionUpdateInterval = 1.0 / 60.0
+        manager.startDeviceMotionUpdates(to: .main) { data, _ in
+            guard let data else { return }
+            if calibration == nil {
+                calibration = (data.attitude.roll, data.attitude.pitch)
+                return
+            }
+            guard let cal = calibration else { return }
+
+            let dRoll  =  CGFloat(data.attitude.roll  - cal.roll)   // lean right → +
+            let dPitch = -CGFloat(data.attitude.pitch - cal.pitch)  // tilt toward you → +y (up on screen)
+
+            let scale: CGFloat = 1.0 / 0.32  // ~18° = full deflection
+            let cx = max(-1, min(1, dRoll  * scale))
+            let cy = max(-1, min(1, dPitch * scale))
+            let mag = sqrt(cx * cx + cy * cy)
+            let dead: CGFloat = 0.10
+
+            if mag < dead {
+                direction = .zero
+                throttle = 0
+            } else {
+                let adj = (mag - dead) / (1.0 - dead)
+                direction = CGVector(dx: cx / mag, dy: -cy / mag)   // SpriteKit y-flip for dy
+                throttle = min(1, adj)
+            }
+
+            dotX = 0.5 + cx * 0.42
+            dotY = 0.5 - cy * 0.42   // SwiftUI y = down, so invert
+        }
+    }
+
+    private func stopMotion() {
+        manager.stopDeviceMotionUpdates()
+        direction = .zero
+        throttle = 0
     }
 }
 

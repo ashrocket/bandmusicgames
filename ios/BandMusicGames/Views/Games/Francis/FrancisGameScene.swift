@@ -364,6 +364,7 @@ final class FrancisGameScene: SKScene, ObservableObject {
             ? SKColor(red: 0.65, green: 0.94, blue: 0.65, alpha: 0.85)
             : SKColor(red: 1.0, green: 0.5, blue: 0.4, alpha: 0.6)
         node.lineWidth = 2
+        if isCorrect { node.name = "correct_edge" }
         linksLayer.addChild(node)
 
         if isCorrect {
@@ -479,6 +480,19 @@ final class FrancisGameScene: SKScene, ObservableObject {
                 .scale(to: 2.0, duration: 0.12),
                 .scale(to: 1.4, duration: 0.18),
             ]))
+        }
+        // Flash correct edge lines from green → gold as the constellation "seals"
+        for case let sn as SKShapeNode in linksLayer.children where sn.name == "correct_edge" {
+            sn.run(SKAction.customAction(withDuration: 0.28) { node, elapsed in
+                guard let sn = node as? SKShapeNode else { return }
+                let t = min(1, elapsed / 0.28)
+                sn.strokeColor = SKColor(
+                    red:   0.65 + 0.35 * t,
+                    green: 0.94 - 0.12 * t,
+                    blue:  0.65 - 0.17 * t,
+                    alpha: 0.85 + 0.15 * t
+                )
+            })
         }
     }
 
