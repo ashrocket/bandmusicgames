@@ -1085,6 +1085,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         showCallout("PASS!", color: SKColor(red: 0.4, green: 0.85, blue: 1.0, alpha: 1))
         HapticManager.impact(.medium)
+        shakeWorld(4)
         players[humanID]?.setSelectionActive(false)
         players[mateID]?.setSelectionActive(true)
         activeHumanID = mateID
