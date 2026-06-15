@@ -1276,6 +1276,24 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
         }
 
+        // Game/match point tension callout (fires exactly once when score first hits 10)
+        if homeScore == winScore - 1 {
+            let isMatchPoint = homeSeriesWins == seriesWinTarget - 1
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { [weak self] in
+                guard let self, self.homeScore == self.winScore - 1 else { return }
+                self.showCallout(isMatchPoint ? "MATCH POINT!" : "GAME POINT!",
+                                 color: SKColor(red: 1.0, green: 0.85, blue: 0.1, alpha: 1), big: false)
+                HapticManager.impact(.heavy)
+            }
+        } else if awayScore == winScore - 1 {
+            let isMatchPoint = awaySeriesWins == seriesWinTarget - 1
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { [weak self] in
+                guard let self, self.awayScore == self.winScore - 1 else { return }
+                self.showCallout(isMatchPoint ? "CPU MATCH PT" : "CPU GAME PT",
+                                 color: SKColor(red: 1.0, green: 0.42, blue: 0.21, alpha: 1), big: false)
+            }
+        }
+
         if homeScore >= winScore || awayScore >= winScore {
             if homeScore >= winScore {
                 homeSeriesWins += 1

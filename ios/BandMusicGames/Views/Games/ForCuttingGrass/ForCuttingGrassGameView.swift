@@ -142,6 +142,11 @@ struct ForCuttingGrassGameView: View {
                                     .fill(Color(hex: "#8bc44a"))
                                     .frame(width: max(4, geo.size.width * CGFloat(scene.grid.cutPercentage)))
                             }
+                            // Win threshold marker
+                            Rectangle()
+                                .fill(Color.white.opacity(0.55))
+                                .frame(width: 1.5, height: 7)
+                                .offset(x: geo.size.width * CGFloat(scene.config.win) - 0.75, y: -1)
                         }
                     }
                     .frame(height: 5)
