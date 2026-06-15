@@ -367,9 +367,14 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         }
         for s in skunks {
             let node = ForCuttingGrassRenderer.sprite(named: "skunk-walk-1", size: CGSize(width: unit * 0.88, height: unit * 0.88), fallbackColor: .black)
-            if s.alarm > 0.5, let sprite = node as? SKSpriteNode {
-                sprite.color = SKColor(red: 1, green: 0.2, blue: 0.1, alpha: 1)
-                sprite.colorBlendFactor = min(0.65, (s.alarm - 0.5) * 1.3)
+            if s.alarm > 0.5 {
+                let blend = min(0.65, (s.alarm - 0.5) * 1.3)
+                if let sprite = node as? SKSpriteNode {
+                    sprite.color = SKColor(red: 1, green: 0.2, blue: 0.1, alpha: 1)
+                    sprite.colorBlendFactor = blend
+                } else if let shape = node as? SKShapeNode {
+                    shape.fillColor = SKColor(red: blend, green: blend * 0.2, blue: blend * 0.1, alpha: 1)
+                }
             }
             node.position = s.position; node.zPosition = 7
             entitiesLayer.addChild(node)
