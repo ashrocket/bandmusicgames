@@ -382,8 +382,28 @@ final class FrancisGameScene: SKScene, ObservableObject {
         let won = correctCount == config.edges.count
         HapticManager.notification(won ? .success : .error)
 
-        let cardDelay: TimeInterval = won ? 0.55 : 0.0
-        if won { burstStars() }
+        let cardDelay: TimeInterval = 0.65
+        if won {
+            burstStars()
+        } else {
+            let flash = SKLabelNode(text: "TIME'S UP")
+            flash.fontName = "AvenirNext-Heavy"
+            flash.fontSize = 36
+            flash.fontColor = SKColor(red: 1, green: 0.4, blue: 0.2, alpha: 1)
+            flash.position = CGPoint(x: size.width / 2, y: size.height / 2)
+            flash.zPosition = 90
+            addChild(flash)
+            flash.run(SKAction.sequence([
+                SKAction.group([
+                    SKAction.sequence([
+                        SKAction.scale(to: 1.2, duration: 0.12),
+                        SKAction.scale(to: 1.0, duration: 0.12),
+                    ]),
+                    SKAction.sequence([SKAction.wait(forDuration: 0.4), SKAction.fadeOut(withDuration: 0.3)]),
+                ]),
+                SKAction.removeFromParent()
+            ]))
+        }
 
         let isLast = levelNum == FrancisLevels.all.count
         let card = FrancisResultCardNode(
