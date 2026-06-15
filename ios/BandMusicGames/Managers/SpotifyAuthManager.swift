@@ -40,6 +40,7 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
 
     private var pendingVerifier: String?
     private var authSession: ASWebAuthenticationSession?
+    private var refreshTask: Task<Void, Never>?
     private(set) var lastAttemptedUri: String?
 
     override init() {
@@ -246,40 +247,52 @@ final class SpotifyAuthManager: NSObject, ObservableObject {
     }
 
     private func refreshToken() async {
-        guard let refresh = UserDefaults.standard.string(forKey: "sp_refresh") else { return }
-        var req = URLRequest(url: URL(string: "https://accounts.spotify.com/api/token")!)
-        req.httpMethod = "POST"
-        req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        req.httpBody = [
-            "grant_type=refresh_token",
-            "refresh_token=\(refresh)",
-            "client_id=\(clientId)",
-        ].joined(separator: "&").data(using: .utf8)
-
-        do {
-            let (data, response) = try await URLSession.shared.data(for: req)
-            let status = (response as? HTTPURLResponse)?.statusCode ?? 0
-            if status == 400 || status == 401 {
-                // Refresh token revoked or expired — force re-login
-                disconnect()
-                return
-            }
-            struct TokenResponse: Decodable {
-                let access_token: String
-                let expires_in: Int
-                let refresh_token: String?
-            }
-            let resp = try JSONDecoder().decode(TokenResponse.self, from: data)
-            UserDefaults.standard.set(resp.access_token, forKey: "sp_token")
-            let expiry = Date().addingTimeInterval(TimeInterval(resp.expires_in)).timeIntervalSince1970
-            UserDefaults.standard.set(expiry, forKey: "sp_token_expiry")
-            if let newRefresh = resp.refresh_token {
-                UserDefaults.standard.set(newRefresh, forKey: "sp_refresh")
-            }
-            accessToken = resp.access_token
-        } catch {
-            print("SpotifyAuth: token refresh failed: \(error)")
+        // Single-flight guard: if another refresh is already in-flight, await it
+        // instead of firing a second POST with the same (possibly rotating) token.
+        // Both callers end up with the result of the one real network request.
+        if let existing = refreshTask {
+            await existing.value
+            return
         }
+        let task = Task {
+            defer { self.refreshTask = nil }
+            guard let refresh = UserDefaults.standard.string(forKey: "sp_refresh") else { return }
+            var req = URLRequest(url: URL(string: "https://accounts.spotify.com/api/token")!)
+            req.httpMethod = "POST"
+            req.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            req.httpBody = [
+                "grant_type=refresh_token",
+                "refresh_token=\(refresh)",
+                "client_id=\(self.clientId)",
+            ].joined(separator: "&").data(using: .utf8)
+
+            do {
+                let (data, response) = try await URLSession.shared.data(for: req)
+                let status = (response as? HTTPURLResponse)?.statusCode ?? 0
+                if status == 400 || status == 401 {
+                    // Refresh token revoked or expired — force re-login
+                    self.disconnect()
+                    return
+                }
+                struct TokenResponse: Decodable {
+                    let access_token: String
+                    let expires_in: Int
+                    let refresh_token: String?
+                }
+                let resp = try JSONDecoder().decode(TokenResponse.self, from: data)
+                UserDefaults.standard.set(resp.access_token, forKey: "sp_token")
+                let expiry = Date().addingTimeInterval(TimeInterval(resp.expires_in)).timeIntervalSince1970
+                UserDefaults.standard.set(expiry, forKey: "sp_token_expiry")
+                if let newRefresh = resp.refresh_token {
+                    UserDefaults.standard.set(newRefresh, forKey: "sp_refresh")
+                }
+                self.accessToken = resp.access_token
+            } catch {
+                print("SpotifyAuth: token refresh failed: \(error)")
+            }
+        }
+        refreshTask = task
+        await task.value
     }
 
     private func exchangeCode(_ code: String, verifier: String) async {
