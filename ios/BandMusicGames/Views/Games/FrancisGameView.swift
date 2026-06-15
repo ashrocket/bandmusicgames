@@ -6,7 +6,9 @@ import SpriteKit
 struct FrancisGameView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var auth: SpotifyAuthManager
+    @EnvironmentObject private var appleMusic: AppleMusicManager
     @StateObject private var scene = FrancisGameScene.make()
+    private let song = Song.catalog.first(where: { $0.id == "francis" })!
 
     var body: some View {
         ZStack {
@@ -34,13 +36,16 @@ struct FrancisGameView: View {
         }
         .onAppear {
             scene.onDismiss = { dismiss() }
-            let uri = "spotify:track:64h0585a6LWXOdsCD2pOiW"
-            if auth.canAttemptPlayback, !(auth.isPlaying && auth.currentTrackUri == uri) {
-                Task { await auth.playTrack(uri) }
+            if appleMusic.isPreferred, let amId = song.appleMusicId {
+                Task { await appleMusic.play(trackId: amId) }
+            } else if auth.canAttemptPlayback,
+                      !(auth.isPlaying && auth.currentTrackUri == song.trackUri) {
+                Task { await auth.playTrack(song.trackUri) }
             }
         }
         .onDisappear {
-            Task { await auth.pausePlayback() }
+            if appleMusic.isPreferred { appleMusic.pause() }
+            else { Task { await auth.pausePlayback() } }
         }
         .spotifyErrorBanner()
     }

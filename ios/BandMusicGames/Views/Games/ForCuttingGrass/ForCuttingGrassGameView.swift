@@ -4,7 +4,9 @@ import SpriteKit
 struct ForCuttingGrassGameView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var auth: SpotifyAuthManager
+    @EnvironmentObject private var appleMusic: AppleMusicManager
     @StateObject private var scene = ForCuttingGrassGameScene.make()
+    private let song = Song.catalog.first(where: { $0.id == "goon" })!
     @State private var canvasZoom: CGFloat = 1
     @State private var controlsMenuOpen = false
     @AppStorage("fcg_l1_tutorial_shown") private var tutorialShown = false
@@ -66,20 +68,25 @@ struct ForCuttingGrassGameView: View {
         .background(Color(hex: "#0a1a0a").ignoresSafeArea())
         .onAppear {
             scene.activate()
-            let uri = "spotify:track:6EJAb3oTjDFwrt1dpIJPbr"
-            if auth.canAttemptPlayback, !(auth.isPlaying && auth.currentTrackUri == uri) {
-                Task { await auth.playTrack(uri) }
+            if appleMusic.isPreferred, let amId = song.appleMusicId {
+                Task { await appleMusic.play(trackId: amId) }
+            } else if auth.canAttemptPlayback,
+                      !(auth.isPlaying && auth.currentTrackUri == song.trackUri) {
+                Task { await auth.playTrack(song.trackUri) }
             }
         }
         .onDisappear {
             scene.deactivate()
-            Task { await auth.pausePlayback() }
+            if appleMusic.isPreferred { appleMusic.pause() }
+            else { Task { await auth.pausePlayback() } }
         }
         .onChange(of: scene.needsReplant) { needs in
             if needs {
-                Task { await auth.pausePlayback() }
-            } else if auth.canAttemptPlayback {
-                Task { await auth.resumePlayback() }
+                if appleMusic.isPreferred { appleMusic.pause() }
+                else { Task { await auth.pausePlayback() } }
+            } else {
+                if appleMusic.isPreferred { Task { await appleMusic.resume() } }
+                else if auth.canAttemptPlayback { Task { await auth.resumePlayback() } }
             }
         }
         .spotifyErrorBanner()

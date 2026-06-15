@@ -4,7 +4,9 @@ import SpriteKit
 struct LizzyMcGuireGameView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var auth: SpotifyAuthManager
+    @EnvironmentObject private var appleMusic: AppleMusicManager
     @StateObject private var scene = HalfCourtHeroScene.make()
+    private let song = Song.catalog.first(where: { $0.id == "narasroom" })!
 
     @State private var selectedPlayer: HalfCourtHeroID = .nara
     @State private var selectedTeammate: HalfCourtHeroID? = nil
@@ -42,7 +44,8 @@ struct LizzyMcGuireGameView: View {
                         if !isFrozen {
                             isFrozen = true
                             scene.isPaused = true
-                            Task { await auth.pausePlayback() }
+                            if appleMusic.isPreferred { appleMusic.pause() }
+                            else { Task { await auth.pausePlayback() } }
                         }
                     }
                     .onEnded { value in
@@ -91,15 +94,18 @@ struct LizzyMcGuireGameView: View {
         }
         .onChange(of: scene.phase) { newPhase in
             if newPhase == .playing {
-                // Restart track on first game of a series so the beat clock
-                // aligns with the audio rather than drifting from title-screen time.
-                if !beatSynced, auth.canAttemptPlayback {
+                if !beatSynced {
                     beatSynced = true
-                    Task {
-                        await auth.playTrack("spotify:track:7kNqAfUxLmrETcwvBTQCkg")
-                        // Re-anchor after the 204 confirms, so beatAnchor latches to
-                        // when audio actually (re)started, not when the call fired.
-                        scene.realignBeatAnchor()
+                    if appleMusic.isPreferred, let amId = song.appleMusicId {
+                        Task {
+                            await appleMusic.play(trackId: amId)
+                            scene.realignBeatAnchor()
+                        }
+                    } else if auth.canAttemptPlayback {
+                        Task {
+                            await auth.playTrack(song.trackUri)
+                            scene.realignBeatAnchor()
+                        }
                     }
                 }
                 withAnimation(.easeIn(duration: 0.5)) { hudOpacity = 1.0 }
@@ -120,13 +126,16 @@ struct LizzyMcGuireGameView: View {
         }
         .onAppear {
             scene.onDismiss = { dismiss() }
-            let uri = "spotify:track:7kNqAfUxLmrETcwvBTQCkg"
-            if auth.canAttemptPlayback, !(auth.isPlaying && auth.currentTrackUri == uri) {
-                Task { await auth.playTrack(uri) }
+            if appleMusic.isPreferred, let amId = song.appleMusicId {
+                Task { await appleMusic.play(trackId: amId) }
+            } else if auth.canAttemptPlayback,
+                      !(auth.isPlaying && auth.currentTrackUri == song.trackUri) {
+                Task { await auth.playTrack(song.trackUri) }
             }
         }
         .onDisappear {
-            Task { await auth.pausePlayback() }
+            if appleMusic.isPreferred { appleMusic.pause() }
+            else { Task { await auth.pausePlayback() } }
         }
         .spotifyErrorBanner()
     }
@@ -373,7 +382,9 @@ struct LizzyMcGuireGameView: View {
         panOffset = .zero
         dragBase = .zero
         scene.isPaused = false
-        if auth.canAttemptPlayback {
+        if appleMusic.isPreferred {
+            Task { await appleMusic.resume() }
+        } else if auth.canAttemptPlayback {
             Task { await auth.resumePlayback() }
         }
     }

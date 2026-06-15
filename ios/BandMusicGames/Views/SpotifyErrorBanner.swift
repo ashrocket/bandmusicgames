@@ -4,6 +4,7 @@ import SwiftUI
 /// Add via .spotifyErrorBanner() on any fullScreenCover game view.
 struct SpotifyErrorBanner: View {
     @EnvironmentObject private var auth: SpotifyAuthManager
+    @EnvironmentObject private var appleMusic: AppleMusicManager
     let error: SpotifyAuthManager.PlaybackError
 
     var body: some View {
@@ -23,6 +24,48 @@ struct SpotifyErrorBanner: View {
                 Spacer(minLength: 0)
 
                 if case .noDevice = error {
+                    // Offer Apple Music switch if authorized and has subscription
+                    if appleMusic.canPlayCatalog && !appleMusic.isPreferred {
+                        Button {
+                            appleMusic.isPreferred = true
+                            auth.playbackError = nil
+                        } label: {
+                            Text("USE APPLE MUSIC")
+                                .font(.system(size: 9, weight: .black, design: .monospaced))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 6)
+                                .background(Color(red: 0.98, green: 0.25, blue: 0.38))
+                                .foregroundColor(.white)
+                                .clipShape(Capsule())
+                        }
+                    } else if appleMusic.authStatus == .authorized && !appleMusic.canPlayCatalog {
+                        // Authorized but no subscription — show prompt to subscribe
+                        Button {
+                            Task { await appleMusic.activateAsPreferred() }
+                            auth.playbackError = nil
+                        } label: {
+                            Text("APPLE MUSIC")
+                                .font(.system(size: 9, weight: .black, design: .monospaced))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 6)
+                                .background(Color(red: 0.98, green: 0.25, blue: 0.38))
+                                .foregroundColor(.white)
+                                .clipShape(Capsule())
+                        }
+                    } else if appleMusic.authStatus != .authorized {
+                        Button {
+                            Task { await appleMusic.activateAsPreferred() }
+                        } label: {
+                            Text("APPLE MUSIC")
+                                .font(.system(size: 9, weight: .black, design: .monospaced))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 6)
+                                .background(Color(red: 0.98, green: 0.25, blue: 0.38))
+                                .foregroundColor(.white)
+                                .clipShape(Capsule())
+                        }
+                    }
+
                     Button {
                         auth.wakeSpotify()
                         auth.playbackError = nil

@@ -7,6 +7,7 @@ struct Song: Identifiable, Hashable {
     let gameName: String
     let gameUrl: String
     let trackUri: String
+    let appleMusicId: String?  // iTunes catalog ID for MusicKit playback
     let hexColor: String
     let unlocked: Bool
 
@@ -25,6 +26,7 @@ extension Song {
             gameName: "FOR CUTTING GRASS",
             gameUrl: "https://forcuttinggrass.goon.bandmusicgames.party",
             trackUri: "spotify:track:6EJAb3oTjDFwrt1dpIJPbr",
+            appleMusicId: "1840263172",
             hexColor: "#39ff14",
             unlocked: true
         ),
@@ -35,6 +37,7 @@ extension Song {
             gameName: "FRANCIS",
             gameUrl: "https://francis.darger.bandmusicgames.party",
             trackUri: "spotify:track:64h0585a6LWXOdsCD2pOiW",
+            appleMusicId: "1866955717",
             hexColor: "#7b68ee",
             unlocked: true
         ),
@@ -45,6 +48,7 @@ extension Song {
             gameName: "HALF COURT HERO",
             gameUrl: "https://lizzymcguire.narasroom.bandmusicgames.party",
             trackUri: "spotify:track:7kNqAfUxLmrETcwvBTQCkg",
+            appleMusicId: "1873123794",
             hexColor: "#FF1493",
             unlocked: true
         ),
