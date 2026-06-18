@@ -116,13 +116,13 @@ enum HalfCourtDifficulty: String, CaseIterable, Identifiable {
         }
     }
 
-    /// How much each right-thumb tap pumps the shot meter (0–1 scale).
-    /// Smaller = finer granularity, more taps to reach green, more margin before overshooting.
-    var tapPumpAmount: CGFloat {
+    /// Rate at which holding the action zone fills the shot meter (0–1 scale per second).
+    /// Faster = narrower reaction window inside the green zone.
+    var chargeRate: CGFloat {
         switch self {
-        case .easy: return 0.10   // ~5 taps of room inside the wide easy window
-        case .normal: return 0.07 // ~3 taps of room in the normal window
-        case .hard: return 0.05   // ~3 taps of room in the tight hard window
+        case .easy: return 0.75   // ~320ms window inside green
+        case .normal: return 0.95 // ~250ms window inside green
+        case .hard: return 1.10   // ~220ms window inside green
         }
     }
 }

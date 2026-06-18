@@ -50,7 +50,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var players: [HalfCourtHeroID: PlayerNode] = [:]
     private var hud: HalfCourtHUDNode?
     private var resultCard: HalfCourtResultCardNode?
-    private var stormSky: StormSkyNode?
     private var streakPips: StreakPipsNode?
     private var tapMeterNode: TapShotMeterNode?
     private var calloutNode: SKNode?
@@ -72,10 +71,11 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     @Published var awaySeriesWins = 0
 
     private enum PlayState {
-        case homeLive   // human has the ball
-        case homeShot   // human shot in windup or flight
-        case awayLive   // CPU has the ball
-        case awayShot   // CPU shot in windup or flight
+        case homeLive       // human has the ball
+        case homeShot       // human shot in windup or flight
+        case awayLive       // CPU has the ball
+        case awayShot       // CPU shot in windup or flight
+        case homeFreethrow  // human shooting free throws after a shooting foul
     }
 
     private enum CPUState {
@@ -115,10 +115,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var rightTouchStart: CGPoint = .zero
     private var rightTouchStartTime: TimeInterval = 0
     private var tapMeterFill: CGFloat = 0
-    private var tapPumpAmount: CGFloat = 0.10
+    private var chargeRate: CGFloat = 0.95       // fills meter per second while holding
     private let meterDecayRate: CGFloat = 0.18
-    private let meterResetDelay: TimeInterval = 2.0
-    private var lastTapTime: TimeInterval = 0
+    private var isChargingShot = false           // right touch held ≥ 150ms in action zone
+    private var lastRightTapTime: TimeInterval = 0  // for double-tap detection
+    private var freethrowsRemaining = 0
+    private var isFreethrowInFlight = false
     private var cpuBlockFill: CGFloat = 0
     private var blockWindowOpened = false
     // Green zone (0.52–0.76) opens at 0.52s, closes at 0.76s — ball launches at 0.29s
@@ -169,7 +171,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
 
         if tapMeterNode == nil {
-            let meter = TapShotMeterNode(barWidth: size.width,
+            let meterWidth = size.width * 0.45
+            let meter = TapShotMeterNode(barWidth: meterWidth,
                                          greenLow: greenLow, greenHigh: greenHigh,
                                          perfectLow: perfectLow, perfectHigh: perfectHigh)
             meter.zPosition = 115
@@ -224,9 +227,10 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         buildCourt()
         hud?.layout(size: size)
-        tapMeterNode?.layout(barWidth: w)
-        tapMeterNode?.position = CGPoint(x: w / 2, y: h * 0.64)
-        streakPips?.position = CGPoint(x: w / 2, y: h * 0.64 + 20)
+        let meterWidth = w * 0.45  // right-side meter centered on action zone
+        tapMeterNode?.layout(barWidth: meterWidth)
+        tapMeterNode?.position = CGPoint(x: w * 0.75, y: h * 0.32)
+        streakPips?.position = CGPoint(x: w * 0.75, y: h * 0.32 + 24)
         resultCard?.position = CGPoint(x: w / 2, y: h / 2)
 
         for player in players.values {
@@ -255,15 +259,6 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             asphalt.strokeColor = .clear
             courtLayer.addChild(asphalt)
         }
-
-        // Storm sky — charge-meter weather. Above backdrop, below players.
-        let storm = StormSkyNode(size: size,
-                                 greenLow: greenLow, greenHigh: greenHigh,
-                                 perfectLow: perfectLow, perfectHigh: perfectHigh)
-        storm.zPosition = -5
-        courtLayer.addChild(storm)
-        stormSky = storm
-        storm.prime(charge: tapMeterFill > 0.01 ? tapMeterFill : nil)
 
         // Three-point marker
         let tpLine = SKShapeNode()
@@ -427,7 +422,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         perfectHigh = mid + 0.05
         cpuShotMult = d.cpuShotMultiplier
         shotClockSeconds = d.shotClockSeconds
-        tapPumpAmount = d.tapPumpAmount
+        chargeRate = d.chargeRate
 
         tapMeterNode?.reconfigure(greenLow: greenLow, greenHigh: greenHigh,
                                    perfectLow: perfectLow, perfectHigh: perfectHigh)
@@ -462,6 +457,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         poweredUntil = 0
         isPowered = false
         onBeatStreak = 0
+        freethrowsRemaining = 0
+        isFreethrowInFlight = false
         streakPips?.set(count: 0, powered: false)
 
         let bandMid = (courtBandMinY + courtBandMaxY) / 2
@@ -503,6 +500,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         pendingLaunch = nil
         shotDeadline = .infinity
         ballTrailActive = false
+        isFreethrowInFlight = false
         ball?.hold()
         ball?.setOnFire(false)
         shotClockRemaining = shotClockSeconds
@@ -557,7 +555,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             return
         }
         hud?.isHidden = false
-        tapMeterNode?.isHidden = !((playState == .homeLive && possession == .home) || playState == .awayShot)
+        tapMeterNode?.isHidden = !((playState == .homeLive && possession == .home) || playState == .awayShot || playState == .homeFreethrow)
         streakPips?.isHidden = false
 
         updateBeat(currentTime)
@@ -647,23 +645,27 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             cpuBlockFill = min(cpuBlockFill + cpuBlockFillRate * dt, 1.1)
             if !blockWindowOpened && cpuBlockFill >= greenLow {
                 blockWindowOpened = true
-                showCallout("TAP TO BLOCK!", color: SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 1))
+                showCallout("SWIPE UP/DOWN TO BLOCK!", color: SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 1))
                 HapticManager.impact(.rigid)
             }
             tapMeterNode?.setFill(cpuBlockFill, mode: .block)
-            stormSky?.setCharge(cpuBlockFill)
         case .homeLive where possession == .home:
-            if lastTapTime > 0 && now - lastTapTime > meterResetDelay {
-                tapMeterFill = 0
+            if isChargingShot {
+                tapMeterFill = min(tapMeterFill + chargeRate * dt, 1.2)
             } else {
                 tapMeterFill = max(0, tapMeterFill - meterDecayRate * dt)
             }
             tapMeterNode?.setFill(tapMeterFill, mode: .shoot)
-            stormSky?.setCharge(tapMeterFill > 0.01 ? tapMeterFill : nil)
+        case .homeFreethrow:
+            if isChargingShot {
+                tapMeterFill = min(tapMeterFill + chargeRate * dt, 1.2)
+            } else {
+                tapMeterFill = max(0, tapMeterFill - meterDecayRate * dt)
+            }
+            tapMeterNode?.setFill(tapMeterFill, mode: .shoot)
         default:
             tapMeterFill = 0
             tapMeterNode?.setFill(0, mode: .shoot)
-            stormSky?.setCharge(nil)
         }
     }
 
@@ -671,15 +673,21 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         tapMeterFill = 0
         cpuBlockFill = 0
         blockWindowOpened = false
-        lastTapTime = 0
+        isChargingShot = false
         tapMeterNode?.setFill(0, mode: .shoot)
-        stormSky?.setCharge(nil)
     }
 
     private func updateHuman(_ dt: CGFloat) {
         guard let id = activeHumanID, let player = players[id] else { return }
         var moving = false
-        let canMove = playState == .homeLive || playState == .awayLive || playState == .awayShot
+        let canMove = playState == .homeLive || playState == .awayLive || playState == .awayShot || playState == .homeFreethrow
+
+        // Arm shot charging once the right touch has been held ≥ 150ms (handles static holds too)
+        if let _ = rightTouch,
+           (playState == .homeLive && possession == .home) || playState == .homeFreethrow,
+           nowTime - rightTouchStartTime >= 0.15 {
+            isChargingShot = true
+        }
 
         if canMove {
             var dx: CGFloat = 0
@@ -923,6 +931,17 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private func resolveExpiredFlight(_ now: TimeInterval) {
         guard playState == .homeShot || playState == .awayShot else { return }
         guard now > shotDeadline, pendingPossession == nil, let ball, !ball.isHeld else { return }
+        if isFreethrowInFlight {
+            // Free throw ball stuck — bail out, give next free throw or possession
+            isFreethrowInFlight = false
+            freethrowsRemaining -= 1
+            if freethrowsRemaining > 0 {
+                giveFreethrows(count: freethrowsRemaining)
+            } else {
+                scheduleGivePossession(to: .away, after: 0.1)
+            }
+            return
+        }
         scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 0.1)
     }
 
@@ -937,7 +956,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     }
 
     // MARK: - Touch handling
-    // Left half of screen = move player; right half = shoot/block/steal/pass
+    // Left half = move player (floating joystick, origin follows touch)
+    // Bottom-right quadrant = action zone: pass/shoot/steal/block/foul
+
+    private func isActionZone(_ p: CGPoint) -> Bool {
+        p.x > size.width * 0.5 && p.y < size.height * 0.5
+    }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
@@ -955,18 +979,17 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             guard phase == .playing else { continue }
 
             let p = touch.location(in: self)
-            if p.x > size.width * 0.5 {
+            if isActionZone(p) {
                 if rightTouch == nil {
                     rightTouch = touch
                     rightTouchStart = p
                     rightTouchStartTime = nowTime
-                    if playState == .homeLive && possession == .home {
-                        handleShootMeterTap()
-                    } else if playState == .awayShot {
-                        handleBlockAttempt()
+                    // Begin charging if we have the ball (long-press detection happens on lift)
+                    if (playState == .homeLive && possession == .home) || playState == .homeFreethrow {
+                        isChargingShot = false // arm it; actual fill starts 150ms in via updateTapMeter
                     }
                 }
-            } else {
+            } else if p.x <= size.width * 0.5 {
                 if leftTouch == nil {
                     leftTouch = touch
                     leftTouchPrev = p
@@ -980,8 +1003,18 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for touch in touches where touch == leftTouch {
-            joystickNode?.move(to: touch.location(in: uiLayer))
+        for touch in touches {
+            if touch == leftTouch {
+                joystickNode?.move(to: touch.location(in: uiLayer))
+            } else if touch == rightTouch {
+                // Arm charging once the touch has been held ≥ 150ms
+                let dur = nowTime - rightTouchStartTime
+                if dur >= 0.15 {
+                    if (playState == .homeLive && possession == .home) || playState == .homeFreethrow {
+                        isChargingShot = true
+                    }
+                }
+            }
         }
     }
 
@@ -997,12 +1030,13 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         for touch in touches {
             if touch == rightTouch {
                 rightTouch = nil
+                isChargingShot = false
                 let endPos = touch.location(in: self)
                 let delta = CGPoint(x: endPos.x - rightTouchStart.x, y: endPos.y - rightTouchStart.y)
+                let dur = max(0.001, nowTime - rightTouchStartTime)
                 let dist = hypot(delta.x, delta.y)
-                if dist > 36 && nowTime - rightTouchStartTime < 0.45 {
-                    handleRightThumbSwipe(delta: delta)
-                }
+                let speed = dist / CGFloat(dur)
+                classifyRightGesture(delta: delta, dur: dur, dist: dist, speed: CGFloat(speed))
             }
             if touch == leftTouch {
                 leftTouch = nil
@@ -1022,50 +1056,130 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
     }
 
-    // MARK: - Shooting
+    private func classifyRightGesture(delta: CGPoint, dur: TimeInterval, dist: CGFloat, speed: CGFloat) {
+        let isQuickTap = dur < 0.15 && dist < 30
 
-    private func handleShootMeterTap() {
-        guard playState == .homeLive, possession == .home else { return }
-        lastTapTime = nowTime
-        tapMeterFill = min(tapMeterFill + tapPumpAmount, 1.2)
-        tapMeterNode?.pumpFlash()
-        HapticManager.impact(.light)
-        if tapMeterFill >= greenLow && tapMeterFill <= greenHigh {
-            let captured = tapMeterFill
-            tapMeterFill = 0
-            releaseShot(charge: captured)
-        }
-    }
-
-    private func handleBlockAttempt() {
-        guard playState == .awayShot else { return }
-        guard cpuBlockFill >= greenLow && cpuBlockFill <= greenHigh else {
-            showCallout(cpuBlockFill < greenLow ? "TOO EARLY!" : "TOO LATE!",
-                        color: SKColor.white.withAlphaComponent(0.5))
-            HapticManager.impact(.light)
+        // --- OFFENSE ---
+        if (playState == .homeLive && possession == .home) || playState == .homeFreethrow {
+            if isQuickTap {
+                if playState == .homeFreethrow {
+                    // No pass during free throws; ignore quick tap
+                    tapMeterFill = 0
+                    return
+                }
+                // Double-tap = bounce pass; single tap = regular pass
+                if nowTime - lastRightTapTime < 0.30 {
+                    lastRightTapTime = 0
+                    tryHumanBouncePass()
+                } else {
+                    lastRightTapTime = nowTime
+                    tryHumanPass()
+                }
+                tapMeterFill = 0
+                return
+            }
+            // Long press + upward flick = shoot
+            if dur >= 0.15 && delta.y > 50 && speed > 200 {
+                let captured = tapMeterFill
+                tapMeterFill = 0
+                if playState == .homeFreethrow {
+                    releaseFreethrow(charge: captured)
+                } else {
+                    releaseShot(charge: captured)
+                }
+                return
+            }
+            // Long press with no upward flick = cancel (reset meter silently)
+            if dur >= 0.15 {
+                tapMeterFill = 0
+            }
             return
         }
-        if CGFloat.random(in: 0...1) < 0.72 {
-            pendingLaunch = nil
-            ball?.missResolved = true  // prevent contact-based scoring if ball is mid-flight
-            ball?.hold()
-            showCallout("BLOCKED!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1), big: true)
-            HapticManager.notification(.success)
-            shakeWorld(7)
-            scheduleGivePossession(to: .home, after: 0.35)
-        } else {
-            showCallout("MISSED IT!", color: SKColor.white.withAlphaComponent(0.60))
-            HapticManager.impact(.rigid)
+
+        // --- DEFENSE: CPU has ball ---
+        if playState == .awayLive {
+            if isQuickTap {
+                // Check proximity to CPU handler for steal vs. non-ball-carrier foul
+                if let handlerID = cpuHandlerID, let handler = players[handlerID],
+                   let humanID = activeHumanID, let human = players[humanID] {
+                    let distToHandler = hypot(handler.position.x - human.position.x,
+                                              handler.position.y - human.position.y)
+                    if distToHandler < 52 {
+                        tryGestureSteal()
+                        return
+                    }
+                }
+                // Tap near non-ball-carrier = foul
+                tryFoulNearDefender()
+                return
+            }
+            // Swipe up or down = block attempt (during awayLive, prep for shot)
+            if abs(delta.y) > 50 && speed > 200 {
+                showCallout("READY TO BLOCK!", color: SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 0.8))
+                HapticManager.impact(.light)
+            }
+            return
+        }
+
+        // --- DEFENSE: CPU shooting ---
+        if playState == .awayShot {
+            if isQuickTap {
+                // Quick tap on shooting player = shooting foul
+                if let handlerID = cpuHandlerID, let handler = players[handlerID],
+                   let humanID = activeHumanID, let human = players[humanID] {
+                    let distToHandler = hypot(handler.position.x - human.position.x,
+                                              handler.position.y - human.position.y)
+                    if distToHandler < 56 {
+                        triggerShootingFoul()
+                        return
+                    }
+                }
+            }
+            // Swipe up or down = block attempt
+            if abs(delta.y) > 50 && speed > 200 {
+                handleBlockAttempt()
+                return
+            }
         }
     }
 
-    private func handleRightThumbSwipe(delta: CGPoint) {
-        if delta.x < -50 {
-            tryHumanPass()
-        } else if playState == .awayLive {
-            tryGestureSteal()
-        }
+    // MARK: - Passes
+
+    private func tryHumanPass() {
+        guard playState == .homeLive, possession == .home,
+              let humanID = activeHumanID,
+              let mateID = homeIDs.first(where: { $0 != humanID }),
+              let _ = players[mateID] else { return }
+
+        showCallout("PASS!", color: SKColor(red: 0.4, green: 0.85, blue: 1.0, alpha: 1))
+        HapticManager.impact(.medium)
+        shakeWorld(4)
+        players[humanID]?.setSelectionActive(false)
+        players[mateID]?.setSelectionActive(true)
+        activeHumanID = mateID
+        leftTouch = nil
+        joystickNode?.end()
+        leftImpulse = .zero
     }
+
+    private func tryHumanBouncePass() {
+        guard playState == .homeLive, possession == .home,
+              let humanID = activeHumanID,
+              let mateID = homeIDs.first(where: { $0 != humanID }),
+              let _ = players[mateID] else { return }
+
+        showCallout("BOUNCE PASS!", color: SKColor(red: 0.2, green: 0.75, blue: 1.0, alpha: 1))
+        HapticManager.impact(.medium)
+        shakeWorld(3)
+        players[humanID]?.setSelectionActive(false)
+        players[mateID]?.setSelectionActive(true)
+        activeHumanID = mateID
+        leftTouch = nil
+        joystickNode?.end()
+        leftImpulse = .zero
+    }
+
+    // MARK: - Steal / Foul / Block
 
     private func tryGestureSteal() {
         guard nowTime > humanStealCooldownUntil,
@@ -1091,21 +1205,79 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
     }
 
-    private func tryHumanPass() {
-        guard playState == .homeLive, possession == .home,
-              let humanID = activeHumanID,
-              let mateID = homeIDs.first(where: { $0 != humanID }),
-              let _ = players[mateID] else { return }
+    private func tryFoulNearDefender() {
+        guard nowTime > humanStealCooldownUntil,
+              let humanID = activeHumanID, let human = players[humanID] else { return }
+        // Find any CPU player without the ball nearby
+        for awayID in awayIDs where awayID != cpuHandlerID {
+            guard let defender = players[awayID] else { continue }
+            let dist = hypot(defender.position.x - human.position.x, defender.position.y - human.position.y)
+            if dist < 40 {
+                humanStealCooldownUntil = nowTime + 2.5
+                showCallout("FOUL!", color: SKColor(red: 1.0, green: 0.3, blue: 0.3, alpha: 1), big: true)
+                HapticManager.notification(.error)
+                shakeWorld(5)
+                scheduleGivePossession(to: .away, after: 0.5)
+                return
+            }
+        }
+    }
 
-        showCallout("PASS!", color: SKColor(red: 0.4, green: 0.85, blue: 1.0, alpha: 1))
-        HapticManager.impact(.medium)
-        shakeWorld(4)
-        players[humanID]?.setSelectionActive(false)
-        players[mateID]?.setSelectionActive(true)
-        activeHumanID = mateID
-        leftTouch = nil
-        joystickNode?.end()
-        leftImpulse = .zero
+    private func handleBlockAttempt() {
+        guard playState == .awayShot else { return }
+        guard cpuBlockFill >= greenLow && cpuBlockFill <= greenHigh else {
+            showCallout(cpuBlockFill < greenLow ? "TOO EARLY!" : "TOO LATE!",
+                        color: SKColor.white.withAlphaComponent(0.5))
+            HapticManager.impact(.light)
+            return
+        }
+        if CGFloat.random(in: 0...1) < 0.72 {
+            pendingLaunch = nil
+            ball?.missResolved = true  // prevent contact-based scoring if ball is mid-flight
+            ball?.hold()
+            showCallout("BLOCKED!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1), big: true)
+            HapticManager.notification(.success)
+            shakeWorld(7)
+            scheduleGivePossession(to: .home, after: 0.35)
+        } else {
+            showCallout("MISSED IT!", color: SKColor.white.withAlphaComponent(0.60))
+            HapticManager.impact(.rigid)
+        }
+    }
+
+    private func triggerShootingFoul() {
+        guard playState == .awayShot else { return }
+        pendingLaunch = nil
+        ball?.missResolved = true
+        ball?.hold()
+        showCallout("SHOOTING FOUL! 2 FREE THROWS", color: SKColor(red: 1.0, green: 0.84, blue: 0, alpha: 1), big: true)
+        HapticManager.notification(.success)
+        shakeWorld(6)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
+            self?.giveFreethrows(count: 2)
+        }
+    }
+
+    private func giveFreethrows(count: Int) {
+        guard phase == .playing else { return }
+        freethrowsRemaining = count
+        playState = .homeFreethrow
+        possession = .home
+        pendingLaunch = nil
+        shotDeadline = .infinity
+        ballTrailActive = false
+        ball?.hold()
+        ball?.setOnFire(false)
+        resetTapMeter()
+        hideStealHint()
+        cpuState = .idle
+
+        // Move active player to the free throw line
+        let bandMid = (courtBandMinY + courtBandMaxY) / 2
+        if let humanID = activeHumanID, let player = players[humanID] {
+            player.position = CGPoint(x: max(playerMinX + 30, rimX - 190), y: bandMid)
+        }
+        showCallout("FREE THROW \(count)", color: SKColor(red: 1.0, green: 0.84, blue: 0, alpha: 1))
     }
 
     private func releaseShot(charge: CGFloat) {
@@ -1120,6 +1292,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         let dist = abs(rimX - player.position.x)
         let beyondArc = player.position.x < threePointX
+        let isLayup = player.position.x > rimX - 90
         var contested = false
         for awayID in awayIDs {
             if let defender = players[awayID],
@@ -1129,13 +1302,19 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
         }
         let error = shotError(charge: charge, dist: dist, beyondArc: beyondArc,
-                              contested: contested, hero: player.heroID.character)
+                              isLayup: isLayup, contested: contested, hero: player.heroID.character)
 
-        // Priority: ON FIRE > CONTESTED (danger) > perfect quip
+        // Shot type callout: ON FIRE overrides, then shot type, then contested, then perfect
         if contested {
             showCallout("CONTESTED!", color: SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1))
-        } else if !activatedPower, charge >= perfectLow && charge <= perfectHigh {
-            showCallout(player.heroID.character.quip, color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
+        } else if !activatedPower {
+            if isLayup {
+                showCallout("LAYUP!", color: SKColor(red: 1, green: 0.62, blue: 0.18, alpha: 1))
+            } else if beyondArc {
+                showCallout("PUMP 3!", color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
+            } else if charge >= perfectLow && charge <= perfectHigh {
+                showCallout(player.heroID.character.quip, color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
+            }
         }
 
         playState = .homeShot
@@ -1143,16 +1322,47 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         pendingLaunch = PendingLaunch(
             at: nowTime + shootWindupDelay,
             team: .home,
-            errorOffset: CGFloat.random(in: -error...error)
+            errorOffset: error
         )
         let isPerfect = !contested && !activatedPower && charge >= perfectLow && charge <= perfectHigh
         HapticManager.impact(isPerfect ? .heavy : .medium)
     }
 
+    private func releaseFreethrow(charge: CGFloat) {
+        guard phase == .playing,
+              playState == .homeFreethrow,
+              let id = activeHumanID,
+              let player = players[id],
+              let ball, ball.isHeld else { return }
+
+        let error = shotError(charge: charge, dist: abs(rimX - player.position.x),
+                              beyondArc: false, isLayup: false, contested: false,
+                              hero: player.heroID.character)
+        if charge >= perfectLow && charge <= perfectHigh {
+            showCallout("SWISH!", color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
+        }
+
+        isFreethrowInFlight = true
+        playState = .homeShot
+        player.playAnimationOnce(.shoot)
+        pendingLaunch = PendingLaunch(
+            at: nowTime + shootWindupDelay,
+            team: .home,
+            errorOffset: error
+        )
+        HapticManager.impact(.medium)
+    }
+
+    /// Returns an error offset for the ball's landing point relative to rim center.
+    /// Positive = long (toward backboard/over); negative = short (early rim/airball).
+    /// Perfect zone returns near-zero; over-green biases long; under biases short.
     private func shotError(charge: CGFloat, dist: CGFloat, beyondArc: Bool,
-                           contested: Bool, hero: HalfCourtHero) -> CGFloat {
+                           isLayup: Bool, contested: Bool, hero: HalfCourtHero) -> CGFloat {
         let c = min(charge, 1.2)
         var accuracy: CGFloat
+        let overGreen = c > greenHigh
+        let underGreen = c < greenLow
+
         if c >= perfectLow && c <= perfectHigh {
             accuracy = difficulty.perfectAccuracy
         } else if c >= greenLow && c <= greenHigh {
@@ -1163,12 +1373,22 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         accuracy -= dist * 0.00025
         if contested { accuracy -= 0.12 }
         if beyondArc { accuracy += hero.threeBonus }
-        if !beyondArc { accuracy += hero.closeBonus }
+        if isLayup { accuracy += hero.closeBonus + 0.08 }
+        else if !beyondArc { accuracy += hero.closeBonus }
         if isPowered { accuracy += 0.15 }
         accuracy = max(0.05, min(1.0, accuracy))
-        return CGFloat.random(in: 0...1) < accuracy
-            ? CGFloat.random(in: 2...5)
-            : CGFloat.random(in: 20...55)
+
+        if CGFloat.random(in: 0...1) < accuracy {
+            return CGFloat.random(in: 2...5) // good shot — tiny random scatter
+        }
+        // Miss: direction depends on timing
+        let missRange: CGFloat = CGFloat.random(in: 22...52)
+        if overGreen {
+            return +missRange  // too late = goes long (backboard or over)
+        } else if underGreen {
+            return -missRange  // too early = falls short (early rim or airball)
+        }
+        return CGFloat.random(in: -missRange...missRange)
     }
 
     @discardableResult
@@ -1262,6 +1482,25 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         guard (ball.physicsBody?.velocity.dy ?? 0) < 0 else { return }
         ball.scoredThisFlight = true
 
+        // Free throw make: 1 point, continue free throw sequence
+        if isFreethrowInFlight {
+            isFreethrowInFlight = false
+            rattleRim()
+            homeScore += 1
+            freethrowsRemaining -= 1
+            showCallout("+1 FREE THROW", color: SKColor(red: 1.0, green: 0.84, blue: 0, alpha: 1), big: false)
+            HapticManager.notification(.success)
+            shakeWorld(4)
+            if freethrowsRemaining > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+                    self?.giveFreethrows(count: self?.freethrowsRemaining ?? 0)
+                }
+            } else {
+                checkForGameEnd(afterTeam: .home, after: 0.8)
+            }
+            return
+        }
+
         var points = ball.shotPoints
         rattleRim()
         if ball.shotTeam == .home {
@@ -1301,6 +1540,10 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
         }
 
+        checkForGameEnd(afterTeam: ball.shotTeam, after: 1.0)
+    }
+
+    private func checkForGameEnd(afterTeam: HalfCourtTeam, after delay: TimeInterval) {
         if homeScore >= winScore || awayScore >= winScore {
             if homeScore >= winScore {
                 homeSeriesWins += 1
@@ -1320,7 +1563,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
             pendingResolveAt = nowTime + 1.0
         } else {
-            scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 1.0)
+            scheduleGivePossession(to: afterTeam == .home ? .away : .home, after: delay)
         }
     }
 
@@ -1328,6 +1571,23 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         guard let ball, !ball.isHeld, !ball.scoredThisFlight, !ball.missResolved else { return }
         guard playState == .homeShot || playState == .awayShot else { return }
         ball.missResolved = true
+
+        // Free throw miss: continue sequence or hand off
+        if isFreethrowInFlight {
+            isFreethrowInFlight = false
+            freethrowsRemaining -= 1
+            showCallout("NO GOOD", color: SKColor.white.withAlphaComponent(0.65))
+            HapticManager.impact(.medium)
+            if freethrowsRemaining > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+                    self?.giveFreethrows(count: self?.freethrowsRemaining ?? 0)
+                }
+            } else {
+                scheduleGivePossession(to: .away, after: 0.8)
+            }
+            return
+        }
+
         if ball.shotTeam == .home {
             showCallout(["MISS!", "OFF THE RIM!", "NO GOOD!", "RATTLED OUT!", "BRICK!"].randomElement() ?? "MISS!",
                         color: SKColor.white.withAlphaComponent(0.6))
@@ -1492,7 +1752,7 @@ enum TapMeterMode { case shoot, block }
 
 @MainActor
 final class TapShotMeterNode: SKNode {
-    private let barHeight: CGFloat = 16
+    private let barHeight: CGFloat = 28
     private var barWidth: CGFloat
     private var greenLow: CGFloat
     private var greenHigh: CGFloat
@@ -1533,19 +1793,19 @@ final class TapShotMeterNode: SKNode {
     }
 
     private func setup() {
-        background.fillColor = SKColor.black.withAlphaComponent(0.45)
-        background.strokeColor = SKColor.white.withAlphaComponent(0.18)
-        background.lineWidth = 1
+        background.fillColor = SKColor.black.withAlphaComponent(0.85)
+        background.strokeColor = SKColor.white.withAlphaComponent(0.70)
+        background.lineWidth = 2
         addChild(background)
 
         fillNode.strokeColor = .clear
         addChild(fillNode)
 
-        greenZone.fillColor = SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 0.30)
+        greenZone.fillColor = SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 0.70)
         greenZone.strokeColor = .clear
         addChild(greenZone)
 
-        perfectZone.fillColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.45)
+        perfectZone.fillColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.85)
         perfectZone.strokeColor = .clear
         addChild(perfectZone)
 
