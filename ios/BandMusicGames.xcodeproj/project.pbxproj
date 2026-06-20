@@ -35,6 +35,7 @@
 		78124B7C6A54C08FA5A7DE02 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D77DC43028C080E39E78EBBA /* Assets.xcassets */; };
 		78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AB66BC63FF553633DE7F80 /* ContentView.swift */; };
 		7969C8D20EF4146A40592CE3 /* JukeboxLineKnot.json in Resources */ = {isa = PBXBuildFile; fileRef = 4D0C48531D9DA41E250F59D8 /* JukeboxLineKnot.json */; };
+		7FEBB8E0B8EC151704E5BBA1 /* MechanicsPrototypeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B350087A6E73A31064143D15 /* MechanicsPrototypeView.swift */; };
 		8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */; };
 		85C60074DA1F975871E974E9 /* FrancisGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7238AEDFCD2DDC7C2750E4 /* FrancisGameScene.swift */; };
 		8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */; };
@@ -51,6 +52,7 @@
 		AEBD877831FCB56EA1A41FB5 /* tile-house-wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DAD71611E68F61627E3F2 /* tile-house-wall.png */; };
 		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
+		C602F26841CBB351CC340874 /* MechanicsPrototypeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6357CADEF161A3B5578C2212 /* MechanicsPrototypeScene.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
 		D2E91B487E48EBF3E79AB72F /* ForCuttingGrassHazards.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42A64FCF259A241304C2C44 /* ForCuttingGrassHazards.swift */; };
 		D3ACBA6A3C0856BAC26398E5 /* StormStageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF53F9CA93346E2D56EF710B /* StormStageTests.swift */; };
@@ -90,6 +92,7 @@
 		4DE395626A2B595F1AB2FA55 /* BandMusicGames.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BandMusicGames.entitlements; sourceTree = "<group>"; };
 		52C830562785E9E848F6E9F9 /* ForCuttingGrassLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassLevels.swift; sourceTree = "<group>"; };
 		5E6DAD71611E68F61627E3F2 /* tile-house-wall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-house-wall.png"; sourceTree = "<group>"; };
+		6357CADEF161A3B5578C2212 /* MechanicsPrototypeScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MechanicsPrototypeScene.swift; sourceTree = "<group>"; };
 		79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameView.swift; sourceTree = "<group>"; };
 		82AB66BC63FF553633DE7F80 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		86C86CF194F193E6FFAC4709 /* ForCuttingGrassGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassGameScene.swift; sourceTree = "<group>"; };
@@ -105,6 +108,7 @@
 		A8204D91A13ADFCD5F19BC3B /* tile-garden-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-garden-1.png"; sourceTree = "<group>"; };
 		ACEDD1A7767AC680C9A5E0B3 /* HalfCourtHeroTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtHeroTypes.swift; sourceTree = "<group>"; };
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
+		B350087A6E73A31064143D15 /* MechanicsPrototypeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MechanicsPrototypeView.swift; sourceTree = "<group>"; };
 		BED672FC4A58B627A3DF1FEF /* ForCuttingGrassInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassInputController.swift; sourceTree = "<group>"; };
 		C878C2F6DA7BAA235B1945F9 /* LobbyPreviewPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyPreviewPlayer.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
@@ -221,6 +225,8 @@
 			children = (
 				79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */,
 				07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */,
+				6357CADEF161A3B5578C2212 /* MechanicsPrototypeScene.swift */,
+				B350087A6E73A31064143D15 /* MechanicsPrototypeView.swift */,
 				D669AFB1FE31DC16A12913A6 /* ForCuttingGrass */,
 				0EB59B8CAE6B98A8868F072B /* Francis */,
 				92FC4BEBD0EA6DD3248DC2AA /* HalfCourtHero */,
@@ -493,6 +499,8 @@
 				8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */,
 				A66A22A3B737C57D3F8BE1C7 /* LobbyPreviewPlayer.swift in Sources */,
 				158D8F08F041F7C10B28A262 /* LottieAnimationPlayer.swift in Sources */,
+				C602F26841CBB351CC340874 /* MechanicsPrototypeScene.swift in Sources */,
+				7FEBB8E0B8EC151704E5BBA1 /* MechanicsPrototypeView.swift in Sources */,
 				2C67BCCD5486929AF288DCB0 /* PlayerNode.swift in Sources */,
 				72D64E1818F031BF93F3AD9C /* Song.swift in Sources */,
 				BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */,
