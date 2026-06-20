@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "frameSize": [
     256,
     256
@@ -13,38 +13,46 @@
       "animations": {
         "nara": {
           "idle": {
-            "fps": 7,
+            "fps": 8,
             "frames": [
               "nara_idle_000",
               "nara_idle_001",
               "nara_idle_002",
-              "nara_idle_003"
+              "nara_idle_003",
+              "nara_idle_004",
+              "nara_idle_005",
+              "nara_idle_006",
+              "nara_idle_007"
             ]
           },
           "dribble": {
-            "fps": 12,
+            "fps": 14,
             "frames": [
               "nara_dribble_000",
               "nara_dribble_001",
               "nara_dribble_002",
               "nara_dribble_003",
               "nara_dribble_004",
-              "nara_dribble_005"
+              "nara_dribble_005",
+              "nara_dribble_006",
+              "nara_dribble_007"
             ]
           },
           "run": {
-            "fps": 12,
+            "fps": 14,
             "frames": [
               "nara_run_000",
               "nara_run_001",
               "nara_run_002",
               "nara_run_003",
               "nara_run_004",
-              "nara_run_005"
+              "nara_run_005",
+              "nara_run_006",
+              "nara_run_007"
             ]
           },
           "shoot": {
-            "fps": 14,
+            "fps": 16,
             "frames": [
               "nara_shoot_000",
               "nara_shoot_001",
@@ -53,55 +61,67 @@
               "nara_shoot_004",
               "nara_shoot_005",
               "nara_shoot_006",
-              "nara_shoot_007"
+              "nara_shoot_007",
+              "nara_shoot_008",
+              "nara_shoot_009"
             ]
           },
           "celebrate": {
-            "fps": 10,
+            "fps": 12,
             "frames": [
               "nara_celebrate_000",
               "nara_celebrate_001",
               "nara_celebrate_002",
               "nara_celebrate_003",
               "nara_celebrate_004",
-              "nara_celebrate_005"
+              "nara_celebrate_005",
+              "nara_celebrate_006",
+              "nara_celebrate_007"
             ]
           }
         },
         "ethan": {
           "idle": {
-            "fps": 7,
+            "fps": 8,
             "frames": [
               "ethan_idle_000",
               "ethan_idle_001",
               "ethan_idle_002",
-              "ethan_idle_003"
+              "ethan_idle_003",
+              "ethan_idle_004",
+              "ethan_idle_005",
+              "ethan_idle_006",
+              "ethan_idle_007"
             ]
           },
           "dribble": {
-            "fps": 12,
+            "fps": 14,
             "frames": [
               "ethan_dribble_000",
               "ethan_dribble_001",
               "ethan_dribble_002",
               "ethan_dribble_003",
               "ethan_dribble_004",
-              "ethan_dribble_005"
+              "ethan_dribble_005",
+              "ethan_dribble_006",
+              "ethan_dribble_007"
             ]
           },
           "run": {
-            "fps": 12,
+            "fps": 14,
             "frames": [
               "ethan_run_000",
               "ethan_run_001",
               "ethan_run_002",
               "ethan_run_003",
               "ethan_run_004",
-              "ethan_run_005"
+              "ethan_run_005",
+              "ethan_run_006",
+              "ethan_run_007"
             ]
           },
           "shoot": {
-            "fps": 14,
+            "fps": 16,
             "frames": [
               "ethan_shoot_000",
               "ethan_shoot_001",
@@ -110,55 +130,67 @@
               "ethan_shoot_004",
               "ethan_shoot_005",
               "ethan_shoot_006",
-              "ethan_shoot_007"
+              "ethan_shoot_007",
+              "ethan_shoot_008",
+              "ethan_shoot_009"
             ]
           },
           "celebrate": {
-            "fps": 10,
+            "fps": 12,
             "frames": [
               "ethan_celebrate_000",
               "ethan_celebrate_001",
               "ethan_celebrate_002",
               "ethan_celebrate_003",
               "ethan_celebrate_004",
-              "ethan_celebrate_005"
+              "ethan_celebrate_005",
+              "ethan_celebrate_006",
+              "ethan_celebrate_007"
             ]
           }
         },
         "brendan": {
           "idle": {
-            "fps": 7,
+            "fps": 8,
             "frames": [
               "brendan_idle_000",
               "brendan_idle_001",
               "brendan_idle_002",
-              "brendan_idle_003"
+              "brendan_idle_003",
+              "brendan_idle_004",
+              "brendan_idle_005",
+              "brendan_idle_006",
+              "brendan_idle_007"
             ]
           },
           "dribble": {
-            "fps": 12,
+            "fps": 14,
             "frames": [
               "brendan_dribble_000",
               "brendan_dribble_001",
               "brendan_dribble_002",
               "brendan_dribble_003",
               "brendan_dribble_004",
-              "brendan_dribble_005"
+              "brendan_dribble_005",
+              "brendan_dribble_006",
+              "brendan_dribble_007"
             ]
           },
           "run": {
-            "fps": 12,
+            "fps": 14,
             "frames": [
               "brendan_run_000",
               "brendan_run_001",
               "brendan_run_002",
               "brendan_run_003",
               "brendan_run_004",
-              "brendan_run_005"
+              "brendan_run_005",
+              "brendan_run_006",
+              "brendan_run_007"
             ]
           },
           "shoot": {
-            "fps": 14,
+            "fps": 16,
             "frames": [
               "brendan_shoot_000",
               "brendan_shoot_001",
@@ -167,55 +199,67 @@
               "brendan_shoot_004",
               "brendan_shoot_005",
               "brendan_shoot_006",
-              "brendan_shoot_007"
+              "brendan_shoot_007",
+              "brendan_shoot_008",
+              "brendan_shoot_009"
             ]
           },
           "celebrate": {
-            "fps": 10,
+            "fps": 12,
             "frames": [
               "brendan_celebrate_000",
               "brendan_celebrate_001",
               "brendan_celebrate_002",
               "brendan_celebrate_003",
               "brendan_celebrate_004",
-              "brendan_celebrate_005"
+              "brendan_celebrate_005",
+              "brendan_celebrate_006",
+              "brendan_celebrate_007"
             ]
           }
         },
         "will": {
           "idle": {
-            "fps": 7,
+            "fps": 8,
             "frames": [
               "will_idle_000",
               "will_idle_001",
               "will_idle_002",
-              "will_idle_003"
+              "will_idle_003",
+              "will_idle_004",
+              "will_idle_005",
+              "will_idle_006",
+              "will_idle_007"
             ]
           },
           "dribble": {
-            "fps": 12,
+            "fps": 14,
             "frames": [
               "will_dribble_000",
               "will_dribble_001",
               "will_dribble_002",
               "will_dribble_003",
               "will_dribble_004",
-              "will_dribble_005"
+              "will_dribble_005",
+              "will_dribble_006",
+              "will_dribble_007"
             ]
           },
           "run": {
-            "fps": 12,
+            "fps": 14,
             "frames": [
               "will_run_000",
               "will_run_001",
               "will_run_002",
               "will_run_003",
               "will_run_004",
-              "will_run_005"
+              "will_run_005",
+              "will_run_006",
+              "will_run_007"
             ]
           },
           "shoot": {
-            "fps": 14,
+            "fps": 16,
             "frames": [
               "will_shoot_000",
               "will_shoot_001",
@@ -224,18 +268,22 @@
               "will_shoot_004",
               "will_shoot_005",
               "will_shoot_006",
-              "will_shoot_007"
+              "will_shoot_007",
+              "will_shoot_008",
+              "will_shoot_009"
             ]
           },
           "celebrate": {
-            "fps": 10,
+            "fps": 12,
             "frames": [
               "will_celebrate_000",
               "will_celebrate_001",
               "will_celebrate_002",
               "will_celebrate_003",
               "will_celebrate_004",
-              "will_celebrate_005"
+              "will_celebrate_005",
+              "will_celebrate_006",
+              "will_celebrate_007"
             ]
           }
         }

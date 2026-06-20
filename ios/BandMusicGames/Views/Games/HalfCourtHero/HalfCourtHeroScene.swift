@@ -223,14 +223,16 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         threePointX = rimX - w * 0.56
         playerMinX = 44
         playerMaxX = rimX - 56
-        playerSpriteSize = min(210, max(140, h * 0.215))
+        playerSpriteSize = min(170, max(118, h * 0.17))
 
         buildCourt()
         hud?.layout(size: size)
-        let meterWidth = w * 0.45  // right-side meter centered on action zone
+        let meterWidth = h * 0.40  // vertical left-side meter
         tapMeterNode?.layout(barWidth: meterWidth)
-        tapMeterNode?.position = CGPoint(x: w * 0.75, y: h * 0.32)
-        streakPips?.position = CGPoint(x: w * 0.75, y: h * 0.32 + 24)
+        tapMeterNode?.setVertical(true)
+        tapMeterNode?.zRotation = .pi / 2
+        tapMeterNode?.position = CGPoint(x: 28, y: h * 0.50)
+        streakPips?.position = CGPoint(x: 62, y: h * 0.50)
         resultCard?.position = CGPoint(x: w / 2, y: h / 2)
 
         for player in players.values {
@@ -1754,6 +1756,7 @@ enum TapMeterMode { case shoot, block }
 final class TapShotMeterNode: SKNode {
     private let barHeight: CGFloat = 28
     private var barWidth: CGFloat
+    private var isVertical = false
     private var greenLow: CGFloat
     private var greenHigh: CGFloat
     private var perfectLow: CGFloat
@@ -1853,9 +1856,23 @@ final class TapShotMeterNode: SKNode {
         beatRing.path = CGPath(roundedRect: CGRect(x: -w / 2 - 4, y: -h / 2 - 4, width: w + 8, height: h + 8),
                                 cornerWidth: r + 4, cornerHeight: r + 4, transform: nil)
 
-        modeLabel.position = CGPoint(x: w / 2 - 8, y: 0)
+        if isVertical {
+            // After CCW 90° rotation, local -x maps to screen "below center"
+            modeLabel.position = CGPoint(x: -w / 2 - 28, y: 0)
+            modeLabel.zRotation = -.pi / 2
+            modeLabel.horizontalAlignmentMode = .center
+        } else {
+            modeLabel.position = CGPoint(x: w / 2 - 8, y: 0)
+            modeLabel.zRotation = 0
+            modeLabel.horizontalAlignmentMode = .right
+        }
 
         setFill(0, mode: .shoot)
+    }
+
+    func setVertical(_ vertical: Bool) {
+        isVertical = vertical
+        rebuildZones()
     }
 
     func setFill(_ fill: CGFloat, mode: TapMeterMode) {

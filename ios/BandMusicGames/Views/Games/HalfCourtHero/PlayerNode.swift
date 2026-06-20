@@ -2,45 +2,46 @@ import Foundation
 import SpriteKit
 import SwiftUI
 
-/// Puppet-animated player using the full-body Lizzy McGuire cartoon sprites
-/// from the web game (one painted pose per character, animated procedurally
-/// with bob / lean / squash-and-stretch — the same math as the web build).
+/// Puppet-animated player with SpriteKit atlas frame overlay.
+/// When `HalfCourtHeroPlayers.atlas` is compiled into the bundle, atlas frames
+/// are played for looping animations (idle, run, dribble, shoot, celebrate).
+/// The puppet layer (bob / lean / squash-and-stretch) runs on top regardless.
 @MainActor
 final class PlayerNode: SKNode {
     let heroID: HalfCourtHeroID
     let team: HalfCourtTeam
-    /// Standing height of the character on screen, in points.
     let playerHeight: CGFloat
     private var nbaJerseysEnabled: Bool
     private var character: HalfCourtHero { heroID.character }
 
-    /// The web game's animation constants are in pixels for a ~175px-tall
-    /// character; everything scales by this factor.
     private var k: CGFloat { playerHeight / 175 }
 
-    private let bodyContainer = SKNode()   // facing flip lives here
-    private let puppet = SKNode()          // bob / lean / squash transforms
+    private let bodyContainer = SKNode()
+    private let puppet = SKNode()
     private let shadowNode: SKShapeNode
     private let selectionRing: SKShapeNode
     private var spriteNode: SKSpriteNode?
     private var fireAura: SKShapeNode?
 
+    // Atlas animation state
+    private var atlasTextureCache: [String: [SKTexture]] = [:]
+    private var useAtlas = false
+
     private enum PuppetAnim {
-        case idle
-        case run
-        case shoot
-        case land
-        case celebrate
-        case sad
+        case idle, dribble, run, shoot, land, celebrate, sad
     }
 
-    private var anim: PuppetAnim = .idle
+    private var anim: PuppetAnim = .idle {
+        didSet {
+            guard anim != oldValue else { return }
+            syncAtlasToAnim()
+        }
+    }
     private var oneShotUntil: TimeInterval = 0
     private var oneShotStart: TimeInterval = 0
     private var landStart: TimeInterval = 0
     private var lastTickTime: TimeInterval = 0
 
-    /// 0...1 — how hard the player is running; drives run-cycle intensity.
     var moveIntensity: CGFloat = 0.75
 
     var facing: CGFloat = 1 {
@@ -98,11 +99,80 @@ final class PlayerNode: SKNode {
         texture.filteringMode = .linear
         let aspect = texture.size().width / max(texture.size().height, 1)
         let sprite = SKSpriteNode(texture: texture)
-        sprite.anchorPoint = CGPoint(x: 0.5, y: 0)  // feet on the ground
+        sprite.anchorPoint = CGPoint(x: 0.5, y: 0)
         sprite.size = CGSize(width: playerHeight * aspect, height: playerHeight)
         sprite.name = "halfcourt-\(heroID.rawValue)-sprite"
         puppet.addChild(sprite)
         spriteNode = sprite
+
+        setupAtlas()
+    }
+
+    // MARK: - Atlas animation
+
+    private func setupAtlas() {
+        let atlas = SKTextureAtlas(named: "HalfCourtHeroPlayers")
+        let key = heroID.rawValue
+        let availableNames = Set(atlas.textureNames)
+        guard availableNames.contains("\(key)_idle_000") else { return }
+
+        useAtlas = true
+
+        // Atlas frames are 256×256 square; character body fills ~82% of height,
+        // feet sit at ~14% from the bottom edge.
+        let atlasSize = playerHeight / 0.82
+        spriteNode?.size = CGSize(width: atlasSize, height: atlasSize)
+        spriteNode?.anchorPoint = CGPoint(x: 0.5, y: 0.14)
+
+        let animDefs: [(String, Int)] = [
+            ("idle", 8), ("run", 8), ("dribble", 8), ("shoot", 10), ("celebrate", 8),
+        ]
+        for (animKey, count) in animDefs {
+            let frames: [SKTexture] = (0..<count).compactMap { i in
+                let name = "\(key)_\(animKey)_\(String(format: "%03d", i))"
+                guard availableNames.contains(name) else { return nil }
+                let tex = atlas.textureNamed(name)
+                tex.filteringMode = .linear
+                return tex
+            }
+            if !frames.isEmpty {
+                atlasTextureCache[animKey] = frames
+            }
+        }
+
+        playAtlasAnim("idle", fps: 8, loop: true)
+    }
+
+    private func playAtlasAnim(_ animKey: String, fps: Double, loop: Bool) {
+        guard useAtlas, let frames = atlasTextureCache[animKey], !frames.isEmpty else { return }
+        spriteNode?.removeAction(forKey: "atlasAnim")
+        let animate = SKAction.animate(with: frames, timePerFrame: 1.0 / fps)
+        let action = loop ? SKAction.repeatForever(animate) : animate
+        spriteNode?.run(action, withKey: "atlasAnim")
+    }
+
+    private func syncAtlasToAnim() {
+        guard useAtlas else { return }
+        switch anim {
+        case .idle:
+            playAtlasAnim("idle", fps: 8, loop: true)
+        case .dribble:
+            playAtlasAnim("dribble", fps: 14, loop: true)
+        case .run:
+            playAtlasAnim("run", fps: 14, loop: true)
+        case .shoot:
+            playAtlasAnim("shoot", fps: 16, loop: false)
+        case .celebrate:
+            playAtlasAnim("celebrate", fps: 12, loop: true)
+        case .sad:
+            // Play idle at half-speed for sad state
+            guard let frames = atlasTextureCache["idle"], !frames.isEmpty else { return }
+            spriteNode?.removeAction(forKey: "atlasAnim")
+            let animate = SKAction.animate(with: frames, timePerFrame: 1.0 / 4)
+            spriteNode?.run(SKAction.repeatForever(animate), withKey: "atlasAnim")
+        case .land:
+            break  // keep current frame while puppet handles landing squash
+        }
     }
 
     func setSelectionActive(_ active: Bool) {
@@ -113,15 +183,20 @@ final class PlayerNode: SKNode {
         nbaJerseysEnabled = nbaJerseys
         spriteNode?.removeFromParent()
         spriteNode = nil
+        atlasTextureCache = [:]
+        useAtlas = false
         installSpriteBody()
     }
 
     // MARK: - Animation state
 
-    /// Loop animations; one-shots in flight (shoot/celebrate) are not interrupted.
     func updateLocomotion(moving: Bool, hasBall: Bool) {
         guard lastTickTime >= oneShotUntil else { return }
-        anim = moving ? .run : .idle
+        if hasBall && !moving {
+            anim = .dribble
+        } else {
+            anim = moving ? .run : .idle
+        }
     }
 
     func setAnimation(_ animation: HalfCourtAnimation) {
@@ -145,35 +220,33 @@ final class PlayerNode: SKNode {
     private func puppetAnim(for animation: HalfCourtAnimation) -> PuppetAnim {
         switch animation {
         case .run: return .run
+        case .dribble: return .dribble
         case .shoot, .jump: return .shoot
         case .celebrate: return .celebrate
         case .sad: return .sad
-        case .idle, .dribble, .land: return .idle
+        case .idle, .land: return .idle
         }
     }
 
-    /// Drive the puppet — call once per frame with the scene clock.
-    /// Ported from the web build's drawChar transform block.
     func tick(now: TimeInterval) {
         lastTickTime = now
         if now >= oneShotUntil {
             switch anim {
             case .shoot:
-                // Touch down from the jumper into a landing squash
                 anim = .land
                 landStart = now
                 oneShotUntil = now + 0.28
             case .land, .celebrate, .sad:
                 anim = .idle
-            case .idle, .run:
+            case .idle, .dribble, .run:
                 break
             }
         }
 
-        let f = CGFloat(now * 60)  // web "frame" counter equivalent
+        let f = CGFloat(now * 60)
         var scX: CGFloat = 1
         var scY: CGFloat = 1
-        var bobY: CGFloat = 0     // web is y-down: negative = up
+        var bobY: CGFloat = 0
         var lean: CGFloat = 0
 
         switch anim {
@@ -182,6 +255,11 @@ final class PlayerNode: SKNode {
             bobY = sin(phase) * 3.5
             scX = 1 + sin(phase) * 0.012
             scY = 1 - sin(phase) * 0.012
+        case .dribble:
+            let phase = f * 0.08
+            bobY = sin(phase) * 2.5
+            scX = 1 + sin(phase) * 0.008
+            scY = 1 - sin(phase) * 0.008
         case .run:
             let phase = f * 0.20
             let intensity = min(1, max(0.2, moveIntensity))
@@ -191,13 +269,11 @@ final class PlayerNode: SKNode {
             scX = 1 + sq * 0.03 * intensity
             scY = 1 - sq * 0.02 * intensity
         case .shoot:
-            // Rise into the jumper: stretch + a sine-arc hop, peak at release
             let t = min(1, max(0, CGFloat((now - oneShotStart) / 0.55)))
             bobY = -10 - sin(.pi * t) * 26
             scX = 0.90
             scY = 1.12
         case .land:
-            // Web-game landing squash, decaying over ~17 frames
             let t = min(1, max(0, CGFloat((now - landStart) / 0.28)))
             scX = 1 + (1 - t) * 0.22
             scY = 1 - (1 - t) * 0.20
@@ -222,17 +298,14 @@ final class PlayerNode: SKNode {
         shadowNode.alpha = max(0.12, 0.25 + bobY * 0.006)
     }
 
-    // MARK: - Ball attachment points (web-game geometry, scaled)
+    // MARK: - Ball attachment points
 
-    /// Where the ball sits while dribbling, in this node's coordinates.
-    /// Web: hand at (30, -78), floor at (30, -10), eased by |sin| bounce.
     func ballCarryPoint(bouncePhase: CGFloat) -> CGPoint {
         let dribPct = abs(sin(bouncePhase))
         let y = (10 + (78 - 10) * dribPct) * k
         return CGPoint(x: facing * 30 * k, y: y)
     }
 
-    /// Where the ball leaves the hand on a shot. Web: (18, -175) — overhead.
     func shotReleasePoint() -> CGPoint {
         CGPoint(x: facing * 18 * k, y: 175 * k)
     }

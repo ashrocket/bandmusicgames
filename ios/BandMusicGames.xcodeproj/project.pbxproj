@@ -20,12 +20,11 @@
 		2C67BCCD5486929AF288DCB0 /* PlayerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990409BAD59E5D7624090BC /* PlayerNode.swift */; };
 		31AA3FACB02EFCA7DF5030DC /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = DB0C50A18C596F6F226F4EA8 /* manifest.json */; };
 		322040669093637ABD0C5D8B /* ForCuttingGrassRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CAB0A5FEF74F7A89D13435 /* ForCuttingGrassRenderer.swift */; };
+		330DA7CAE2E3C5A4205F972F /* AppleMusicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949996882745F58520AD10DE /* AppleMusicManager.swift */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
-		D54E0F078034448EB3FABCC4 /* SpotifyErrorBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F673AE8E2744948A7E43F9 /* SpotifyErrorBanner.swift */; };
 		44CD12EC1DF87386F9EE66E4 /* HalfCourtHUDNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CB28A4323E659BD953281 /* HalfCourtHUDNode.swift */; };
 		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* AppleMusicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* AppleMusicManager.swift */; };
-		F4552C5046D74C00B5E66ED4 /* LobbyPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3372F06D07C64D01888CEE0F /* LobbyPreviewPlayer.swift */; };
+		53E0AC04367B389742A6B773 /* SpotifyErrorBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1CF61FF4D6DA1D17FD7B57 /* SpotifyErrorBanner.swift */; };
 		54053F0397C8344563D97BCA /* ForCuttingGrassLevels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52C830562785E9E848F6E9F9 /* ForCuttingGrassLevels.swift */; };
 		556849F763DA66541FE78663 /* tile-garden-1.png in Resources */ = {isa = PBXBuildFile; fileRef = A8204D91A13ADFCD5F19BC3B /* tile-garden-1.png */; };
 		5C9F5213FA77EDE523255CA8 /* HalfCourtResultCardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BC18B1C6F46DF6BDD916163 /* HalfCourtResultCardNode.swift */; };
@@ -46,6 +45,7 @@
 		95BF4499E00AF4D91FE21F30 /* HalfCourtHeroTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDD1A7767AC680C9A5E0B3 /* HalfCourtHeroTypes.swift */; };
 		99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE185679CAD568601C864B6E /* ArchHeaderView.swift */; };
 		9F55F487EE8D3ABC0C84FE55 /* FrancisHUDNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1447C20787223E3BA94B7B5C /* FrancisHUDNode.swift */; };
+		A66A22A3B737C57D3F8BE1C7 /* LobbyPreviewPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C878C2F6DA7BAA235B1945F9 /* LobbyPreviewPlayer.swift */; };
 		A763F8F5AF4B98F6912A1A52 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF0F0EDD5912F2F1A501CC3C /* WebKit.framework */; };
 		A974458E68E8B84835D08791 /* StormSkyNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1E77EEBE8BC5E9F2A41B420 /* StormSkyNode.swift */; };
 		AEBD877831FCB56EA1A41FB5 /* tile-house-wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DAD71611E68F61627E3F2 /* tile-house-wall.png */; };
@@ -85,9 +85,9 @@
 		3C7238AEDFCD2DDC7C2750E4 /* FrancisGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameScene.swift; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
 		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
-		40F673AE8E2744948A7E43F9 /* SpotifyErrorBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyErrorBanner.swift; sourceTree = "<group>"; };
 		4B0FEFEAE20F717F1B193FC2 /* mower-body-test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body-test.png"; sourceTree = "<group>"; };
 		4D0C48531D9DA41E250F59D8 /* JukeboxLineKnot.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JukeboxLineKnot.json; sourceTree = "<group>"; };
+		4DE395626A2B595F1AB2FA55 /* BandMusicGames.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BandMusicGames.entitlements; sourceTree = "<group>"; };
 		52C830562785E9E848F6E9F9 /* ForCuttingGrassLevels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassLevels.swift; sourceTree = "<group>"; };
 		5E6DAD71611E68F61627E3F2 /* tile-house-wall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tile-house-wall.png"; sourceTree = "<group>"; };
 		79C7123FF5E4F6728F3511EB /* FrancisGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameView.swift; sourceTree = "<group>"; };
@@ -96,7 +96,9 @@
 		8AFCC5A97AB46F6B6B65345B /* BandMusicGames.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BandMusicGames.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BC18B1C6F46DF6BDD916163 /* HalfCourtResultCardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtResultCardNode.swift; sourceTree = "<group>"; };
 		8C60E9FC3934E62B02667E84 /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		8D1CF61FF4D6DA1D17FD7B57 /* SpotifyErrorBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyErrorBanner.swift; sourceTree = "<group>"; };
 		9335EB35B1AB2B24DF7F32A8 /* BallNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BallNode.swift; sourceTree = "<group>"; };
+		949996882745F58520AD10DE /* AppleMusicManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicManager.swift; sourceTree = "<group>"; };
 		9A80508AF89C6F61C9C06257 /* HalfCourtHeroBall.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = HalfCourtHeroBall.atlas; sourceTree = "<group>"; };
 		9D7C5C786747064F3815AA29 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		A42A64FCF259A241304C2C44 /* ForCuttingGrassHazards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassHazards.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 		ACEDD1A7767AC680C9A5E0B3 /* HalfCourtHeroTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtHeroTypes.swift; sourceTree = "<group>"; };
 		AE185679CAD568601C864B6E /* ArchHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchHeaderView.swift; sourceTree = "<group>"; };
 		BED672FC4A58B627A3DF1FEF /* ForCuttingGrassInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassInputController.swift; sourceTree = "<group>"; };
+		C878C2F6DA7BAA235B1945F9 /* LobbyPreviewPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyPreviewPlayer.swift; sourceTree = "<group>"; };
 		CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDisplayView.swift; sourceTree = "<group>"; };
 		CF53F9CA93346E2D56EF710B /* StormStageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StormStageTests.swift; sourceTree = "<group>"; };
 		CF8ABE1149F03BEB14FB8947 /* BandMusicGamesTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = BandMusicGamesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -121,8 +124,6 @@
 		F1E77EEBE8BC5E9F2A41B420 /* StormSkyNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StormSkyNode.swift; sourceTree = "<group>"; };
 		F282D587BD99FF41373791FB /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F3 /* AppleMusicManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicManager.swift; sourceTree = "<group>"; };
-		3372F06D07C64D01888CEE0F /* LobbyPreviewPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LobbyPreviewPlayer.swift; sourceTree = "<group>"; };
 		F71CB28A4323E659BD953281 /* HalfCourtHUDNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtHUDNode.swift; sourceTree = "<group>"; };
 		FACBCEE1035B20CF24D9EA3B /* ForCuttingGrassGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassGameView.swift; sourceTree = "<group>"; };
 		FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JukeboxView.swift; sourceTree = "<group>"; };
@@ -158,6 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				D77DC43028C080E39E78EBBA /* Assets.xcassets */,
+				4DE395626A2B595F1AB2FA55 /* BandMusicGames.entitlements */,
 				4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */,
 				8567BD69AC65A149C336E5B2 /* Animations */,
 				43525B9D693EF310A0F4202C /* Managers */,
@@ -180,10 +182,10 @@
 		43525B9D693EF310A0F4202C /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				949996882745F58520AD10DE /* AppleMusicManager.swift */,
 				9D7C5C786747064F3815AA29 /* HapticManager.swift */,
-				3372F06D07C64D01888CEE0F /* LobbyPreviewPlayer.swift */,
+				C878C2F6DA7BAA235B1945F9 /* LobbyPreviewPlayer.swift */,
 				F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1F3 /* AppleMusicManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -199,8 +201,8 @@
 				FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */,
 				179F02B60F81160662AA2202 /* LottieAnimationPlayer.swift */,
 				CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */,
+				8D1CF61FF4D6DA1D17FD7B57 /* SpotifyErrorBanner.swift */,
 				494493654D27227DBC1E24DB /* SpotifySheetView.swift */,
-				40F673AE8E2744948A7E43F9 /* SpotifyErrorBanner.swift */,
 				78F249AC8A96E504E2113CCA /* Games */,
 			);
 			path = Views;
@@ -461,6 +463,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				330DA7CAE2E3C5A4205F972F /* AppleMusicManager.swift in Sources */,
 				99A699CB61A1FB423BB3F7A8 /* ArchHeaderView.swift in Sources */,
 				677C791AF93B76489A0C75C0 /* BallNode.swift in Sources */,
 				B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */,
@@ -487,16 +490,15 @@
 				DEDC2772035F23DBB8551E3A /* HalfCourtSpriteFactory.swift in Sources */,
 				CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */,
 				1A8D8BC32BAEE65B88DBDBB7 /* JukeboxView.swift in Sources */,
-				F4552C5046D74C00B5E66ED4 /* LobbyPreviewPlayer.swift in Sources */,
 				8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */,
+				A66A22A3B737C57D3F8BE1C7 /* LobbyPreviewPlayer.swift in Sources */,
 				158D8F08F041F7C10B28A262 /* LottieAnimationPlayer.swift in Sources */,
 				2C67BCCD5486929AF288DCB0 /* PlayerNode.swift in Sources */,
 				72D64E1818F031BF93F3AD9C /* Song.swift in Sources */,
 				BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */,
 				48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */,
-				A1B2C3D4E5F6A7B8C9D0E1F2 /* AppleMusicManager.swift in Sources */,
+				53E0AC04367B389742A6B773 /* SpotifyErrorBanner.swift in Sources */,
 				39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */,
-				D54E0F078034448EB3FABCC4 /* SpotifyErrorBanner.swift in Sources */,
 				A974458E68E8B84835D08791 /* StormSkyNode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -674,9 +676,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_ENTITLEMENTS = BandMusicGames/BandMusicGames.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20260615114813;
+				CURRENT_PROJECT_VERSION = 20260620150000;
 				DEVELOPMENT_TEAM = 6P24N3R4TP;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
@@ -698,9 +699,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_ENTITLEMENTS = BandMusicGames/BandMusicGames.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 20260615114813;
+				CURRENT_PROJECT_VERSION = 20260620150000;
 				DEVELOPMENT_TEAM = 6P24N3R4TP;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = Info.plist;
