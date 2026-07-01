@@ -34,7 +34,7 @@ struct LizzyMcGuireGameView: View {
             .scaleEffect(zoomLevel, anchor: .center)
             .offset(x: panOffset.width, y: panOffset.height)
             .gesture(
-                MagnificationGesture(minimumScaleDelta: 0.03)
+                MagnificationGesture(minimumScaleDelta: 0.12)
                     .onChanged { value in
                         guard scene.phase == .playing else { return }
                         var tx = Transaction()
@@ -474,9 +474,17 @@ struct LizzyMcGuireGameView: View {
         dragBase = .zero
         scene.isPaused = false
         if appleMusic.isPreferred {
-            Task { await appleMusic.resume() }
+            Task {
+                await appleMusic.resume()
+                // Re-latch the beat clock once audio has actually resumed —
+                // same confirmed-playback rule as the initial playTrack path.
+                scene.realignBeatAnchor()
+            }
         } else if auth.canAttemptPlayback {
-            Task { await auth.resumePlayback() }
+            Task {
+                await auth.resumePlayback()
+                scene.realignBeatAnchor()
+            }
         }
     }
 
@@ -517,7 +525,7 @@ struct LizzyMcGuireGameView: View {
                 }
         )
         .simultaneousGesture(
-            MagnificationGesture(minimumScaleDelta: 0.03)
+            MagnificationGesture(minimumScaleDelta: 0.12)
                 .onChanged { value in
                     let delta = value / overlayPinchBase
                     overlayPinchBase = value
