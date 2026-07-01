@@ -60,6 +60,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var streakPips: StreakPipsNode?
     private var tapMeterNode: TapShotMeterNode?
     private var calloutNode: SKNode?
+    private var timingCalloutNode: SKNode?
     private var stealHintNode: SKNode?
     private var rimNode: SKShapeNode?
     private var rimHaloNode: SKShapeNode?
@@ -708,7 +709,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             players[id]?.setOnFire(powered)
         }
         if !powered {
-            showCallout("COOLED OFF", color: SKColor.white.withAlphaComponent(0.7))
+            showCallout("COOLED OFF", color: SKColor.white.withAlphaComponent(0.7), lane: .timing)
             HapticManager.impact(.rigid)
             streakPips?.set(count: onBeatStreak, powered: false)
         }
@@ -1549,12 +1550,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 activatePowerUp(now)
                 return true
             } else {
-                showCallout("ON BEAT ×\(onBeatStreak)", color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1))
+                showCallout("ON BEAT ×\(onBeatStreak)", color: SKColor(red: 1, green: 0.84, blue: 0, alpha: 1), lane: .timing)
                 HapticManager.impact(.rigid)
             }
         } else {
             if onBeatStreak > 0 {
-                showCallout("OFF BEAT", color: SKColor.white.withAlphaComponent(0.55))
+                showCallout("OFF BEAT", color: SKColor.white.withAlphaComponent(0.55), lane: .timing)
             }
             onBeatStreak = 0
         }
@@ -1569,7 +1570,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             players[id]?.setOnFire(true)
         }
         streakPips?.set(count: 3, powered: true)
-        showCallout("🔥 ON FIRE!", color: SKColor(red: 1, green: 0.55, blue: 0.1, alpha: 1), big: true)
+        showCallout("🔥 ON FIRE!", color: SKColor(red: 1, green: 0.55, blue: 0.1, alpha: 1), big: true, lane: .timing)
         flashScreen()
         shakeWorld(9)
         HapticManager.notification(.success)
@@ -1802,7 +1803,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private func showStealHint() {
         stealHintNode?.removeFromParent()
         let hint = SKLabelNode(fontNamed: "AvenirNext-Heavy")
-        hint.text = "SWIPE \u{2192} STEAL"
+        hint.text = "TAP STEAL!"
         hint.fontSize = 14
         hint.fontColor = SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1)
         hint.horizontalAlignmentMode = .right
@@ -1831,19 +1832,29 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
     // MARK: - Callouts
 
-    private func showCallout(_ text: String, color: SKColor, big: Bool = false) {
-        calloutNode?.removeFromParent()
+    /// Two independent callout lanes so beat/streak feedback (.timing) is never
+    /// clobbered by shot-type/defense callouts (.event) fired the same frame.
+    private enum CalloutLane { case event, timing }
+
+    private func showCallout(_ text: String, color: SKColor, big: Bool = false, lane: CalloutLane = .event) {
+        switch lane {
+        case .event:  calloutNode?.removeFromParent()
+        case .timing: timingCalloutNode?.removeFromParent()
+        }
 
         let label = SKLabelNode(text: text)
         label.fontName = "AvenirNext-Heavy"
         label.fontSize = big ? 30 : 19
         label.fontColor = color
-        label.position = CGPoint(x: size.width / 2, y: size.height * 0.58)
+        label.position = CGPoint(x: size.width / 2, y: size.height * 0.58 + (lane == .timing ? 36 : 0))
         label.zPosition = 200
         label.setScale(0.6)
         label.alpha = 0
         fxLayer.addChild(label)
-        calloutNode = label
+        switch lane {
+        case .event:  calloutNode = label
+        case .timing: timingCalloutNode = label
+        }
 
         let pop = SKAction.group([
             SKAction.fadeIn(withDuration: 0.1),
