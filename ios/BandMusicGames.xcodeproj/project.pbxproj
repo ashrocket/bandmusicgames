@@ -41,6 +41,7 @@
 		8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */; };
 		85C60074DA1F975871E974E9 /* FrancisGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7238AEDFCD2DDC7C2750E4 /* FrancisGameScene.swift */; };
 		8679C2DB6EC14B8CF47D61C2 /* LizzyMcGuireGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */; };
+		8B0F805C82CACBAB9CB79E2C /* BlockGradeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DD52D74FA70B03DA96B12E0 /* BlockGradeTests.swift */; };
 		8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */; };
 		90604B97C7E0492877E71594 /* tile-cut-1.png in Resources */ = {isa = PBXBuildFile; fileRef = D5B2265F8A59C6A75AE95963 /* tile-cut-1.png */; };
 		92F7990237F050CDC55279CA /* ForCuttingGrassGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86C86CF194F193E6FFAC4709 /* ForCuttingGrassGameScene.swift */; };
@@ -90,6 +91,7 @@
 		1DEF3481E9967A067F380C47 /* JukeboxLineIdle.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JukeboxLineIdle.json; sourceTree = "<group>"; };
 		2BFDCCD66F6537A3AD736D3F /* HalfCourtHeroScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtHeroScene.swift; sourceTree = "<group>"; };
 		3C7238AEDFCD2DDC7C2750E4 /* FrancisGameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisGameScene.swift; sourceTree = "<group>"; };
+		3DD52D74FA70B03DA96B12E0 /* BlockGradeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockGradeTests.swift; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
 		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
 		4B0FEFEAE20F717F1B193FC2 /* mower-body-test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body-test.png"; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 		8FAC014724E2F2C7F2A3E5E9 /* BandMusicGamesTests */ = {
 			isa = PBXGroup;
 			children = (
+				3DD52D74FA70B03DA96B12E0 /* BlockGradeTests.swift */,
 				B94D3136B717A47DEB81A454 /* HalfCourtDifficultyTests.swift */,
 				0758718CD5A5648A02797A93 /* HalfCourtStatsTests.swift */,
 				CF53F9CA93346E2D56EF710B /* StormStageTests.swift */,
@@ -481,6 +484,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B0F805C82CACBAB9CB79E2C /* BlockGradeTests.swift in Sources */,
 				9B3F7525F3468D48407373B0 /* HalfCourtDifficultyTests.swift in Sources */,
 				C0F894D8900D34B3DF5112CA /* HalfCourtStatsTests.swift in Sources */,
 				D3ACBA6A3C0856BAC26398E5 /* StormStageTests.swift in Sources */,

@@ -144,6 +144,27 @@ enum HalfCourtDifficulty: String, CaseIterable, Identifiable {
     }
 }
 
+/// Graded block-timing outcome: dead-center taps are near-certain swats,
+/// window edges are ordinary blocks, outside the window never connects.
+enum BlockGrade: Equatable {
+    case early, inWindow, swat, late
+
+    static func grade(fill: CGFloat, greenLow: CGFloat, greenHigh: CGFloat) -> BlockGrade {
+        guard fill >= greenLow else { return .early }
+        guard fill <= greenHigh else { return .late }
+        let p = (fill - greenLow) / max(0.001, greenHigh - greenLow)
+        return (0.30...0.70).contains(p) ? .swat : .inWindow
+    }
+
+    var successChance: CGFloat {
+        switch self {
+        case .swat: return 0.95
+        case .inWindow: return 0.70
+        case .early, .late: return 0
+        }
+    }
+}
+
 /// On-screen control scheme for HalfCourtHero (Nara's Room). Selected on the
 /// pre-game title screen and persisted in `UserDefaults`. The legacy gesture
 /// scheme (drag-to-move + flick-to-shoot) has been retired in favour of

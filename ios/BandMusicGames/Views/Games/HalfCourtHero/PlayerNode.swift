@@ -310,6 +310,20 @@ final class PlayerNode: SKNode {
         CGPoint(x: facing * 18 * k, y: 175 * k)
     }
 
+    /// Brief white flash — "you touched it but didn't get it" steal feedback.
+    func flashGlint() {
+        guard let spriteNode else { return }
+        spriteNode.removeAction(forKey: "glint")
+        spriteNode.color = .white
+        spriteNode.colorBlendFactor = 0.55
+        spriteNode.run(.sequence([
+            .wait(forDuration: 0.05),
+            .customAction(withDuration: 0.25) { node, t in
+                (node as? SKSpriteNode)?.colorBlendFactor = 0.55 * (1 - t / 0.25)
+            },
+        ]), withKey: "glint")
+    }
+
     // MARK: - Power-up aura
 
     func setOnFire(_ on: Bool) {

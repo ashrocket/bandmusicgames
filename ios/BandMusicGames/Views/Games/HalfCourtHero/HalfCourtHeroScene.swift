@@ -179,6 +179,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var stealCooldownUntil: TimeInterval = 0
     private var humanStealCooldownUntil: TimeInterval = 0
     private var blockCooldownUntil: TimeInterval = 0     // mistimed BLOCK penalty (F2)
+    private var contestDegradeActive = false             // failed block roll degraded the CPU shot (F8)
     private var foulRetainPossession = false             // reach-in foul: CPU keeps ball on miss
     private var humanInputLockedUntil: TimeInterval = 0  // brief lockout after a foul
 
@@ -623,6 +624,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         ballTrailActive = false
         isFreethrowInFlight = false
         foulRetainPossession = false
+        contestDegradeActive = false
         ball?.hold()
         ball?.setOnFire(false)
         shotClockRemaining = shotClockSeconds
@@ -1216,6 +1218,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let blue = SKColor(red: 0.36, green: 0.55, blue: 1.0, alpha: 0.34)
         let red  = SKColor(red: 1.0, green: 0.32, blue: 0.30, alpha: 0.34)
         buttonA?.alpha = 1.0
+        buttonB?.setCooldown(nil)
         switch controlContext {
         case .offenseBallHoopLand:
             buttonA?.isHidden = false; buttonA?.configure(title: "SHOOT", fill: gold)
@@ -1232,6 +1235,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         case .defenseLive:
             buttonA?.isHidden = true; buttonA?.setRing(fill: nil)
             buttonB?.isHidden = false; buttonB?.configure(title: "STEAL", fill: red)
+            let cd = humanStealCooldownUntil - nowTime
+            buttonB?.setCooldown(cd > 0 ? CGFloat(cd / 3.0) : nil)
         case .defenseShot:
             buttonA?.isHidden = false; buttonA?.configure(title: "BLOCK", fill: red)
             buttonA?.setRing(fill: cpuBlockFill, block: true)
@@ -1292,8 +1297,13 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     // MARK: - Steal / Foul / Block
 
     private func tryGestureSteal() {
-        guard nowTime > humanStealCooldownUntil,
-              let handlerID = cpuHandlerID, let handler = players[handlerID],
+        guard nowTime > humanStealCooldownUntil else {
+            // Cooling down — distinct read from range/luck failures.
+            buttonB?.deniedShake()
+            HapticManager.impact(.light)
+            return
+        }
+        guard let handlerID = cpuHandlerID, let handler = players[handlerID],
               let humanID = activeHumanID, let human = players[humanID] else { return }
 
         let dist = hypot(handler.position.x - human.position.x, handler.position.y - human.position.y)
@@ -1311,6 +1321,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             shakeWorld(7)
             givePossession(to: .home)
         } else {
+            // Got a hand in but couldn't rip it — glint shows the near-miss.
+            players[handlerID]?.flashGlint()
             showCallout("NO GOOD", color: SKColor.white.withAlphaComponent(0.5))
             HapticManager.impact(.rigid)
         }
@@ -1342,18 +1354,34 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             HapticManager.impact(.light)
             return
         }
-        if CGFloat.random(in: 0...1) < 0.72 {
+        // Graded window: dead-center = near-certain SWAT, edges = ordinary block.
+        let grade = BlockGrade.grade(fill: cpuBlockFill, greenLow: greenLow, greenHigh: greenHigh)
+        if CGFloat.random(in: 0...1) < grade.successChance {
             pendingLaunch = nil
             ball?.missResolved = true  // prevent contact-based scoring if ball is mid-flight
             ball?.hold()
             gameStats.blocks += 1
-            showCallout("BLOCKED!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1), big: true)
+            let swat = grade == .swat
+            showCallout(swat ? "SWATTED!" : "BLOCKED!",
+                        color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1), big: true)
             HapticManager.notification(.success)
-            shakeWorld(7)
+            shakeWorld(swat ? 9 : 7)
             scheduleGivePossession(to: .home, after: 0.35)
         } else {
-            showCallout("MISSED IT!", color: SKColor.white.withAlphaComponent(0.60))
+            // Failed roll is no longer silent: the contest degrades the shot.
+            showCallout("CONTESTED!", color: SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 1))
             HapticManager.impact(.rigid)
+            contestDegradeActive = true
+            if let launch = pendingLaunch {
+                // Pre-launch: widen the error, sign preserved.
+                let mag = max(abs(launch.errorOffset) * 1.5, abs(launch.errorOffset) + 6)
+                let sign: CGFloat = launch.errorOffset >= 0 ? 1 : -1
+                pendingLaunch = PendingLaunch(at: launch.at, team: launch.team, errorOffset: sign * mag)
+            } else if let ball, !ball.isHeld, let body = ball.physicsBody {
+                // In flight (the common case — the window sits during flight): a small
+                // tip shortens the arc ~12–24pt, visually a real contest.
+                body.velocity = CGVector(dx: body.velocity.dx, dy: body.velocity.dy - 45)
+            }
         }
     }
 
@@ -1825,6 +1853,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             showCallout(["MISS!", "OFF THE RIM!", "NO GOOD!", "RATTLED OUT!", "BRICK!"].randomElement() ?? "MISS!",
                         color: SKColor.white.withAlphaComponent(0.6))
             HapticManager.impact(.medium)
+        } else if contestDegradeActive {
+            contestDegradeActive = false
+            showCallout("FORCED THE BRICK!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1))
         } else {
             showCallout(["BRICKED!", "WALLED OFF!", "BLOCKED OUT!", "NOT TODAY!"].randomElement() ?? "BRICKED!",
                         color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 0.85))
@@ -2350,6 +2381,7 @@ final class ControlButtonNode: SKNode {
     private let greenArc = SKShapeNode()
     private let perfectArc = SKShapeNode()
     private let fillArc = SKShapeNode()
+    private let cooldownArc = SKShapeNode()
     private let beatRing = SKShapeNode()
     private let startAngle: CGFloat = .pi * 7 / 6   // 210°, lower-left
     private let sweep: CGFloat = .pi * 4 / 3        // 240°
@@ -2367,7 +2399,7 @@ final class ControlButtonNode: SKNode {
         bg.lineWidth = 2
         addChild(bg)
 
-        for arc in [greenArc, perfectArc, fillArc] {
+        for arc in [greenArc, perfectArc, fillArc, cooldownArc] {
             arc.fillColor = .clear
             arc.lineWidth = 5
             arc.lineCap = .round
@@ -2376,6 +2408,7 @@ final class ControlButtonNode: SKNode {
         }
         greenArc.strokeColor = SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 0.45)
         perfectArc.strokeColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.7)
+        cooldownArc.strokeColor = SKColor(white: 1, alpha: 0.5)
 
         beatRing.path = CGPath(ellipseIn: CGRect(x: -ringRadius, y: -ringRadius,
                                                  width: ringRadius * 2, height: ringRadius * 2), transform: nil)
@@ -2406,6 +2439,29 @@ final class ControlButtonNode: SKNode {
     }
 
     func setPressed(_ pressed: Bool) { setScale(pressed ? 0.92 : 1.0) }
+
+    /// Radial sweep of cooldown REMAINING (1 → just used, 0/nil → ready).
+    /// Dims the button while cooling so the state reads at a glance.
+    func setCooldown(_ fraction: CGFloat?) {
+        guard let fraction, fraction > 0.01 else {
+            cooldownArc.isHidden = true
+            bg.alpha = 1.0
+            return
+        }
+        cooldownArc.isHidden = false
+        cooldownArc.path = arcPath(from: startAngle, to: angle(for: fraction))
+        bg.alpha = 0.4
+    }
+
+    /// Tap rejected (cooling down) — quick sideways shake.
+    func deniedShake() {
+        removeAction(forKey: "denied")
+        run(.sequence([
+            .moveBy(x: -3, y: 0, duration: 0.04),
+            .moveBy(x: 6, y: 0, duration: 0.04),
+            .moveBy(x: -3, y: 0, duration: 0.04),
+        ]), withKey: "denied")
+    }
 
     /// One beat of the song: subtle scale bump + gold ring flash (112 BPM cue).
     func beatPulse() {
