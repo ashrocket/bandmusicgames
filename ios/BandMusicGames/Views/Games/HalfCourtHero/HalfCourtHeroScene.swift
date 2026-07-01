@@ -176,6 +176,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var shotDeadline: TimeInterval = .infinity
     private var stealCooldownUntil: TimeInterval = 0
     private var humanStealCooldownUntil: TimeInterval = 0
+    private var blockCooldownUntil: TimeInterval = 0     // mistimed BLOCK penalty (F2)
+    private var foulRetainPossession = false             // reach-in foul: CPU keeps ball on miss
+    private var humanInputLockedUntil: TimeInterval = 0  // brief lockout after a foul
 
     // MARK: - Construction
     static func make() -> HalfCourtHeroScene {
@@ -576,6 +579,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         shotDeadline = .infinity
         ballTrailActive = false
         isFreethrowInFlight = false
+        foulRetainPossession = false
         ball?.hold()
         ball?.setOnFire(false)
         shotClockRemaining = shotClockSeconds
@@ -772,7 +776,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private func updateHuman(_ dt: CGFloat) {
         guard let id = activeHumanID, let player = players[id] else { return }
         var moving = false
-        let canMove = playState == .homeLive || playState == .awayLive || playState == .awayShot || playState == .homeFreethrow
+        let canMove = nowTime >= humanInputLockedUntil
+            && (playState == .homeLive || playState == .awayLive || playState == .awayShot || playState == .homeFreethrow)
 
         if canMove {
             var dx: CGFloat = 0
@@ -1028,7 +1033,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
             return
         }
-        scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 0.1)
+        scheduleGivePossession(to: nextTeamAfterMiss(shotTeam: ball.shotTeam), after: 0.1)
     }
 
     private func updateDepthSorting() {
@@ -1133,6 +1138,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     // MARK: - Control button dispatch
 
     private func handlePrimaryDown(_ touch: UITouch) {
+        guard nowTime >= humanInputLockedUntil else { return }
         switch controlContext {
         case .offenseBallHoopLand, .freeThrow:
             // Hold-to-charge: MUST arm charging on press, else the meter stays at 0
@@ -1143,13 +1149,19 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         case .offenseBallJumpBall:
             releaseJumpBallShot()
         case .defenseShot:
-            attemptBlockOrFoul()
+            if nowTime < blockCooldownUntil {
+                HapticManager.impact(.light)
+                buttonA?.setPressed(false)
+            } else {
+                attemptBlockOrFoul()
+            }
         case .defenseLive, .none:
             break
         }
     }
 
     private func handleSecondaryDown() {
+        guard nowTime >= humanInputLockedUntil else { return }
         switch controlContext {
         case .offenseBallHoopLand, .offenseBallJumpBall:
             tryHumanPass()
@@ -1165,6 +1177,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let gold = SKColor(red: 1.0, green: 0.84, blue: 0.0, alpha: 0.34)
         let blue = SKColor(red: 0.36, green: 0.55, blue: 1.0, alpha: 0.34)
         let red  = SKColor(red: 1.0, green: 0.32, blue: 0.30, alpha: 0.34)
+        buttonA?.alpha = 1.0
         switch controlContext {
         case .offenseBallHoopLand:
             buttonA?.isHidden = false; buttonA?.configure(title: "SHOOT", fill: gold)
@@ -1184,6 +1197,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         case .defenseShot:
             buttonA?.isHidden = false; buttonA?.configure(title: "BLOCK", fill: red)
             buttonA?.setRing(fill: cpuBlockFill, block: true)
+            buttonA?.alpha = nowTime < blockCooldownUntil ? 0.35 : 1.0
             buttonB?.isHidden = true
         case .none:
             buttonA?.isHidden = true; buttonA?.setRing(fill: nil)
@@ -1329,14 +1343,39 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }()
         if contesting {
             contestResolved = true
-            showCallout(cpuBlockFill < greenLow ? "TOO EARLY — FOUL!" : "TOO LATE — FOUL!",
-                        color: SKColor(red: 1, green: 0.32, blue: 0.30, alpha: 1), big: true)
-            triggerShootingFoul()
+            blockCooldownUntil = nowTime + 1.2
+            reachInFoul()
         } else {
+            blockCooldownUntil = nowTime + 1.2
             showCallout(cpuBlockFill < greenLow ? "TOO EARLY!" : "TOO LATE!",
                         color: SKColor.white.withAlphaComponent(0.9))
             HapticManager.impact(.light)
         }
+    }
+
+    /// Mistimed contest = reach-in foul AGAINST the human: error haptic, brief
+    /// lockout, the CPU shot flies on easier, and the CPU keeps the ball on a miss.
+    /// Replaces the inverted foul that awarded the fouler two free throws.
+    private func reachInFoul() {
+        showCallout("REACH-IN FOUL!", color: SKColor(red: 1, green: 0.32, blue: 0.30, alpha: 1), big: true)
+        HapticManager.notification(.error)
+        humanInputLockedUntil = nowTime + 0.6
+        if let id = activeHumanID { players[id]?.playAnimationOnce(.sad) }
+        foulRetainPossession = true
+        // The foul helps the shooter: if the launch is still pending, tighten its error.
+        if let launch = pendingLaunch {
+            pendingLaunch = PendingLaunch(at: launch.at, team: launch.team,
+                                          errorOffset: launch.errorOffset * 0.6)
+        }
+    }
+
+    private func nextTeamAfterMiss(shotTeam: HalfCourtTeam) -> HalfCourtTeam {
+        if shotTeam == .away && foulRetainPossession {
+            foulRetainPossession = false
+            showCallout("FOUL — THEY KEEP IT", color: SKColor(red: 1, green: 0.42, blue: 0.21, alpha: 1))
+            return .away
+        }
+        return shotTeam == .home ? .away : .home
     }
 
     private func triggerShootingFoul() {
@@ -1745,7 +1784,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             showCallout(["BRICKED!", "WALLED OFF!", "BLOCKED OUT!", "NOT TODAY!"].randomElement() ?? "BRICKED!",
                         color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 0.85))
         }
-        scheduleGivePossession(to: ball.shotTeam == .home ? .away : .home, after: 0.6)
+        scheduleGivePossession(to: nextTeamAfterMiss(shotTeam: ball.shotTeam), after: 0.6)
     }
 
     // MARK: - Game end
