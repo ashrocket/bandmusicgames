@@ -261,11 +261,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let h = size.height
 
         // Safe-area-aware bounds so the hoop + right-thumb buttons clear the
-        // landscape notch / home indicator. Floors guard zero-inset degradation
-        // before SwiftUI pushes real values.
-        let safeL = max(safeInsets.left, 0)
-        let safeR = w - max(safeInsets.right, 0)
-        let safeB = max(safeInsets.bottom, 8)
+        // landscape notch / home indicator. Prefer SwiftUI-pushed insets; fall back
+        // to the UIKit window insets (the SKView itself ignores the safe area).
+        let ins = safeInsets == .zero ? (view?.window?.safeAreaInsets ?? .zero) : safeInsets
+        let safeL = max(ins.left, 0)
+        let safeR = w - max(ins.right, 0)
+        let safeB = max(ins.bottom, 8)
         let safeW = safeR - safeL
 
         floorY = max(70, h * 0.12)
@@ -281,18 +282,19 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         buildCourt()
         hud?.layout(size: size, safeInsets: safeInsets)
 
-        // Horizontal charge/block meter, tucked above the primary (SHOOT/BLOCK) button.
+        // Horizontal charge/block meter, right-aligned inside the safe area, above the button cluster.
         let meterW = min(safeW * 0.34, 280)
+        let meterCenterX = safeR - 14 - meterW / 2   // right edge sits at safeR - 14 (clears the notch)
         tapMeterNode?.setVertical(false)
         tapMeterNode?.zRotation = 0
         tapMeterNode?.layout(barWidth: meterW)
-        tapMeterNode?.position = CGPoint(x: safeR - 68, y: safeB + 156)
-        streakPips?.position = CGPoint(x: safeR - 68, y: safeB + 194)
+        tapMeterNode?.position = CGPoint(x: meterCenterX, y: safeB + 156)
+        streakPips?.position = CGPoint(x: meterCenterX, y: safeB + 194)
         resultCard?.position = CGPoint(x: (safeL + safeR) / 2, y: h / 2)
 
         // Right-thumb button cluster (bottom-right); left-thumb joystick is floating.
         buttonA?.position = CGPoint(x: safeR - 68,  y: safeB + 84)   // SHOOT / JUMP / BLOCK
-        buttonB?.position = CGPoint(x: safeR - 176, y: safeB + 64)   // PASS / STEAL
+        buttonB?.position = CGPoint(x: safeR - 200, y: safeB + 64)   // PASS / STEAL (spaced to avoid hit-area overlap)
 
         for player in players.values {
             clampToCourt(player)
@@ -1182,6 +1184,11 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         players[humanID]?.setSelectionActive(false)
         players[mateID]?.setSelectionActive(true)
         activeHumanID = mateID
+        // Cancel any in-progress SHOOT charge so the teammate doesn't inherit it.
+        isChargingShot = false
+        tapMeterFill = 0
+        shootButtonTouch = nil
+        buttonA?.setPressed(false)
         leftTouch = nil
         joystickNode?.end()
         leftImpulse = .zero
@@ -1274,7 +1281,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     /// block roll; mistimed while actually contesting the shooter -> shooting foul
     /// (2 free throws). Guarded by `contestResolved` so it fires at most once per shot.
     private func attemptBlockOrFoul() {
-        guard playState == .awayShot, !contestResolved else { return }
+        // Close the contest window once the shot has resolved (scored/missed) or a
+        // possession swap is already scheduled — otherwise a late BLOCK tap in the
+        // 0.6–1.0s teardown gap wrongly awards a shooting foul.
+        guard playState == .awayShot, !contestResolved,
+              pendingPossession == nil,
+              !(ball?.scoredThisFlight ?? false), !(ball?.missResolved ?? false) else { return }
 
         if cpuBlockFill >= greenLow && cpuBlockFill <= greenHigh {
             contestResolved = true
@@ -1432,7 +1444,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
         let contested = nearest < 62
 
-        let autoCharge: CGFloat = greenHigh - 0.02   // "good but not perfect" tier
+        let autoCharge: CGFloat = (perfectHigh + greenHigh) / 2   // strictly inside green (never perfect) on all difficulties
         let accuracy = shotAccuracy(charge: autoCharge, dist: dist, beyondArc: beyondArc,
                                     isLayup: isLayup, contested: contested,
                                     hero: player.heroID.character)

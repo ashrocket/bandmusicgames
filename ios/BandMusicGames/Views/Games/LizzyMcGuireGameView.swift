@@ -140,11 +140,12 @@ struct LizzyMcGuireGameView: View {
         .spotifyErrorBanner()
         .background(
             GeometryReader { geo in
+                // NOTE: no .ignoresSafeArea() here — that would zero out safeAreaInsets.
+                // This reader backs the full-bleed ZStack, so it reports the real insets.
                 Color.clear
                     .onAppear { pushInsets(geo.safeAreaInsets) }
                     .onChange(of: geo.safeAreaInsets) { pushInsets($0) }
             }
-            .ignoresSafeArea()
         )
         .forceLandscape()
     }
