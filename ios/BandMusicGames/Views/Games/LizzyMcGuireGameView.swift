@@ -12,7 +12,9 @@ struct LizzyMcGuireGameView: View {
     @State private var selectedTeammate: HalfCourtHeroID? = nil
     @State private var selectStep = 1
     @State private var scoutedHero: HalfCourtHeroID?
-    @State private var difficulty: HalfCourtDifficulty = .normal
+    @State private var difficulty: HalfCourtDifficulty =
+        UserDefaults.standard.string(forKey: "hch_difficulty")
+            .flatMap(HalfCourtDifficulty.init(rawValue:)) ?? .normal
     @State private var hudOpacity: Double = 0
     @State private var zoomLevel: CGFloat = 1.0
     @State private var isFrozen: Bool = false
@@ -149,6 +151,15 @@ struct LizzyMcGuireGameView: View {
         .forceLandscape()
     }
 
+    /// Last squad the player took to tip-off — powers the 1-tap QUICK START.
+    private var savedSquad: (player: HalfCourtHeroID, teammate: HalfCourtHeroID)? {
+        let d = UserDefaults.standard
+        guard let p = d.string(forKey: "hch_last_player").flatMap(HalfCourtHeroID.init(rawValue:)),
+              let t = d.string(forKey: "hch_last_teammate").flatMap(HalfCourtHeroID.init(rawValue:)),
+              p != t else { return nil }
+        return (p, t)
+    }
+
     /// Push SwiftUI safe-area insets into the scene (it runs under `.ignoresSafeArea()`
     /// and can't read them itself) so landscape controls clear the notch / home indicator.
     private func pushInsets(_ e: EdgeInsets) {
@@ -232,6 +243,7 @@ struct LizzyMcGuireGameView: View {
                         Button {
                             HapticManager.selection()
                             difficulty = d
+                            UserDefaults.standard.set(d.rawValue, forKey: "hch_difficulty")
                         } label: {
                             Text(d.label)
                                 .font(.system(size: compact ? 10 : 11, weight: .black, design: .monospaced))
@@ -247,21 +259,60 @@ struct LizzyMcGuireGameView: View {
                 .padding(.horizontal, compact ? 28 : 34)
                 .padding(.bottom, 10)
 
-                Button {
-                    HapticManager.impact(.medium)
-                    scene.startSeries()
-                } label: {
-                    Text("TAP TO PLAY")
-                        .font(.system(size: compact ? 17 : 19, weight: .black, design: .monospaced))
-                        .tracking(3)
+                if let squad = savedSquad {
+                    Button {
+                        HapticManager.impact(.medium)
+                        scene.quickStart(playerID: squad.player, teammateID: squad.teammate, difficulty: difficulty)
+                    } label: {
+                        VStack(spacing: 2) {
+                            Text("QUICK START")
+                                .font(.system(size: compact ? 17 : 19, weight: .black, design: .monospaced))
+                                .tracking(3)
+                            Text("\(squad.player.character.name) + \(squad.teammate.character.name) · \(difficulty.label)")
+                                .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                .opacity(0.7)
+                        }
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, compact ? 13 : 15)
+                        .padding(.vertical, compact ? 11 : 13)
                         .background(Color(hex: "#FFD700"))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                         .shadow(color: Color(hex: "#FFD700").opacity(0.35), radius: 16)
+                    }
+                    .padding(.horizontal, compact ? 28 : 34)
+
+                    Button {
+                        HapticManager.selection()
+                        scene.startSeries()
+                    } label: {
+                        Text("CHANGE SQUAD")
+                            .font(.system(size: 11, weight: .black, design: .monospaced))
+                            .tracking(2)
+                            .foregroundColor(.white.opacity(0.62))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .padding(.horizontal, compact ? 28 : 34)
+                    .padding(.top, 8)
+                } else {
+                    Button {
+                        HapticManager.impact(.medium)
+                        scene.startSeries()
+                    } label: {
+                        Text("TAP TO PLAY")
+                            .font(.system(size: compact ? 17 : 19, weight: .black, design: .monospaced))
+                            .tracking(3)
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, compact ? 13 : 15)
+                            .background(Color(hex: "#FFD700"))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .shadow(color: Color(hex: "#FFD700").opacity(0.35), radius: 16)
+                    }
+                    .padding(.horizontal, compact ? 28 : 34)
                 }
-                .padding(.horizontal, compact ? 28 : 34)
 
                 Text("LEFT THUMB: JOYSTICK TO MOVE · RIGHT: ON-SCREEN BUTTONS\nHOOPLAND: HOLD SHOOT TO CHARGE · JUMPBALL: TAP JUMP TO SHOOT\nPASS · DEFENSE: STEAL / BLOCK · 3 ON-BEAT = ON FIRE 🔥 · FIRST TO 11")
                     .font(.system(size: compact ? 9 : 10, weight: .bold, design: .monospaced))
@@ -271,7 +322,7 @@ struct LizzyMcGuireGameView: View {
                     .padding(.top, 14)
                     .padding(.horizontal, 24)
 
-                Text("BANDMUSICGAMES.PARTY")
+                Text("BANDMUSICGAMES.PARTY · v2.4.0")
                     .font(.system(size: compact ? 9 : 11, weight: .bold, design: .monospaced))
                     .tracking(2)
                     .foregroundColor(.white.opacity(0.42))
@@ -394,6 +445,10 @@ struct LizzyMcGuireGameView: View {
                 // Play button
                 Button {
                     HapticManager.impact(.heavy)
+                    UserDefaults.standard.set(selectedPlayer.rawValue, forKey: "hch_last_player")
+                    if let mate = selectedTeammate {
+                        UserDefaults.standard.set(mate.rawValue, forKey: "hch_last_teammate")
+                    }
                     scene.startGame(playerID: selectedPlayer, teammateID: selectedTeammate ?? .ethan, difficulty: difficulty)
                 } label: {
                     Text("PLAY")

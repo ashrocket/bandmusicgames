@@ -488,6 +488,16 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         beatAnchor = nil
     }
 
+    /// Cold-start shortcut: skip title/select, straight to tip-off with the saved
+    /// squad. beatAnchor is nil'd so the view's confirmed-playback path
+    /// (playTrack → realignBeatAnchor) re-latches it — the fa93bb7 rule.
+    func quickStart(playerID: HalfCourtHeroID, teammateID: HalfCourtHeroID, difficulty: HalfCourtDifficulty) {
+        homeSeriesWins = 0
+        awaySeriesWins = 0
+        beatAnchor = nil
+        startGame(playerID: playerID, teammateID: teammateID, difficulty: difficulty)
+    }
+
     /// Series-over rematch: same squad, same difficulty, straight to tip-off.
     /// beatAnchor is deliberately NOT reset — audio plays continuously through
     /// the result card, so the beat clock stays valid (contrast startSeries()).
