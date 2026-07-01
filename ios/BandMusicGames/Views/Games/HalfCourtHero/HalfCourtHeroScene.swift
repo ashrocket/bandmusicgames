@@ -214,13 +214,13 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
 
         if buttonA == nil {
-            let a = ControlButtonNode(radius: 54)
+            let a = ControlButtonNode(radius: 42)
             a.isHidden = true
             uiLayer.addChild(a)
             buttonA = a
         }
         if buttonB == nil {
-            let b = ControlButtonNode(radius: 46)
+            let b = ControlButtonNode(radius: 34)
             b.isHidden = true
             uiLayer.addChild(b)
             buttonB = b
@@ -282,19 +282,17 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         buildCourt()
         hud?.layout(size: size, safeInsets: safeInsets)
 
-        // Horizontal charge/block meter, right-aligned inside the safe area, above the button cluster.
-        let meterW = min(safeW * 0.34, 280)
-        let meterCenterX = safeR - 14 - meterW / 2   // right edge sits at safeR - 14 (clears the notch)
-        tapMeterNode?.setVertical(false)
-        tapMeterNode?.zRotation = 0
-        tapMeterNode?.layout(barWidth: meterW)
-        tapMeterNode?.position = CGPoint(x: meterCenterX, y: safeB + 156)
-        streakPips?.position = CGPoint(x: meterCenterX, y: safeB + 194)
+        // Compact translucent controls tucked into the bottom-right corner so they clear
+        // the court/hoop. Charge & block-timing feedback is a ring around SHOOT (buttonA),
+        // so the old wide meter bar is retired (kept hidden; it still drives tapMeterFill).
+        tapMeterNode?.isHidden = true
         resultCard?.position = CGPoint(x: (safeL + safeR) / 2, y: h / 2)
 
-        // Right-thumb button cluster (bottom-right); left-thumb joystick is floating.
-        buttonA?.position = CGPoint(x: safeR - 68,  y: safeB + 84)   // SHOOT / JUMP / BLOCK
-        buttonB?.position = CGPoint(x: safeR - 200, y: safeB + 64)   // PASS / STEAL (spaced to avoid hit-area overlap)
+        buttonA?.position = CGPoint(x: safeR - 52,  y: safeB + 66)   // SHOOT / JUMP / BLOCK
+        buttonB?.position = CGPoint(x: safeR - 150, y: safeB + 54)   // PASS / STEAL
+        buttonA?.configureRing(greenLow: greenLow, greenHigh: greenHigh,
+                               perfectLow: perfectLow, perfectHigh: perfectHigh)
+        streakPips?.position = CGPoint(x: safeR - 52, y: safeB + 126)
 
         for player in players.values {
             clampToCourt(player)
@@ -489,6 +487,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         tapMeterNode?.reconfigure(greenLow: greenLow, greenHigh: greenHigh,
                                    perfectLow: perfectLow, perfectHigh: perfectHigh)
+        buttonA?.configureRing(greenLow: greenLow, greenHigh: greenHigh,
+                               perfectLow: perfectLow, perfectHigh: perfectHigh)
 
         homeIDs = [playerID, teammateID]
         awayIDs = HalfCourtHeroID.allCases.filter { !homeIDs.contains($0) }
@@ -620,11 +620,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             return
         }
         hud?.isHidden = false
-        // Meter shows for: free throws (both modes), a live HoopLand possession, and the block-timing window.
-        let holdChargeMode = (playState == .homeFreethrow)
-            || (controlStyle == .hoopLand && playState == .homeLive && possession == .home)
-        let showBlockMeter = (playState == .awayShot)
-        tapMeterNode?.isHidden = !(holdChargeMode || showBlockMeter)
+        tapMeterNode?.isHidden = true   // retired in favour of the ring around the SHOOT button
         streakPips?.isHidden = false
         refreshControlButtons()
 
@@ -715,7 +711,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             cpuBlockFill = min(cpuBlockFill + cpuBlockFillRate * dt, 1.1)
             if !blockWindowOpened && cpuBlockFill >= greenLow {
                 blockWindowOpened = true
-                showCallout("SWIPE UP/DOWN TO BLOCK!", color: SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 1))
+                showCallout("BLOCK NOW!", color: SKColor(red: 1.0, green: 0.75, blue: 0.2, alpha: 1))
                 HapticManager.impact(.rigid)
             }
             tapMeterNode?.setFill(cpuBlockFill, mode: .block)
@@ -1140,27 +1136,32 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     }
 
     private func refreshControlButtons() {
-        let gold = SKColor(red: 1.0, green: 0.84, blue: 0.0, alpha: 0.92)
-        let blue = SKColor(red: 0.36, green: 0.55, blue: 1.0, alpha: 0.92)
-        let red  = SKColor(red: 1.0, green: 0.32, blue: 0.30, alpha: 0.92)
+        // Translucent fills so the court shows through; the SHOOT/BLOCK ring conveys timing.
+        let gold = SKColor(red: 1.0, green: 0.84, blue: 0.0, alpha: 0.34)
+        let blue = SKColor(red: 0.36, green: 0.55, blue: 1.0, alpha: 0.34)
+        let red  = SKColor(red: 1.0, green: 0.32, blue: 0.30, alpha: 0.34)
         switch controlContext {
         case .offenseBallHoopLand:
             buttonA?.isHidden = false; buttonA?.configure(title: "SHOOT", fill: gold)
+            buttonA?.setRing(fill: tapMeterFill)
             buttonB?.isHidden = false; buttonB?.configure(title: "PASS",  fill: blue)
         case .offenseBallJumpBall:
             buttonA?.isHidden = false; buttonA?.configure(title: "JUMP",  fill: gold)
+            buttonA?.setRing(fill: nil)
             buttonB?.isHidden = false; buttonB?.configure(title: "PASS",  fill: blue)
         case .freeThrow:
             buttonA?.isHidden = false; buttonA?.configure(title: "SHOOT", fill: gold)
+            buttonA?.setRing(fill: tapMeterFill)
             buttonB?.isHidden = true
         case .defenseLive:
-            buttonA?.isHidden = true
+            buttonA?.isHidden = true; buttonA?.setRing(fill: nil)
             buttonB?.isHidden = false; buttonB?.configure(title: "STEAL", fill: red)
         case .defenseShot:
             buttonA?.isHidden = false; buttonA?.configure(title: "BLOCK", fill: red)
+            buttonA?.setRing(fill: cpuBlockFill, block: true)
             buttonB?.isHidden = true
         case .none:
-            buttonA?.isHidden = true
+            buttonA?.isHidden = true; buttonA?.setRing(fill: nil)
             buttonB?.isHidden = true
         }
         // If the context left the hold-charge state mid-press (e.g. shot fired), drop the tracked touch.
@@ -2208,20 +2209,51 @@ final class ControlButtonNode: SKNode {
     private let bg = SKShapeNode()
     private let label = SKLabelNode(fontNamed: "AvenirNext-Heavy")
 
+    // Optional charge/timing ring drawn just outside the button (replaces the old wide meter bar).
+    private let ringRadius: CGFloat
+    private let greenArc = SKShapeNode()
+    private let perfectArc = SKShapeNode()
+    private let fillArc = SKShapeNode()
+    private let startAngle: CGFloat = .pi * 7 / 6   // 210°, lower-left
+    private let sweep: CGFloat = .pi * 4 / 3        // 240°
+    private var greenLow: CGFloat = 0.52
+    private var greenHigh: CGFloat = 0.76
+    private var perfectLow: CGFloat = 0.59
+    private var perfectHigh: CGFloat = 0.69
+
     init(radius: CGFloat) {
         self.radius = radius
+        self.ringRadius = radius + 7
         super.init()
         bg.path = CGPath(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 2, height: radius * 2), transform: nil)
-        bg.strokeColor = SKColor(white: 1, alpha: 0.85)
-        bg.lineWidth = 3
+        bg.strokeColor = SKColor(white: 1, alpha: 0.7)
+        bg.lineWidth = 2
         addChild(bg)
-        label.fontSize = 19
+
+        for arc in [greenArc, perfectArc, fillArc] {
+            arc.fillColor = .clear
+            arc.lineWidth = 5
+            arc.lineCap = .round
+            arc.isHidden = true
+            addChild(arc)
+        }
+        greenArc.strokeColor = SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 0.45)
+        perfectArc.strokeColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.7)
+
+        label.fontSize = radius * 0.40
         label.verticalAlignmentMode = .center
         label.horizontalAlignmentMode = .center
         addChild(label)
         zPosition = 122
     }
     required init?(coder: NSCoder) { fatalError() }
+
+    private func angle(for charge: CGFloat) -> CGFloat { startAngle - sweep * min(max(charge, 0), 1) }
+    private func arcPath(from a: CGFloat, to b: CGFloat) -> CGPath {
+        let p = CGMutablePath()
+        p.addArc(center: .zero, radius: ringRadius, startAngle: a, endAngle: b, clockwise: true)
+        return p
+    }
 
     func configure(title: String, fill: SKColor) {
         if label.text != title { label.text = title }
@@ -2230,11 +2262,45 @@ final class ControlButtonNode: SKNode {
 
     func setPressed(_ pressed: Bool) { setScale(pressed ? 0.92 : 1.0) }
 
+    /// Set the green/perfect timing windows the ring should display.
+    func configureRing(greenLow: CGFloat, greenHigh: CGFloat, perfectLow: CGFloat, perfectHigh: CGFloat) {
+        self.greenLow = greenLow; self.greenHigh = greenHigh
+        self.perfectLow = perfectLow; self.perfectHigh = perfectHigh
+        greenArc.path = arcPath(from: angle(for: greenLow), to: angle(for: greenHigh))
+        perfectArc.path = arcPath(from: angle(for: perfectLow), to: angle(for: perfectHigh))
+    }
+
+    /// `fill` nil hides the ring; otherwise draws the charge fill. `block` = defense block-timing (green window only).
+    func setRing(fill: CGFloat?, block: Bool = false) {
+        guard let fill else {
+            greenArc.isHidden = true; perfectArc.isHidden = true; fillArc.isHidden = true
+            return
+        }
+        greenArc.isHidden = false
+        perfectArc.isHidden = block
+        fillArc.isHidden = fill <= 0.01
+        fillArc.path = arcPath(from: startAngle, to: angle(for: fill))
+        if block {
+            fillArc.strokeColor = (fill >= greenLow && fill <= greenHigh)
+                ? SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1)
+                : (fill > greenHigh ? SKColor(red: 1, green: 0.35, blue: 0.2, alpha: 1)
+                                    : SKColor(red: 0.9, green: 0.6, blue: 0.15, alpha: 1))
+        } else if fill >= perfectLow && fill <= perfectHigh {
+            fillArc.strokeColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 1)
+        } else if fill >= greenLow && fill <= greenHigh {
+            fillArc.strokeColor = SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 1)
+        } else if fill > greenHigh {
+            fillArc.strokeColor = SKColor(red: 1, green: 0.25, blue: 0.2, alpha: 1)
+        } else {
+            fillArc.strokeColor = SKColor(white: 1, alpha: 0.9)
+        }
+    }
+
     /// Hit-test in scene space (uiLayer sits at the scene origin, so they coincide).
     func hitTest(_ pt: CGPoint) -> Bool {
         guard !isHidden else { return false }
         let dx = pt.x - position.x, dy = pt.y - position.y
-        let r = radius + 12   // 12px slop
+        let r = radius + 8   // slop
         return dx * dx + dy * dy <= r * r
     }
 }

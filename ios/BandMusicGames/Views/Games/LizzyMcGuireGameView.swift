@@ -82,9 +82,8 @@ struct LizzyMcGuireGameView: View {
                 .zIndex(10)
             }
 
-            if scene.phase == .playing {
-                controlsHUD.opacity(hudOpacity)
-            }
+            // In-game control legend removed — the on-screen buttons are self-labeling
+            // and the title screen explains the scheme. Keeps the court clear.
 
             if isFrozen {
                 freezeOverlay
