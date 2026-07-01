@@ -119,16 +119,14 @@ final class HalfCourtHUDNode: SKNode {
             lastHomeScore = homeScore
             homeScoreLabel.text = "\(homeScore)"
             if homeScore > 0 {
-                homeScoreLabel.removeAction(forKey: "bump")
-                homeScoreLabel.run(.sequence([.scale(to: 1.4, duration: 0.07), .scale(to: 1.0, duration: 0.13)]), withKey: "bump")
+                popScore(homeScoreLabel, restoreTo: SKColor(red: 1.0, green: 0.08, blue: 0.58, alpha: 1.0))
             }
         }
         if awayScore != lastAwayScore {
             lastAwayScore = awayScore
             awayScoreLabel.text = "\(awayScore)"
             if awayScore > 0 {
-                awayScoreLabel.removeAction(forKey: "bump")
-                awayScoreLabel.run(.sequence([.scale(to: 1.4, duration: 0.07), .scale(to: 1.0, duration: 0.13)]), withKey: "bump")
+                popScore(awayScoreLabel, restoreTo: SKColor(red: 1.0, green: 0.42, blue: 0.21, alpha: 1.0))
             }
         }
         seriesLabel.text = "SERIES \(homeWins)–\(awayWins)"
@@ -149,5 +147,18 @@ final class HalfCourtHUDNode: SKNode {
         if powered {
             fireBanner.text = "🔥 ON FIRE \(powerRemaining)s"
         }
+    }
+
+    /// Gold flash + scale pop on a score change — the bucket reads at the
+    /// scoreboard as well as at the rim.
+    private func popScore(_ label: SKLabelNode, restoreTo teamColor: SKColor) {
+        label.removeAction(forKey: "bump")
+        label.fontColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 1)
+        let up = SKAction.scale(to: 1.35, duration: 0.10); up.timingMode = .easeOut
+        let down = SKAction.scale(to: 1.0, duration: 0.15); down.timingMode = .easeIn
+        label.run(.sequence([
+            up, down, .wait(forDuration: 0.05),
+            .run { [weak label] in label?.fontColor = teamColor },
+        ]), withKey: "bump")
     }
 }

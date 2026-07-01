@@ -15,7 +15,6 @@ struct LizzyMcGuireGameView: View {
     @State private var difficulty: HalfCourtDifficulty =
         UserDefaults.standard.string(forKey: "hch_difficulty")
             .flatMap(HalfCourtDifficulty.init(rawValue:)) ?? .normal
-    @State private var hudOpacity: Double = 0
     @State private var zoomLevel: CGFloat = 1.0
     @State private var isFrozen: Bool = false
     @State private var panOffset: CGSize = .zero
@@ -109,12 +108,7 @@ struct LizzyMcGuireGameView: View {
                         }
                     }
                 }
-                withAnimation(.easeIn(duration: 0.5)) { hudOpacity = 1.0 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
-                    withAnimation(.easeInOut(duration: 2.5)) { hudOpacity = 0.18 }
-                }
             } else {
-                hudOpacity = 0
                 if newPhase == .characterSelect { beatSynced = false }
                 if isFrozen {
                     isFrozen = false
