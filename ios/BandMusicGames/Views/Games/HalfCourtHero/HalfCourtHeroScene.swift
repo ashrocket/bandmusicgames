@@ -64,6 +64,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var stealHintNode: SKNode?
     private var rimNode: SKShapeNode?
     private var rimHaloNode: SKShapeNode?
+    private var stormSky: StormSkyNode?
     private var posterNode: SKNode?
     private var nbaJerseysEnabled: Bool = false
     private var ballTrailActive = false
@@ -471,6 +472,23 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         courtLayer.addChild(poster)
         posterNode = poster
+
+        installStormSky()
+    }
+
+    /// (Re)install the charge-storm sky against the current green/perfect bounds —
+    /// called from buildCourt (layout/resize) and startGame (bounds change per
+    /// difficulty). Restores the 2a53193 wiring lost in the 6d41189 rework.
+    private func installStormSky() {
+        stormSky?.removeFromParent()
+        let storm = StormSkyNode(size: size,
+                                 greenLow: greenLow, greenHigh: greenHigh,
+                                 perfectLow: perfectLow, perfectHigh: perfectHigh)
+        storm.zPosition = -5   // above backdrop (-10), below court lines and players
+        courtLayer.addChild(storm)
+        stormSky = storm
+        // Layout rebuilds can happen mid-charge — sync without one-shot effects.
+        storm.prime(charge: isChargingShot || tapMeterFill > 0.01 ? tapMeterFill : nil)
     }
 
     // MARK: - Match management
@@ -526,6 +544,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                                    perfectLow: perfectLow, perfectHigh: perfectHigh)
         buttonA?.configureRing(greenLow: greenLow, greenHigh: greenHigh,
                                perfectLow: perfectLow, perfectHigh: perfectHigh)
+        installStormSky()
 
         homeIDs = [playerID, teammateID]
         awayIDs = HalfCourtHeroID.allCases.filter { !homeIDs.contains($0) }
@@ -766,23 +785,18 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 HapticManager.impact(.rigid)
             }
             tapMeterNode?.setFill(cpuBlockFill, mode: .block)
-        case .homeLive where possession == .home:
+        case .homeLive where possession == .home, .homeFreethrow:
             if isChargingShot {
                 tapMeterFill = min(tapMeterFill + chargeRate * dt, 1.2)
             } else {
                 tapMeterFill = max(0, tapMeterFill - meterDecayRate * dt)
             }
             tapMeterNode?.setFill(tapMeterFill, mode: .shoot)
-        case .homeFreethrow:
-            if isChargingShot {
-                tapMeterFill = min(tapMeterFill + chargeRate * dt, 1.2)
-            } else {
-                tapMeterFill = max(0, tapMeterFill - meterDecayRate * dt)
-            }
-            tapMeterNode?.setFill(tapMeterFill, mode: .shoot)
+            stormSky?.setCharge(isChargingShot || tapMeterFill > 0.01 ? tapMeterFill : nil)
         default:
             tapMeterFill = 0
             tapMeterNode?.setFill(0, mode: .shoot)
+            stormSky?.setCharge(nil)
         }
     }
 
