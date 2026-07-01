@@ -182,6 +182,29 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var humanStealCooldownUntil: TimeInterval = 0
     private var blockCooldownUntil: TimeInterval = 0     // mistimed BLOCK penalty (F2)
     private var contestDegradeActive = false             // failed block roll degraded the CPU shot (F8)
+
+    // CPU steal pressure: telegraphed reach FSM (F12) — replaces per-frame RNG.
+    private enum CPUReachState { case none, stalking(since: TimeInterval), reaching(until: TimeInterval) }
+    private var cpuReach: CPUReachState = .none
+    private var reachCooldownUntil: TimeInterval = 0
+    private var cpuReachActive: Bool {
+        if case .none = cpuReach { return false }
+        return true
+    }
+    private var reachWindup: TimeInterval {
+        switch difficulty {   // monotonic (W6): harder = less time to react
+        case .easy: return 0.5
+        case .normal: return 0.4
+        case .hard: return 0.3
+        }
+    }
+    private var reachLandChance: CGFloat {
+        switch difficulty {   // monotonic (W6)
+        case .easy: return 0.55
+        case .normal: return 0.70
+        case .hard: return 0.85
+        }
+    }
     private var foulRetainPossession = false             // reach-in foul: CPU keeps ball on miss
     private var humanInputLockedUntil: TimeInterval = 0  // brief lockout after a foul
 
@@ -638,6 +661,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         resetTapMeter()
         hideStealHint()
 
+        cpuReach = .none
         if team == .home {
             playState = .homeLive
             cpuState = .idle
@@ -929,27 +953,57 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                     y: (human.position.y + bandMid) / 2
                 )
             }
-            let moved = steer(defender, toward: target, speed: 125, dt: dt)
+            let moved = defender.isStaggered ? false : steer(defender, toward: target, speed: 125, dt: dt)
             defender.updateLocomotion(moving: moved, hasBall: false)
             if !moved, possession == .home, let humanID = activeHumanID, let human = players[humanID] {
                 defender.facing = human.position.x > defender.position.x ? 1 : -1
             }
         }
 
-        // CPU steal attempt: primary defender close to human ball-handler
-        if possession == .home, playState == .homeLive, nowTime > stealCooldownUntil,
+        // CPU steal pressure: telegraphed reach FSM (F12). The defender stalks,
+        // flashes a telegraph, then lunges — dash away or pass to make it whiff.
+        if possession == .home, playState == .homeLive,
            let awayID = awayIDs.first, let defender = players[awayID],
            let humanID = activeHumanID, let human = players[humanID] {
             let dist = hypot(defender.position.x - human.position.x, defender.position.y - human.position.y)
-            if dist < 44 {
-                let stealChance = difficulty.cpuStealRate * dt
-                if CGFloat.random(in: 0...1) < stealChance {
-                    stealCooldownUntil = nowTime + 3.5
-                    showCallout("STOLEN!", color: SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1))
-                    HapticManager.notification(.error)
-                    givePossession(to: .away)
+            switch cpuReach {
+            case .none:
+                // No reach may START once the shot is gathered (charge > 0.3) —
+                // kills the old charge-eating grief.
+                if nowTime > reachCooldownUntil, dist < 48, tapMeterFill <= 0.3, !defender.isStaggered {
+                    cpuReach = .stalking(since: nowTime)
+                }
+            case .stalking(let since):
+                if dist >= 48 || tapMeterFill > 0.3 {
+                    cpuReach = .none
+                } else if nowTime - since >= 0.35 {
+                    cpuReach = .reaching(until: nowTime + reachWindup)
+                    defender.showReachTelegraph()
+                    HapticManager.impact(.rigid)
+                }
+            case .reaching(let until):
+                if nowTime >= until {
+                    cpuReach = .none
+                    reachCooldownUntil = nowTime + 2.8
+                    if dist >= 78 {
+                        // Escaped — the dash created separation, defender lunges at air.
+                        defender.stagger(duration: 0.6)
+                        showCallout("ANKLES!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1))
+                    } else if CGFloat.random(in: 0...1) < reachLandChance {
+                        showCallout("STOLEN!", color: SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1))
+                        HapticManager.notification(.error)
+                        givePossession(to: .away)
+                    } else {
+                        defender.stagger(duration: 0.4)
+                        showCallout("HELD ON!", color: SKColor.white.withAlphaComponent(0.7))
+                    }
                 }
             }
+        } else if cpuReachActive {
+            // Possession/state changed mid-reach (pass or shot release) — abort the lunge.
+            cpuReach = .none
+            reachCooldownUntil = nowTime + 2.8
+            if let awayID = awayIDs.first { players[awayID]?.stagger(duration: 0.4) }
         }
     }
 

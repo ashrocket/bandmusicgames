@@ -310,6 +310,41 @@ final class PlayerNode: SKNode {
         CGPoint(x: facing * 18 * k, y: 175 * k)
     }
 
+    private var staggeredUntil: TimeInterval = 0
+    var isStaggered: Bool { lastTickTime < staggeredUntil }
+
+    /// Defender lunged and missed — brief stun with a sad wobble.
+    func stagger(duration: TimeInterval) {
+        staggeredUntil = lastTickTime + duration
+        playAnimationOnce(.sad)
+    }
+
+    /// Red flash + "!" bubble: the defender is about to reach in (F12 telegraph).
+    func showReachTelegraph() {
+        guard let spriteNode else { return }
+        spriteNode.removeAction(forKey: "reachTint")
+        spriteNode.color = SKColor(red: 1, green: 0.25, blue: 0.2, alpha: 1)
+        spriteNode.colorBlendFactor = 0.35
+        spriteNode.run(.sequence([
+            .wait(forDuration: 0.35),
+            .run { [weak spriteNode] in spriteNode?.colorBlendFactor = 0 },
+        ]), withKey: "reachTint")
+
+        let bubble = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+        bubble.text = "!"
+        bubble.fontSize = 26
+        bubble.fontColor = SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1)
+        bubble.position = CGPoint(x: 0, y: playerHeight + 8)
+        bubble.setScale(0.2)
+        addChild(bubble)
+        bubble.run(.sequence([
+            .group([.scale(to: 1.0, duration: 0.12), .fadeAlpha(to: 1, duration: 0.12)]),
+            .wait(forDuration: 0.5),
+            .fadeOut(withDuration: 0.15),
+            .removeFromParent(),
+        ]))
+    }
+
     /// Brief white flash — "you touched it but didn't get it" steal feedback.
     func flashGlint() {
         guard let spriteNode else { return }
