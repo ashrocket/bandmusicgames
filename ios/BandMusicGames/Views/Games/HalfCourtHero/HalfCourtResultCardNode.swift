@@ -14,11 +14,14 @@ final class HalfCourtResultCardNode: SKNode {
     private var onRematch: (() -> Void)?
     private var isSeriesOver = false
 
-    init(homeScore: Int, awayScore: Int, homeWins: Int, awayWins: Int, isSeriesOver: Bool, onAction: @escaping () -> Void, onRematch: (() -> Void)? = nil) {
+    init(homeScore: Int, awayScore: Int, homeWins: Int, awayWins: Int, isSeriesOver: Bool,
+         stats: HalfCourtStats = HalfCourtStats(), recordBeatStreak: Int = 0, isNewStreakRecord: Bool = false,
+         onAction: @escaping () -> Void, onRematch: (() -> Void)? = nil) {
         self.onAction = onAction
         self.onRematch = onRematch
         super.init()
         setup(homeScore: homeScore, awayScore: awayScore, homeWins: homeWins, awayWins: awayWins, isSeriesOver: isSeriesOver)
+        addStats(stats, recordBeatStreak: recordBeatStreak, isNewStreakRecord: isNewStreakRecord)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -108,6 +111,41 @@ final class HalfCourtResultCardNode: SKNode {
             rematchLabel.name = "rematch_btn"
             addChild(rematchLabel)
         }
+    }
+
+    /// Game stat line + record chase, in the empty band between the series
+    /// text (y −20) and the action button (y −180).
+    private func addStats(_ stats: HalfCourtStats, recordBeatStreak: Int, isNewStreakRecord: Bool) {
+        func statLabel(_ text: String, x: CGFloat, y: CGFloat, size: CGFloat, alpha: CGFloat) {
+            let l = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            l.text = text
+            l.fontSize = size
+            l.fontColor = SKColor.white.withAlphaComponent(alpha)
+            l.position = CGPoint(x: x, y: y)
+            l.verticalAlignmentMode = .center
+            addChild(l)
+        }
+        statLabel("FG \(stats.made)/\(stats.shots) · \(stats.fgPercent)%", x: -90, y: -60, size: 13, alpha: 0.8)
+        statLabel("3PT \(stats.threes)", x: 90, y: -60, size: 13, alpha: 0.8)
+        statLabel("STL \(stats.steals) · BLK \(stats.blocks)", x: -90, y: -88, size: 13, alpha: 0.8)
+        statLabel("BEAT STREAK \(stats.bestBeatStreak) 🔥", x: 90, y: -88, size: 13, alpha: 0.8)
+
+        let record = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        record.fontSize = 12
+        record.verticalAlignmentMode = .center
+        record.position = CGPoint(x: 0, y: -120)
+        if isNewStreakRecord && stats.bestBeatStreak > 0 {
+            record.text = "NEW RECORD — BEAT STREAK \(stats.bestBeatStreak)!"
+            record.fontColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 1)
+            record.run(.repeatForever(.sequence([
+                .scale(to: 1.06, duration: 0.3),
+                .scale(to: 1.0, duration: 0.3),
+            ])))
+        } else {
+            record.text = "BEST STREAK \(recordBeatStreak) — YOU HIT \(stats.bestBeatStreak)"
+            record.fontColor = SKColor.white.withAlphaComponent(0.45)
+        }
+        addChild(record)
     }
 
     private func addSeriesDots(homeWins: Int, awayWins: Int) {

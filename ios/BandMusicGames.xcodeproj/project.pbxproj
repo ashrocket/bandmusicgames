@@ -55,6 +55,7 @@
 		AEBD877831FCB56EA1A41FB5 /* tile-house-wall.png in Resources */ = {isa = PBXBuildFile; fileRef = 5E6DAD71611E68F61627E3F2 /* tile-house-wall.png */; };
 		B84E87F9FB2ADFB1E78061DE /* BandMusicGamesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */; };
 		BBB912C91BE985DDA4C2058B /* SongDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6D78D5E5ECB731431CE177 /* SongDisplayView.swift */; };
+		C0F894D8900D34B3DF5112CA /* HalfCourtStatsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0758718CD5A5648A02797A93 /* HalfCourtStatsTests.swift */; };
 		C602F26841CBB351CC340874 /* MechanicsPrototypeScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6357CADEF161A3B5578C2212 /* MechanicsPrototypeScene.swift */; };
 		CA54FE89FCBABAE9DB1BBDCD /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7C5C786747064F3815AA29 /* HapticManager.swift */; };
 		D2E91B487E48EBF3E79AB72F /* ForCuttingGrassHazards.swift in Sources */ = {isa = PBXBuildFile; fileRef = A42A64FCF259A241304C2C44 /* ForCuttingGrassHazards.swift */; };
@@ -79,6 +80,7 @@
 
 /* Begin PBXFileReference section */
 		06CAB0A5FEF74F7A89D13435 /* ForCuttingGrassRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForCuttingGrassRenderer.swift; sourceTree = "<group>"; };
+		0758718CD5A5648A02797A93 /* HalfCourtStatsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtStatsTests.swift; sourceTree = "<group>"; };
 		07ECF192676509762D21C04F /* LizzyMcGuireGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LizzyMcGuireGameView.swift; sourceTree = "<group>"; };
 		1447C20787223E3BA94B7B5C /* FrancisHUDNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrancisHUDNode.swift; sourceTree = "<group>"; };
 		145BF3844A8BB0333AE5561A /* HalfCourtSpriteFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HalfCourtSpriteFactory.swift; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 			isa = PBXGroup;
 			children = (
 				B94D3136B717A47DEB81A454 /* HalfCourtDifficultyTests.swift */,
+				0758718CD5A5648A02797A93 /* HalfCourtStatsTests.swift */,
 				CF53F9CA93346E2D56EF710B /* StormStageTests.swift */,
 			);
 			path = BandMusicGamesTests;
@@ -479,6 +482,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B3F7525F3468D48407373B0 /* HalfCourtDifficultyTests.swift in Sources */,
+				C0F894D8900D34B3DF5112CA /* HalfCourtStatsTests.swift in Sources */,
 				D3ACBA6A3C0856BAC26398E5 /* StormStageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

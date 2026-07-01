@@ -84,6 +84,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     @Published var awayScore = 0
     @Published var homeSeriesWins = 0
     @Published var awaySeriesWins = 0
+    private(set) var gameStats = HalfCourtStats()
 
     private enum PlayState {
         case homeLive       // human has the ball
@@ -576,6 +577,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         poweredUntil = 0
         isPowered = false
         onBeatStreak = 0
+        gameStats = HalfCourtStats()
         freethrowsRemaining = 0
         isFreethrowInFlight = false
         streakPips?.set(count: 0, powered: false)
@@ -1303,6 +1305,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
         let chance = (0.15 + human.heroID.character.stealBonus * 2.0) / (1.0 + difficulty.cpuStealRate * 0.5)
         if CGFloat.random(in: 0...1) < chance {
+            gameStats.steals += 1
             showCallout("STEAL!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1))
             HapticManager.notification(.success)
             shakeWorld(7)
@@ -1343,6 +1346,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             pendingLaunch = nil
             ball?.missResolved = true  // prevent contact-based scoring if ball is mid-flight
             ball?.hold()
+            gameStats.blocks += 1
             showCallout("BLOCKED!", color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 1), big: true)
             HapticManager.notification(.success)
             shakeWorld(7)
@@ -1472,6 +1476,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
         let error = shotError(charge: charge, dist: dist, beyondArc: beyondArc,
                               isLayup: isLayup, contested: contested, hero: player.heroID.character)
+        gameStats.shots += 1
 
         // Shot type callout: ON FIRE overrides, then shot type, then contested, then perfect
         if contested {
@@ -1557,6 +1562,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let jitter = (CGFloat(n) * 0.61803398875).truncatingRemainder(dividingBy: 1) - 0.5
         let errorOffset = sign * (1 - accuracy) * 60 + jitter * 6
 
+        gameStats.shots += 1
         if !activatedPower {
             showCallout(contested ? "CONTESTED!" : "OPEN LOOK!",
                         color: contested ? SKColor(red: 1, green: 0.35, blue: 0.3, alpha: 1)
@@ -1618,6 +1624,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     @discardableResult
     private func registerBeatTiming(_ now: TimeInterval) -> Bool {
         let delta = nearestBeatDelta(now)
+        gameStats.registerBeatRelease(onBeat: delta <= onBeatWindow)
         if delta <= onBeatWindow {
             onBeatStreak += 1
             if onBeatStreak >= 3 {
@@ -1728,6 +1735,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         var points = ball.shotPoints
         rattleRim()
         if ball.shotTeam == .home {
+            gameStats.made += 1
+            if ball.shotPoints == 3 { gameStats.threes += 1 }
             if isPowered { points += 1 }
             homeScore += points
             showCallout(isPowered ? "+\(points) 🔥" : "+\(points)",
@@ -1837,12 +1846,29 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 HapticManager.notification(.error)
             }
         }
+        // Persist records: the beat run F1 made visible becomes a chased number.
+        let defaults = UserDefaults.standard
+        let priorRecord = defaults.integer(forKey: "hch_record_beat_streak")
+        let isNewStreakRecord = gameStats.bestBeatStreak > priorRecord
+        if isNewStreakRecord { defaults.set(gameStats.bestBeatStreak, forKey: "hch_record_beat_streak") }
+        let margin = homeScore - awayScore
+        if margin > defaults.integer(forKey: "hch_record_margin") {
+            defaults.set(margin, forKey: "hch_record_margin")
+        }
+        if isSeriesOver {
+            let key = homeSeriesWins >= seriesWinTarget ? "hch_career_series_w" : "hch_career_series_l"
+            defaults.set(defaults.integer(forKey: key) + 1, forKey: key)
+        }
+
         let card = HalfCourtResultCardNode(
             homeScore: homeScore,
             awayScore: awayScore,
             homeWins: homeSeriesWins,
             awayWins: awaySeriesWins,
             isSeriesOver: isSeriesOver,
+            stats: gameStats,
+            recordBeatStreak: max(priorRecord, gameStats.bestBeatStreak),
+            isNewStreakRecord: isNewStreakRecord,
             onAction: { [weak self] in
                 guard let self else { return }
                 if isSeriesOver {

@@ -32,6 +32,23 @@ struct HalfCourtStats {
     var threes = 0
     var homeSeriesWins = 0
     var awaySeriesWins = 0
+    var bestBeatStreak = 0
+    private(set) var beatRunLength = 0
+
+    var fgPercent: Int {
+        shots > 0 ? Int((Double(made) / Double(shots) * 100).rounded()) : 0
+    }
+
+    /// Continuous on-beat run for the record chase. Unlike onBeatStreak, this
+    /// does NOT reset when ON FIRE triggers at 3 — only an off-beat release ends it.
+    mutating func registerBeatRelease(onBeat: Bool) {
+        if onBeat {
+            beatRunLength += 1
+            bestBeatStreak = max(bestBeatStreak, beatRunLength)
+        } else {
+            beatRunLength = 0
+        }
+    }
 }
 
 struct HalfCourtCallout: Identifiable, Equatable {
