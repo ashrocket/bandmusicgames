@@ -12,6 +12,7 @@ final class HalfCourtResultCardNode: SKNode {
 
     private var onAction: (() -> Void)?
     private var onRematch: (() -> Void)?
+    private var isSeriesOver = false
 
     init(homeScore: Int, awayScore: Int, homeWins: Int, awayWins: Int, isSeriesOver: Bool, onAction: @escaping () -> Void, onRematch: (() -> Void)? = nil) {
         self.onAction = onAction
@@ -26,6 +27,7 @@ final class HalfCourtResultCardNode: SKNode {
 
     private func setup(homeScore: Int, awayScore: Int, homeWins: Int, awayWins: Int, isSeriesOver: Bool) {
         zPosition = 1000
+        self.isSeriesOver = isSeriesOver
 
         // Background
         bgNode.fillColor = SKColor(red: 0.1, green: 0.04, blue: 0.24, alpha: 0.95)
@@ -81,7 +83,8 @@ final class HalfCourtResultCardNode: SKNode {
         actionButton.name = "action_btn"
         addChild(actionButton)
 
-        actionLabel.text = isSeriesOver ? "BACK TO LOBBY" : "START NEXT GAME"
+        // Series over: the loud primary is the rematch (retention path); lobby is the ghost.
+        actionLabel.text = isSeriesOver ? "RUN IT BACK" : "START NEXT GAME"
         actionLabel.fontSize = 18
         actionLabel.fontColor = .black
         actionLabel.position = CGPoint(x: 0, y: -186)
@@ -97,7 +100,7 @@ final class HalfCourtResultCardNode: SKNode {
             rematchButton.name = "rematch_btn"
             addChild(rematchButton)
 
-            rematchLabel.text = "REMATCH →"
+            rematchLabel.text = "BACK TO LOBBY"
             rematchLabel.fontSize = 13
             rematchLabel.fontColor = SKColor.white.withAlphaComponent(0.55)
             rematchLabel.position = CGPoint(x: 0, y: -232)
@@ -174,11 +177,13 @@ final class HalfCourtResultCardNode: SKNode {
         let location = touch.location(in: self)
         let node = atPoint(location)
         if node.name == "action_btn" {
-            onAction?()
+            // Series over: primary = RUN IT BACK (rematch); mid-series: next game.
+            (isSeriesOver ? onRematch : onAction)?()
             return true
         }
         if node.name == "rematch_btn" {
-            onRematch?()
+            // Series over: ghost = BACK TO LOBBY (dismiss).
+            (isSeriesOver ? onAction : onRematch)?()
             return true
         }
         return false

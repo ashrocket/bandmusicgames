@@ -488,6 +488,18 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         beatAnchor = nil
     }
 
+    /// Series-over rematch: same squad, same difficulty, straight to tip-off.
+    /// beatAnchor is deliberately NOT reset — audio plays continuously through
+    /// the result card, so the beat clock stays valid (contrast startSeries()).
+    func rematchSeries() {
+        homeSeriesWins = 0
+        awaySeriesWins = 0
+        homeScore = 0
+        awayScore = 0
+        phase = .playing   // before resetMatch so givePossession doesn't short-circuit
+        resetMatch()
+    }
+
     func startGame(playerID: HalfCourtHeroID, teammateID: HalfCourtHeroID, difficulty: HalfCourtDifficulty = .normal) {
         self.difficulty = difficulty
         let d = difficulty
@@ -1820,7 +1832,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                     self.resetMatch()
                 }
             },
-            onRematch: isSeriesOver ? { [weak self] in self?.startSeries() } : nil
+            onRematch: isSeriesOver ? { [weak self] in self?.rematchSeries() } : nil
         )
         card.position = CGPoint(x: size.width / 2, y: size.height / 2)
         card.setScale(min(1, size.width / 440))
