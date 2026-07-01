@@ -840,7 +840,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         switch cpuState {
         case .bringUp(let spot):
             if !steer(handler, toward: spot, speed: 150 * difficulty.cpuDriveSpeed / 2.2, dt: dt) {
-                cpuState = .dribbling(now + TimeInterval.random(in: 0.8...1.5))
+                cpuState = .dribbling(now + TimeInterval.random(in: 0.7...1.2))
                 showStealHint()
             }
             handler.updateLocomotion(moving: true, hasBall: true)
@@ -1658,7 +1658,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         ball.setOnFire(flaming)
         ballTrailActive = flaming
         ball.zPosition = 70
-        shotDeadline = nowTime + TimeInterval(flightTime) + 3.2
+        shotDeadline = nowTime + TimeInterval(flightTime) + 2.0
         if launch.team == .away {
             cpuState = .idle
         }
@@ -1750,7 +1750,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
         }
 
-        checkForGameEnd(afterTeam: ball.shotTeam, after: 1.0)
+        checkForGameEnd(afterTeam: ball.shotTeam, after: 0.7)
     }
 
     private func checkForGameEnd(afterTeam: HalfCourtTeam, after delay: TimeInterval) {
@@ -1806,7 +1806,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             showCallout(["BRICKED!", "WALLED OFF!", "BLOCKED OUT!", "NOT TODAY!"].randomElement() ?? "BRICKED!",
                         color: SKColor(red: 0.4, green: 0.95, blue: 0.5, alpha: 0.85))
         }
-        scheduleGivePossession(to: nextTeamAfterMiss(shotTeam: ball.shotTeam), after: 0.6)
+        scheduleGivePossession(to: nextTeamAfterMiss(shotTeam: ball.shotTeam), after: 0.45)
     }
 
     // MARK: - Game end
