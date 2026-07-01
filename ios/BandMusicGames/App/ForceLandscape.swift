@@ -17,20 +17,23 @@ extension View {
 }
 
 enum OrientationController {
-    /// Sets the app-wide orientation mask and asks the active window scene to
-    /// re-evaluate its geometry so the device rotates immediately.
+    /// Sets the app-wide orientation mask and asks every window scene to re-evaluate
+    /// its geometry so the device rotates immediately. Applies to ALL connected window
+    /// scenes (not just a foreground-active one) because `onAppear` can fire before the
+    /// scene becomes active — filtering on that would silently skip the rotation.
     static func lock(_ mask: UIInterfaceOrientationMask) {
         AppDelegate.orientationLock = mask
-        guard let scene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-        else { return }
-        if #available(iOS 16.0, *) {
+        guard #available(iOS 16.0, *) else { return }
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        for scene in windowScenes {
+            // Force the root VC to re-evaluate supportedInterfaceOrientations against the
+            // new mask, then request the actual geometry change.
+            scene.keyWindow?.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
             scene.requestGeometryUpdate(.iOS(interfaceOrientations: mask)) { error in
                 #if DEBUG
                 print("requestGeometryUpdate failed (check plist orientation keys): \(error)")
                 #endif
             }
-            scene.keyWindow?.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
         }
     }
 }
