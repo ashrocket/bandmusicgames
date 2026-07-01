@@ -64,6 +64,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var stealHintNode: SKNode?
     private var rimNode: SKShapeNode?
     private var rimHaloNode: SKShapeNode?
+    private var netNode: SKNode?
+    private var lastShotErrorOffset: CGFloat = 0
     private var stormSky: StormSkyNode?
     private var posterNode: SKNode?
     private var nbaJerseysEnabled: Bool = false
@@ -400,18 +402,22 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             courtLayer.addChild(lip)
         }
 
-        // Net (visual)
+        // Net (visual) — in a container anchored at the rim so a make can snap it
+        let net = SKNode()
+        net.position = CGPoint(x: rimX, y: rimY)
         for i in 0..<6 {
             let netLine = SKShapeNode()
             let netPath = CGMutablePath()
-            let x = rimX - rimR + 3 + CGFloat(i) * ((rimR * 2 - 6) / 5)
-            netPath.move(to: CGPoint(x: x, y: rimY - 3))
-            netPath.addLine(to: CGPoint(x: rimX + (x - rimX) * 0.6, y: rimY - 30))
+            let xOff = -rimR + 3 + CGFloat(i) * ((rimR * 2 - 6) / 5)
+            netPath.move(to: CGPoint(x: xOff, y: -3))
+            netPath.addLine(to: CGPoint(x: xOff * 0.6, y: -30))
             netLine.path = netPath
             netLine.strokeColor = SKColor.white.withAlphaComponent(0.7)
             netLine.lineWidth = 1.2
-            courtLayer.addChild(netLine)
+            net.addChild(netLine)
         }
+        courtLayer.addChild(net)
+        netNode = net
 
         // Net score sensor
         let netSensor = SKNode()
@@ -1032,6 +1038,40 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             SKAction.fadeOut(withDuration: 0.4),
             SKAction.removeFromParent(),
         ]))
+    }
+
+    /// Full make ceremony: net snap + gold burst + point pop at the rim (F9).
+    private func celebrateMake(points: Int, powered: Bool) {
+        netNode?.removeAllActions()
+        netNode?.yScale = 1.0
+        netNode?.run(.sequence([.scaleY(to: 1.25, duration: 0.08), .scaleY(to: 1.0, duration: 0.10)]))
+
+        let burst = HalfCourtSpriteFactory.goldBurst()
+        burst.position = CGPoint(x: rimX, y: rimY - 8)
+        burst.zPosition = 80
+        fxLayer.addChild(burst)
+        burst.run(.sequence([.wait(forDuration: 0.8), .removeFromParent()]))
+
+        let pop = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+        pop.text = "+\(points)"
+        pop.fontSize = 22
+        pop.fontColor = powered
+            ? SKColor(red: 1, green: 0.55, blue: 0.1, alpha: 1)
+            : SKColor(red: 1, green: 0.84, blue: 0, alpha: 1)
+        pop.position = CGPoint(x: rimX, y: rimY + 20)
+        pop.zPosition = 210
+        fxLayer.addChild(pop)
+        pop.run(.sequence([
+            .group([.moveBy(x: 0, y: 40, duration: 0.6), .fadeOut(withDuration: 0.6)]),
+            .removeFromParent(),
+        ]))
+    }
+
+    /// CPU make: net snap only — the opponent doesn't get the fireworks.
+    private func snapNet() {
+        netNode?.removeAllActions()
+        netNode?.yScale = 1.0
+        netNode?.run(.sequence([.scaleY(to: 1.25, duration: 0.08), .scaleY(to: 1.0, duration: 0.10)]))
     }
 
     private func rattleRim() {
@@ -1689,6 +1729,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
 
     private func performLaunch(_ launch: PendingLaunch) {
         guard phase == .playing, let ball, ball.isHeld else { return }
+        lastShotErrorOffset = launch.errorOffset
         let holderID = launch.team == .home ? activeHumanID : cpuHandlerID
         guard let holderID, let holder = players[holderID] else { return }
 
@@ -1745,6 +1786,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         if isFreethrowInFlight {
             isFreethrowInFlight = false
             rattleRim()
+            celebrateMake(points: 1, powered: false)
             homeScore += 1
             freethrowsRemaining -= 1
             showCallout("+1 FREE THROW", color: SKColor(red: 1.0, green: 0.84, blue: 0, alpha: 1), big: false)
@@ -1767,6 +1809,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             if ball.shotPoints == 3 { gameStats.threes += 1 }
             if isPowered { points += 1 }
             homeScore += points
+            celebrateMake(points: points, powered: isPowered)
             showCallout(isPowered ? "+\(points) 🔥" : "+\(points)",
                         color: SKColor(red: 1.0, green: 0.08, blue: 0.58, alpha: 1), big: true)
             HapticManager.notification(.success)
@@ -1776,6 +1819,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
         } else {
             awayScore += points
+            snapNet()
             showCallout("CPU +\(points)", color: SKColor(red: 1.0, green: 0.42, blue: 0.21, alpha: 1))
             HapticManager.impact(.medium)
             if let id = cpuHandlerID {
@@ -1850,8 +1894,30 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         }
 
         if ball.shotTeam == .home {
-            showCallout(["MISS!", "OFF THE RIM!", "NO GOOD!", "RATTLED OUT!", "BRICK!"].randomElement() ?? "MISS!",
-                        color: SKColor.white.withAlphaComponent(0.6))
+            // Near-miss vs clean miss — attribution teaches (F9).
+            let off = lastShotErrorOffset
+            if abs(off) <= 32 {
+                rimNode?.removeAction(forKey: "rattle")
+                rimNode?.run(.repeat(.sequence([
+                    .moveBy(x: 0, y: -3, duration: 0.04),
+                    .moveBy(x: 0, y: 3, duration: 0.04),
+                ]), count: 3), withKey: "rattle")
+                showCallout(["OFF THE RIM!", "RATTLED OUT!", "SO CLOSE!"].randomElement() ?? "OFF THE RIM!",
+                            color: SKColor.white.withAlphaComponent(0.6))
+            } else {
+                let tag = SKLabelNode(fontNamed: "AvenirNext-Bold")
+                tag.text = off < 0 ? "SHORT" : "LONG"
+                tag.fontSize = 14
+                tag.fontColor = SKColor.white.withAlphaComponent(0.7)
+                tag.position = CGPoint(x: rimX - 80, y: rimY + 60)
+                tag.zPosition = 210
+                fxLayer.addChild(tag)
+                tag.run(.sequence([
+                    .group([.moveBy(x: 10, y: 0, duration: 0.8), .fadeOut(withDuration: 0.8)]),
+                    .removeFromParent(),
+                ]))
+                showCallout(off < 0 ? "SHORT!" : "TOO STRONG!", color: SKColor.white.withAlphaComponent(0.6))
+            }
             HapticManager.impact(.medium)
         } else if contestDegradeActive {
             contestDegradeActive = false
