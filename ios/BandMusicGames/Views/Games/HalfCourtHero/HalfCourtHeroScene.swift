@@ -865,6 +865,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             if hypot(leftImpulse.dx, leftImpulse.dy) < 3 { leftImpulse = .zero }
             dx += leftImpulse.dx * dt
             dy += leftImpulse.dy * dt
+            joystickNode?.reflectApplied(dx: dx, dy: dy)
             if abs(dx) > 0.3 || abs(dy) > 0.3 {
                 player.position.x += dx
                 player.position.y += dy
@@ -2679,8 +2680,23 @@ final class JoystickNode: SKNode {
             dx = dx / dist * baseRadius
             dy = dy / dist * baseRadius
         }
-        knob.position = CGPoint(x: dx, y: dy)
+        // Knob position is driven by reflectApplied() — the visual mirrors the
+        // movement actually applied to the player, not the raw finger offset,
+        // so the stick never claims motion the delta-based scheme isn't giving.
         vector = CGVector(dx: dx / baseRadius, dy: dy / baseRadius)
+    }
+
+    /// Mirror the APPLIED per-frame movement delta on the knob (F13).
+    func reflectApplied(dx: CGFloat, dy: CGFloat) {
+        let gain: CGFloat = 6   // 5pt/frame drag ≈ 30pt knob deflection
+        var vx = dx * gain, vy = dy * gain
+        let dist = hypot(vx, vy)
+        if dist > baseRadius {
+            vx = vx / dist * baseRadius
+            vy = vy / dist * baseRadius
+        }
+        knob.position = CGPoint(x: knob.position.x + (vx - knob.position.x) * 0.5,
+                                y: knob.position.y + (vy - knob.position.y) * 0.5)
     }
 
     func end() {
