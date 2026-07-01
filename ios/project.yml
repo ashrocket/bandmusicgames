@@ -38,7 +38,7 @@ targets:
         CFBundleInfoDictionaryVersion: "6.0"
         CFBundleName: $(PRODUCT_NAME)
         CFBundlePackageType: APPL
-        CFBundleShortVersionString: "2.2.5"
+        CFBundleShortVersionString: "2.3.0"
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleURLTypes:
           - CFBundleURLSchemes:
@@ -48,6 +48,12 @@ targets:
         UILaunchScreen: {}
         LSApplicationQueriesSchemes:
           - spotify
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        GCSupportsGameMode: true
+        LSApplicationCategoryType: public.app-category.games
     scheme:
       testTargets:
         - BandMusicGamesTests

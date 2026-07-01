@@ -1,0 +1,35 @@
+{
+  "release": "coxex-5.5",
+  "previousRelease": "opus-4.8",
+  "runtime": "Asset catalog hch_* puppet sprites loaded by PlayerNode",
+  "canvas": [
+    420,
+    960
+  ],
+  "assetCount": 12,
+  "artDirection": [
+    "smaller court-scale figures",
+    "semi-profile stance",
+    "softer painterly outlines",
+    "warm upper-left court lighting",
+    "stronger foot contact shadows"
+  ],
+  "assets": [
+    "ios/BandMusicGames/Assets.xcassets/hch_nara.imageset/nara_sprite.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_nara_knicks.imageset/nara_sprite_knicks.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_nara_spurs.imageset/nara_sprite_spurs.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_ethan.imageset/ethan_sprite.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_ethan_knicks.imageset/ethan_sprite_knicks.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_ethan_spurs.imageset/ethan_sprite_spurs.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_brendan.imageset/brendan_sprite.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_brendan_knicks.imageset/brendan_sprite_knicks.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_brendan_spurs.imageset/brendan_sprite_spurs.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_will.imageset/will_sprite.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_will_knicks.imageset/will_sprite_knicks.png",
+    "ios/BandMusicGames/Assets.xcassets/hch_will_spurs.imageset/will_sprite_spurs.png"
+  ],
+  "previews": [
+    "previews/sprites/halfcourt/halfcourt-character-assets-sheet.png",
+    "previews/sprites/halfcourt/halfcourt-character-ingame-mock.png"
+  ]
+}

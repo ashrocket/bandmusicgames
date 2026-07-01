@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Half Court Hero coxex-5.5 Release</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #151217;
+      --panel: #201b24;
+      --ink: #f8efe7;
+      --muted: #beb1c5;
+      --line: #403746;
+      --accent: #51d88a;
+      --warn: #ffd166;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1060px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 56px;
+    }
+
+    header, section {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    section { margin-top: 18px; }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: clamp(2rem, 5vw, 4.2rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 12px;
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      letter-spacing: 0;
+    }
+
+    p { max-width: 780px; }
+
+    code {
+      padding: 0.1rem 0.32rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .tile {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .value {
+      color: var(--accent);
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .warning .value { color: var(--warn); }
+
+    .preview {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #111015;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      color: var(--muted);
+    }
+
+    li + li { margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Half Court Hero coxex-5.5</h1>
+      <p>
+        Release pass for the active SpriteKit puppet art. The previous active
+        asset-catalog sprites are archived as <code>opus-4.8</code>; the new
+        generated court-scale assets are tagged <code>coxex-5.5</code>.
+      </p>
+      <div class="meta">
+        <div class="tile warning">
+          <span class="label">Previous</span>
+          <span class="value">opus-4.8</span>
+        </div>
+        <div class="tile">
+          <span class="label">Current</span>
+          <span class="value">coxex-5.5</span>
+        </div>
+        <div class="tile">
+          <span class="label">Runtime Path</span>
+          <span class="value">hch_*</span>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <h2>What Changed</h2>
+      <ul>
+        <li>Archived the prior in-use <code>hch_*</code> asset image sets under <code>previews/sprites/halfcourt/releases/opus-4.8/</code>.</li>
+        <li>Added <code>scripts/generate-halfcourt-character-assets.py</code> for deterministic active character PNG generation.</li>
+        <li>Generated 12 current hero/team PNGs for Nara, Ethan, Brendan, and Will.</li>
+        <li>Reduced in-scene player sprite sizing in <code>HalfCourtHeroScene.swift</code> to move away from oversized cutout proportions.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>coxex-5.5 Asset Sheet</h2>
+      <img class="preview" src="../previews/sprites/halfcourt/halfcourt-character-assets-sheet.png" alt="coxex-5.5 Half Court Hero character asset sheet">
+    </section>
+
+    <section>
+      <h2>In-Game Scale Mock</h2>
+      <img class="preview" src="../previews/sprites/halfcourt/halfcourt-character-ingame-mock.png" alt="coxex-5.5 Half Court Hero in-game court mock">
+    </section>
+  </main>
+</body>
+</html>

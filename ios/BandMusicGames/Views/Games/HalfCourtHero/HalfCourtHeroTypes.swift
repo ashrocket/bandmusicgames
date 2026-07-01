@@ -127,6 +127,48 @@ enum HalfCourtDifficulty: String, CaseIterable, Identifiable {
     }
 }
 
+/// On-screen control scheme for HalfCourtHero (Nara's Room). Selected on the
+/// pre-game title screen and persisted in `UserDefaults`. The legacy gesture
+/// scheme (drag-to-move + flick-to-shoot) has been retired in favour of
+/// on-screen buttons; movement stays on the left-thumb joystick in both modes.
+enum HalfCourtControlStyle: String, CaseIterable, Identifiable {
+    /// Hoop Land style: PASS + hold-to-charge SHOOT on offense; the same two
+    /// buttons relabel to STEAL + BLOCK on defense.
+    case hoopLand
+    /// Basketball Battle style: PASS + a single JUMP button. On offense a tap
+    /// jumps and auto-releases the shot at the apex (no meter); on defense the
+    /// JUMP button blocks/contests. PASS relabels to STEAL on defense.
+    case jumpBall
+
+    var id: String { rawValue }
+
+    /// UserDefaults key shared by the scene (read) and the title-screen selector (write).
+    static let storageKey = "half_court_control_style"
+
+    var title: String {
+        switch self {
+        case .hoopLand: return "HoopLand"
+        case .jumpBall: return "JumpBall"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .hoopLand: return "Hold to charge your shot"
+        case .jumpBall: return "Tap to jump & auto-shoot"
+        }
+    }
+
+    /// HoopLand shows the hold-to-charge power meter; JumpBall never does.
+    var usesChargeMeter: Bool { self == .hoopLand }
+
+    /// Current persisted style, defaulting to `.hoopLand`.
+    static func loadPersisted() -> HalfCourtControlStyle {
+        let saved = UserDefaults.standard.string(forKey: storageKey)
+        return saved.flatMap(HalfCourtControlStyle.init(rawValue:)) ?? .hoopLand
+    }
+}
+
 enum HalfCourtHeroID: String, CaseIterable, Identifiable {
     case nara
     case ethan

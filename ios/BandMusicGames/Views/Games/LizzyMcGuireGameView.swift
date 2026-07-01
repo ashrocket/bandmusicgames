@@ -138,6 +138,21 @@ struct LizzyMcGuireGameView: View {
             else { Task { await auth.pausePlayback() } }
         }
         .spotifyErrorBanner()
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear { pushInsets(geo.safeAreaInsets) }
+                    .onChange(of: geo.safeAreaInsets) { pushInsets($0) }
+            }
+            .ignoresSafeArea()
+        )
+        .forceLandscape()
+    }
+
+    /// Push SwiftUI safe-area insets into the scene (it runs under `.ignoresSafeArea()`
+    /// and can't read them itself) so landscape controls clear the notch / home indicator.
+    private func pushInsets(_ e: EdgeInsets) {
+        scene.safeInsets = UIEdgeInsets(top: e.top, left: e.leading, bottom: e.bottom, right: e.trailing)
     }
 
     private var closeButton: some View {
@@ -183,6 +198,33 @@ struct LizzyMcGuireGameView: View {
 
                 Spacer()
 
+                // Control-scheme selector (HoopLand buttons vs JumpBall one-button)
+                Text(scene.controlStyle.subtitle)
+                    .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
+                    .tracking(1)
+                    .foregroundColor(.white.opacity(0.5))
+                    .padding(.bottom, 3)
+                HStack(spacing: 6) {
+                    ForEach(HalfCourtControlStyle.allCases) { style in
+                        let sel = style == scene.controlStyle
+                        Button {
+                            HapticManager.selection()
+                            scene.controlStyle = style
+                        } label: {
+                            Text(style.title.uppercased())
+                                .font(.system(size: compact ? 10 : 11, weight: .black, design: .monospaced))
+                                .tracking(1.2)
+                                .foregroundColor(sel ? .black : .white.opacity(0.62))
+                                .padding(.vertical, compact ? 7 : 8)
+                                .frame(maxWidth: .infinity)
+                                .background(sel ? Color(hex: "#FF1493") : Color.white.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                    }
+                }
+                .padding(.horizontal, compact ? 28 : 34)
+                .padding(.bottom, 10)
+
                 // Difficulty selector
                 HStack(spacing: 6) {
                     ForEach(HalfCourtDifficulty.allCases) { d in
@@ -221,7 +263,7 @@ struct LizzyMcGuireGameView: View {
                 }
                 .padding(.horizontal, compact ? 28 : 34)
 
-                Text("LEFT HALF: DRAG TO MOVE · RIGHT HALF: TAP TO CHARGE SHOT\nSWIPE RIGHT → STEAL · SWIPE LEFT ← PASS TO TEAMMATE\n3 ON-BEAT SHOTS = ON FIRE 🔥 · FIRST TO 11 · BEST OF 5")
+                Text("LEFT THUMB: JOYSTICK TO MOVE · RIGHT: ON-SCREEN BUTTONS\nHOOPLAND: HOLD SHOOT TO CHARGE · JUMPBALL: TAP JUMP TO SHOOT\nPASS · DEFENSE: STEAL / BLOCK · 3 ON-BEAT = ON FIRE 🔥 · FIRST TO 11")
                     .font(.system(size: compact ? 9 : 10, weight: .bold, design: .monospaced))
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
@@ -473,10 +515,10 @@ struct LizzyMcGuireGameView: View {
                         .font(.system(size: 8, weight: .black, design: .monospaced))
                         .foregroundColor(.white.opacity(0.45))
                     HStack(spacing: 12) {
-                        rightAction(gesture: "TAP", label: "SHOOT")
-                        rightAction(gesture: "TAP", label: "BLOCK")
-                        rightAction(gesture: "→", label: "STEAL")
-                        rightAction(gesture: "←", label: "PASS")
+                        rightAction(gesture: "●", label: "SHOOT/JUMP")
+                        rightAction(gesture: "●", label: "PASS")
+                        rightAction(gesture: "●", label: "STEAL")
+                        rightAction(gesture: "●", label: "BLOCK")
                     }
                 }
                 .frame(maxWidth: .infinity)

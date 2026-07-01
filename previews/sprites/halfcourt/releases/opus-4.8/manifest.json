@@ -1,0 +1,26 @@
+{
+  "release": "opus-4.8",
+  "archivedBefore": "coxex-5.5",
+  "archivedOn": "2026-06-20",
+  "runtime": "Prior active asset catalog hch_* puppet sprites loaded by PlayerNode",
+  "reason": "Baseline archived before the court-scale coxex-5.5 character art pass.",
+  "assetsRoot": "previews/sprites/halfcourt/releases/opus-4.8/assets",
+  "assetSets": [
+    "hch_nara.imageset",
+    "hch_nara_knicks.imageset",
+    "hch_nara_spurs.imageset",
+    "hch_ethan.imageset",
+    "hch_ethan_knicks.imageset",
+    "hch_ethan_spurs.imageset",
+    "hch_brendan.imageset",
+    "hch_brendan_knicks.imageset",
+    "hch_brendan_spurs.imageset",
+    "hch_will.imageset",
+    "hch_will_knicks.imageset",
+    "hch_will_spurs.imageset"
+  ],
+  "atlasPreviews": [
+    "previews/sprites/halfcourt/releases/opus-4.8/atlas-previews/halfcourt-players-sheet.png",
+    "previews/sprites/halfcourt/releases/opus-4.8/atlas-previews/halfcourt-ball-sheet.png"
+  ]
+}

@@ -1,4 +1,5 @@
 import SpriteKit
+import UIKit
 
 /// Slim top-edge HUD: scores flank a center dash, series pips + shot clock
 /// tucked underneath, and an ON FIRE banner that appears while powered up.
@@ -79,8 +80,14 @@ final class HalfCourtHUDNode: SKNode {
     }
 
     func layout(size: CGSize) {
-        let topY = size.height - 96  // clear the Dynamic Island on full-bleed layouts
-        let cx = size.width / 2
+        layout(size: size, safeInsets: .zero)
+    }
+
+    func layout(size: CGSize, safeInsets: UIEdgeInsets) {
+        // Hug the top-safe edge; center within the horizontal safe area (landscape notch).
+        let topPad: CGFloat = safeInsets.top > 1 ? safeInsets.top + 24 : 96
+        let topY = size.height - topPad
+        let cx = safeInsets.left + (size.width - safeInsets.left - safeInsets.right) / 2
 
         backdrop.path = CGPath(
             roundedRect: CGRect(x: cx - 105, y: topY - 68, width: 210, height: 116),
