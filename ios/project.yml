@@ -26,7 +26,7 @@ targets:
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: 6P24N3R4TP
         INFOPLIST_FILE: Info.plist
-        CURRENT_PROJECT_VERSION: "20260620150000"
+        CURRENT_PROJECT_VERSION: "20260701200000"
         ENABLE_PREVIEWS: "YES"
         SWIFT_EMIT_LOC_STRINGS: "YES"
     info:
@@ -38,7 +38,7 @@ targets:
         CFBundleInfoDictionaryVersion: "6.0"
         CFBundleName: $(PRODUCT_NAME)
         CFBundlePackageType: APPL
-        CFBundleShortVersionString: "2.3.1"
+        CFBundleShortVersionString: "2.4.0"
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleURLTypes:
           - CFBundleURLSchemes:
