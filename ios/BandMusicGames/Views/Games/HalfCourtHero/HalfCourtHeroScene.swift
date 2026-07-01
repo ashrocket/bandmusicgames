@@ -62,6 +62,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
     private var calloutNode: SKNode?
     private var stealHintNode: SKNode?
     private var rimNode: SKShapeNode?
+    private var rimHaloNode: SKShapeNode?
     private var posterNode: SKNode?
     private var nbaJerseysEnabled: Bool = false
     private var ballTrailActive = false
@@ -371,6 +372,16 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         courtLayer.addChild(rimVisual)
         rimNode = rimVisual
 
+        // Beat halo — pulses around the rim on every beat of the song (F1)
+        let halo = SKShapeNode(circleOfRadius: 30)
+        halo.strokeColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 1)
+        halo.lineWidth = 2
+        halo.fillColor = .clear
+        halo.alpha = 0
+        halo.position = CGPoint(x: rimX, y: rimY)
+        courtLayer.addChild(halo)
+        rimHaloNode = halo
+
         for lipX in [rimX - rimR, rimX + rimR] {
             let lip = SKNode()
             lip.position = CGPoint(x: lipX, y: rimY)
@@ -663,10 +674,23 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         if idx > lastBeatIndex {
             lastBeatIndex = idx
             tapMeterNode?.beatPulse()
+            rimBeatHalo()
+            if playState == .homeLive || playState == .homeFreethrow {
+                buttonA?.beatPulse()   // only in SHOOT contexts — never during BLOCK timing
+            }
+            if onBeatStreak > 0 { streakPips?.beatFlash() }
             if playState == .homeLive {
                 HapticManager.selection()
             }
         }
+    }
+
+    private func rimBeatHalo() {
+        guard let rimHaloNode else { return }
+        rimHaloNode.removeAllActions()
+        rimHaloNode.setScale(1.0)
+        rimHaloNode.alpha = 0.5
+        rimHaloNode.run(.group([.scale(to: 1.18, duration: 0.30), .fadeOut(withDuration: 0.30)]))
     }
 
     private func nearestBeatDelta(_ now: TimeInterval) -> TimeInterval {
@@ -2214,6 +2238,7 @@ final class ControlButtonNode: SKNode {
     private let greenArc = SKShapeNode()
     private let perfectArc = SKShapeNode()
     private let fillArc = SKShapeNode()
+    private let beatRing = SKShapeNode()
     private let startAngle: CGFloat = .pi * 7 / 6   // 210°, lower-left
     private let sweep: CGFloat = .pi * 4 / 3        // 240°
     private var greenLow: CGFloat = 0.52
@@ -2240,6 +2265,14 @@ final class ControlButtonNode: SKNode {
         greenArc.strokeColor = SKColor(red: 0.2, green: 0.83, blue: 0.2, alpha: 0.45)
         perfectArc.strokeColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.7)
 
+        beatRing.path = CGPath(ellipseIn: CGRect(x: -ringRadius, y: -ringRadius,
+                                                 width: ringRadius * 2, height: ringRadius * 2), transform: nil)
+        beatRing.strokeColor = SKColor(red: 1, green: 0.84, blue: 0, alpha: 0.9)
+        beatRing.lineWidth = 2.5
+        beatRing.fillColor = .clear
+        beatRing.alpha = 0
+        addChild(beatRing)
+
         label.fontSize = radius * 0.40
         label.verticalAlignmentMode = .center
         label.horizontalAlignmentMode = .center
@@ -2261,6 +2294,18 @@ final class ControlButtonNode: SKNode {
     }
 
     func setPressed(_ pressed: Bool) { setScale(pressed ? 0.92 : 1.0) }
+
+    /// One beat of the song: subtle scale bump + gold ring flash (112 BPM cue).
+    func beatPulse() {
+        bg.removeAction(forKey: "beatPulse")
+        let up = SKAction.scale(to: 1.06, duration: 0.10); up.timingMode = .easeOut
+        let down = SKAction.scale(to: 1.0, duration: 0.20); down.timingMode = .easeIn
+        bg.run(.sequence([up, down]), withKey: "beatPulse")
+        beatRing.removeAllActions()
+        beatRing.setScale(1.0)
+        beatRing.alpha = 0.9
+        beatRing.run(.group([.scale(to: 1.12, duration: 0.30), .fadeOut(withDuration: 0.30)]))
+    }
 
     /// Set the green/perfect timing windows the ring should display.
     func configureRing(greenLow: CGFloat, greenHigh: CGFloat, perfectLow: CGFloat, perfectHigh: CGFloat) {
@@ -2377,6 +2422,10 @@ final class StreakPipsNode: SKNode {
     }
 
     required init?(coder aDecoder: NSCoder) { fatalError() }
+
+    func beatFlash() {
+        run(.sequence([.fadeAlpha(to: 0.6, duration: 0.10), .fadeAlpha(to: 1.0, duration: 0.10)]))
+    }
 
     func set(count: Int, powered: Bool) {
         for (i, pip) in pips.enumerated() {
