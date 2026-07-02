@@ -473,18 +473,15 @@ struct LizzyMcGuireGameView: View {
         panOffset = .zero
         dragBase = .zero
         scene.isPaused = false
+        // NOTE: do NOT realignBeatAnchor() here. Resume continues the track from
+        // its paused (arbitrary-phase) position, so re-latching phase-0 would
+        // desync the beat grid by up to ±268ms. The scene's rawDt>0.5 anchor
+        // shift already preserves beat phase across the pause; phase-0 latching
+        // is only valid after a fresh playTrack from 0:00.
         if appleMusic.isPreferred {
-            Task {
-                await appleMusic.resume()
-                // Re-latch the beat clock once audio has actually resumed —
-                // same confirmed-playback rule as the initial playTrack path.
-                scene.realignBeatAnchor()
-            }
+            Task { await appleMusic.resume() }
         } else if auth.canAttemptPlayback {
-            Task {
-                await auth.resumePlayback()
-                scene.realignBeatAnchor()
-            }
+            Task { await auth.resumePlayback() }
         }
     }
 

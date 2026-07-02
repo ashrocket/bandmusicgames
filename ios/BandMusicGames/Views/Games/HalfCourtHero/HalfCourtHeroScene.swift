@@ -205,6 +205,26 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         case .hard: return 0.85
         }
     }
+    private var reachCooldown: TimeInterval {
+        // Tuned so the uncountered steal hazard per second of pressure matches
+        // v2.3's cpuStealRate (0.10/0.20/0.32) — keeps W6 comparable per difficulty.
+        switch difficulty {
+        case .easy: return 4.65
+        case .normal: return 2.8
+        case .hard: return 2.0
+        }
+    }
+
+    /// Resolve an active reach as a whiff (pass counter or state change).
+    /// Only a visible lunge (.reaching) staggers the defender and burns the
+    /// cooldown — an invisible .stalking state just resets silently.
+    private func abortReach() {
+        if case .reaching = cpuReach {
+            reachCooldownUntil = nowTime + reachCooldown
+            if let awayID = awayIDs.first { players[awayID]?.stagger(duration: 0.4) }
+        }
+        cpuReach = .none
+    }
     private var foulRetainPossession = false             // reach-in foul: CPU keeps ball on miss
     private var humanInputLockedUntil: TimeInterval = 0  // brief lockout after a foul
 
@@ -874,6 +894,12 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 if abs(dx) > 0.5 { player.facing = dx > 0 ? 1 : -1 }
             }
             player.moveIntensity = moving ? min(1, hypot(dx, dy) / 5.0) : 0
+        } else {
+            // Movement gated (foul lockout / shot in flight): keep the touch
+            // anchor fresh so unlocking doesn't apply the accumulated finger
+            // delta as a one-frame teleport, and recenter the knob visual.
+            if let lt = leftTouch { leftTouchPrev = lt.location(in: self) }
+            joystickNode?.reflectApplied(dx: 0, dy: 0)
         }
 
         let hasBall = possession == .home && (ball?.isHeld ?? false)
@@ -985,7 +1011,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             case .reaching(let until):
                 if nowTime >= until {
                     cpuReach = .none
-                    reachCooldownUntil = nowTime + 2.8
+                    reachCooldownUntil = nowTime + reachCooldown
                     if dist >= 78 {
                         // Escaped — the dash created separation, defender lunges at air.
                         defender.stagger(duration: 0.6)
@@ -1001,10 +1027,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 }
             }
         } else if cpuReachActive {
-            // Possession/state changed mid-reach (pass or shot release) — abort the lunge.
-            cpuReach = .none
-            reachCooldownUntil = nowTime + 2.8
-            if let awayID = awayIDs.first { players[awayID]?.stagger(duration: 0.4) }
+            // Possession/state changed mid-reach (shot release or turnover) — abort.
+            abortReach()
         }
     }
 
@@ -1168,6 +1192,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             }
             return
         }
+        // Mark resolved before scheduling so a late floor contact can't consume
+        // foulRetainPossession a second time with a contradictory outcome.
+        ball.missResolved = true
         scheduleGivePossession(to: nextTeamAfterMiss(shotTeam: ball.shotTeam), after: 0.1)
     }
 
@@ -1313,6 +1340,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         let blue = SKColor(red: 0.36, green: 0.55, blue: 1.0, alpha: 0.34)
         let red  = SKColor(red: 1.0, green: 0.32, blue: 0.30, alpha: 0.34)
         buttonA?.alpha = 1.0
+        buttonA?.setCooldown(nil)
         buttonB?.setCooldown(nil)
         switch controlContext {
         case .offenseBallHoopLand:
@@ -1335,7 +1363,8 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
         case .defenseShot:
             buttonA?.isHidden = false; buttonA?.configure(title: "BLOCK", fill: red)
             buttonA?.setRing(fill: cpuBlockFill, block: true)
-            buttonA?.alpha = nowTime < blockCooldownUntil ? 0.35 : 1.0
+            let bcd = blockCooldownUntil - nowTime
+            buttonA?.setCooldown(bcd > 0 ? CGFloat(bcd / 1.2) : nil)
             buttonB?.isHidden = true
         case .none:
             buttonA?.isHidden = true; buttonA?.setRing(fill: nil)
@@ -1356,6 +1385,9 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
               let mateID = homeIDs.first(where: { $0 != humanID }),
               let _ = players[mateID] else { return }
 
+        // PASS is the taught counter to a telegraphed reach: the defender
+        // lunges at empty hands and staggers — never steals from the receiver.
+        abortReach()
         showCallout("PASS!", color: SKColor(red: 0.4, green: 0.85, blue: 1.0, alpha: 1))
         HapticManager.impact(.medium)
         shakeWorld(4)
@@ -1378,6 +1410,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
               let mateID = homeIDs.first(where: { $0 != humanID }),
               let _ = players[mateID] else { return }
 
+        abortReach()
         showCallout("BOUNCE PASS!", color: SKColor(red: 0.2, green: 0.75, blue: 1.0, alpha: 1))
         HapticManager.impact(.medium)
         shakeWorld(3)
@@ -1473,9 +1506,11 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
                 let sign: CGFloat = launch.errorOffset >= 0 ? 1 : -1
                 pendingLaunch = PendingLaunch(at: launch.at, team: launch.team, errorOffset: sign * mag)
             } else if let ball, !ball.isHeld, let body = ball.physicsBody {
-                // In flight (the common case — the window sits during flight): a small
-                // tip shortens the arc ~12–24pt, visually a real contest.
-                body.velocity = CGVector(dx: body.velocity.dx, dy: body.velocity.dy - 45)
+                // In flight (the common case — the window sits during flight): tip
+                // ~12–24pt ALONG the shot's error sign (W3) so the contest can only
+                // worsen the miss — never pull a long-erring ball back onto the rim.
+                let tip: CGFloat = lastShotErrorOffset >= 0 ? 45 : -45
+                body.velocity = CGVector(dx: body.velocity.dx, dy: body.velocity.dy + tip)
             }
         }
     }
@@ -2037,7 +2072,10 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             onRematch: isSeriesOver ? { [weak self] in self?.rematchSeries() } : nil
         )
         card.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        card.setScale(min(1, size.width / 440))
+        // Clamp by height too: the 500pt-tall card must fit landscape phones
+        // (375pt scene height) or the bottom BACK TO LOBBY ghost lands off-screen.
+        let cardScale = min(1, size.width / 440, size.height / 520)
+        card.setScale(cardScale)
         card.alpha = 0
         uiLayer.addChild(card)
         resultCard = card
@@ -2046,7 +2084,7 @@ final class HalfCourtHeroScene: SKScene, ObservableObject, SKPhysicsContactDeleg
             SKAction.fadeIn(withDuration: 0.28),
             SKAction.sequence([
                 SKAction.scale(by: 1.08, duration: 0.14),
-                SKAction.scale(to: min(1, size.width / 440), duration: 0.14),
+                SKAction.scale(to: cardScale, duration: 0.14),
             ]),
         ]))
     }
@@ -2574,9 +2612,11 @@ final class ControlButtonNode: SKNode {
         bg.alpha = 0.4
     }
 
-    /// Tap rejected (cooling down) — quick sideways shake.
+    /// Tap rejected (cooling down) — quick sideways shake. Never interrupts an
+    /// in-flight shake: cancelling a relative moveBy mid-sequence would leave
+    /// the button drifted off its resting position under spam taps.
     func deniedShake() {
-        removeAction(forKey: "denied")
+        guard action(forKey: "denied") == nil else { return }
         run(.sequence([
             .moveBy(x: -3, y: 0, duration: 0.04),
             .moveBy(x: 6, y: 0, duration: 0.04),
