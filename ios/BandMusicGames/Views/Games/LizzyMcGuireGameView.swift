@@ -182,7 +182,7 @@ struct LizzyMcGuireGameView: View {
             let titleSize: CGFloat = compact ? 42 : 50
 
             VStack(spacing: 0) {
-                Spacer()
+                Spacer(minLength: compact ? 6 : 0)
 
                 VStack(spacing: compact ? 5 : 8) {
                     Text("NARA'S ROOM")
@@ -201,8 +201,13 @@ struct LizzyMcGuireGameView: View {
                     .shadow(color: Color(hex: "#FF1493").opacity(0.5), radius: 12)
                 }
 
-                Spacer()
+                Spacer(minLength: compact ? 6 : 0)
 
+                // Everything below scrolls independently on short (compact landscape)
+                // screens, so the play button and footer text are always reachable
+                // instead of being pushed past the bottom edge by the fixed title above.
+                ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 0) {
                 // Control-scheme selector (HoopLand buttons vs JumpBall one-button)
                 Text(scene.controlStyle.subtitle)
                     .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
@@ -323,7 +328,9 @@ struct LizzyMcGuireGameView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                     .padding(.top, 10)
-                    .padding(.bottom, geo.safeAreaInsets.bottom + 20)
+                    .padding(.bottom, geo.safeAreaInsets.bottom + 28)
+                }
+                }
             }
             .frame(maxWidth: 430)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -381,60 +388,63 @@ struct LizzyMcGuireGameView: View {
                 .padding(.top, topInset + (compact ? 14 : 20))
                 .padding(.bottom, compact ? 12 : 16)
 
-                // Character grid
-                LazyVGrid(
-                    columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2),
-                    spacing: compact ? 10 : 14
-                ) {
-                    ForEach(HalfCourtHeroID.allCases) { hero in
-                        let disabled = selectStep == 2 && hero == selectedPlayer
-                        let isSelected = hero == selectedPlayer || hero == selectedTeammate
-                        VStack(spacing: compact ? 6 : 8) {
-                            HalfCourtHeroBadge(hero: hero, selected: isSelected, dimmed: disabled)
-                                .frame(height: compact ? 90 : 110)
-                            Text(hero.character.name)
-                                .font(.system(size: compact ? 12 : 14, weight: .black, design: .monospaced))
-                                .foregroundColor(disabled ? .white.opacity(0.24) : hero.character.hue)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.7)
-                            Text(hero.character.ability)
-                                .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
-                                .tracking(1.2)
-                                .foregroundColor(disabled ? .white.opacity(0.2) : .white.opacity(0.58))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.65)
-                        }
-                        .padding(compact ? 10 : 14)
-                        .frame(maxWidth: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(isSelected ? hero.character.hue.opacity(0.17) : Color.black.opacity(0.28))
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(isSelected ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: isSelected ? 2.5 : 1)
-                        )
-                        .contentShape(RoundedRectangle(cornerRadius: 12))
-                        .onTapGesture {
-                            guard !disabled else { return }
-                            HapticManager.selection()
-                            if selectStep == 1 {
-                                selectedPlayer = hero
-                                selectedTeammate = HalfCourtHeroID.allCases.first { $0 != hero }
-                                selectStep = 2
-                            } else {
-                                selectedTeammate = hero
+                // Character grid — scrolls independently so the header and PLAY
+                // button below stay pinned and fully visible on short (compact
+                // landscape) screens instead of being pushed past the bottom edge.
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVGrid(
+                        columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2),
+                        spacing: compact ? 10 : 14
+                    ) {
+                        ForEach(HalfCourtHeroID.allCases) { hero in
+                            let disabled = selectStep == 2 && hero == selectedPlayer
+                            let isSelected = hero == selectedPlayer || hero == selectedTeammate
+                            VStack(spacing: compact ? 6 : 8) {
+                                HalfCourtHeroBadge(hero: hero, selected: isSelected, dimmed: disabled)
+                                    .frame(height: compact ? 90 : 110)
+                                Text(hero.character.name)
+                                    .font(.system(size: compact ? 12 : 14, weight: .black, design: .monospaced))
+                                    .foregroundColor(disabled ? .white.opacity(0.24) : hero.character.hue)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.7)
+                                Text(hero.character.ability)
+                                    .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
+                                    .tracking(1.2)
+                                    .foregroundColor(disabled ? .white.opacity(0.2) : .white.opacity(0.58))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.65)
+                            }
+                            .padding(compact ? 10 : 14)
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(isSelected ? hero.character.hue.opacity(0.17) : Color.black.opacity(0.28))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(isSelected ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: isSelected ? 2.5 : 1)
+                            )
+                            .contentShape(RoundedRectangle(cornerRadius: 12))
+                            .onTapGesture {
+                                guard !disabled else { return }
+                                HapticManager.selection()
+                                if selectStep == 1 {
+                                    selectedPlayer = hero
+                                    selectedTeammate = HalfCourtHeroID.allCases.first { $0 != hero }
+                                    selectStep = 2
+                                } else {
+                                    selectedTeammate = hero
+                                }
+                            }
+                            .onLongPressGesture(minimumDuration: 0.4) {
+                                HapticManager.impact(.medium)
+                                scoutedHero = hero
                             }
                         }
-                        .onLongPressGesture(minimumDuration: 0.4) {
-                            HapticManager.impact(.medium)
-                            scoutedHero = hero
-                        }
                     }
+                    .padding(.horizontal, compact ? 16 : 22)
+                    .padding(.vertical, 4)
                 }
-                .padding(.horizontal, compact ? 16 : 22)
-
-                Spacer(minLength: 12)
 
                 // Play button
                 Button {
@@ -457,7 +467,8 @@ struct LizzyMcGuireGameView: View {
                 .opacity(selectedTeammate != nil ? 1 : 0.35)
                 .disabled(selectedTeammate == nil)
                 .padding(.horizontal, compact ? 28 : 34)
-                .padding(.bottom, bottomInset + (compact ? 14 : 20))
+                .padding(.top, 10)
+                .padding(.bottom, bottomInset + (compact ? 18 : 24))
             }
             .frame(maxWidth: 430)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
