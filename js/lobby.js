@@ -1,4 +1,4 @@
-// ─── Lobby dial controller ─────────────────────────────────────────
+// ─── Lobby dial controller (LG TV Edition) ──────────────────────────
 
 const canvas     = document.getElementById('dial-canvas');
 const ctx        = canvas.getContext('2d');
@@ -7,7 +7,16 @@ const infoArtist = document.getElementById('song-artist');
 const infoGame   = document.getElementById('game-name');
 const enterHint  = document.getElementById('enter-hint');
 
-const N = SONGS.length;
+// Search and Filtering
+const searchInput = document.getElementById('search-input');
+let ALL_SONGS = SONGS;
+let filteredSongs = SONGS;
+let N = filteredSongs.length;
+
+// Game Iframe Overlay
+const gameOverlay = document.getElementById('game-overlay');
+const gameIframe  = document.getElementById('game-iframe');
+const btnBack     = document.getElementById('btn-back');
 
 // Layout constants
 const W  = canvas.width  = 900;
@@ -28,18 +37,31 @@ let hovered      = false;
 let clickFlash   = 0;
 
 function idxToAngle(i) {
-  return -(i / N) * Math.PI * 2;
+  return N > 0 ? -(i / N) * Math.PI * 2 : 0;
 }
 
-function angleToIdx(a) {
-  const norm = ((-a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-  return Math.round(norm / (Math.PI * 2) * N) % N;
-}
+// ─── Search Logic ──────────────────────────────────────────────────
+
+searchInput.addEventListener('input', (e) => {
+  const query = e.target.value.toLowerCase();
+  filteredSongs = ALL_SONGS.filter(s => 
+    s.title.toLowerCase().includes(query) || 
+    s.artist.toLowerCase().includes(query) ||
+    s.gameName.toLowerCase().includes(query)
+  );
+  
+  N = filteredSongs.length;
+  selectedIdx = 0;
+  targetAngle = idxToAngle(selectedIdx);
+  currentAngle = targetAngle; // snap to avoid long rotations on filter
+  updateInfo();
+});
 
 // ─── Input ─────────────────────────────────────────────────────────
 
 let _scrollCooldown = false;
 window.addEventListener('wheel', e => {
+  if (N === 0) return;
   e.preventDefault();
   if (_scrollCooldown) return;
   if (e.deltaY > 0) {
@@ -54,17 +76,50 @@ window.addEventListener('wheel', e => {
   setTimeout(() => { _scrollCooldown = false; }, 420);
 }, { passive: false });
 
-canvas.addEventListener('click', () => {
+function handleEnter() {
+  if (N === 0) return;
   if (!LobbyAuth.isConnected()) return;
-  const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
-  if (!song.unlocked || !song.gameUrl) {
+  const isConnected = LobbyAuth.isConnected(); 
+  const song = isConnected ? filteredSongs[selectedIdx] : null;
+  if (!song || !song.unlocked || !song.gameUrl) {
     Haptic.error();
     clickFlash = 12;
     return;
   }
   Haptic.medium();
   clickFlash = 8;
-  setTimeout(() => { window.location.href = song.gameUrl; }, 280);
+  
+  // LG TV: Launch via Iframe instead of window.location
+  setTimeout(() => { launchGame(song); }, 280);
+}
+
+canvas.addEventListener('click', handleEnter);
+
+// Iframe Lifecycle
+function launchGame(song) {
+  gameIframe.src = song.gameUrl;
+  gameOverlay.style.display = 'block';
+  searchInput.blur();
+}
+
+btnBack.addEventListener('click', () => {
+  gameOverlay.style.display = 'none';
+  gameIframe.src = 'about:blank';
+});
+
+// Remote Back Button Handler (webOS standard)
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Backspace' || e.key === 'Escape' || e.keyCode === 461) { // 461 is webOS back button
+    if (gameOverlay.style.display === 'block') {
+      btnBack.click();
+      e.preventDefault();
+    }
+  }
+  if (e.key === 'Enter') {
+    if (document.activeElement !== searchInput) {
+       handleEnter();
+    }
+  }
 });
 
 // Circular click-wheel touch gesture
@@ -72,7 +127,6 @@ let _wheelLastAng = null;
 let _wheelAccum   = 0;
 let _tapStart     = { x: 0, y: 0 };
 let _tapMoved     = false;
-const STEP_ANGLE  = (Math.PI * 2) / N;
 
 function touchToCanvas(touch) {
   const rect = canvas.getBoundingClientRect();
@@ -83,6 +137,7 @@ function touchToCanvas(touch) {
 }
 
 canvas.addEventListener('touchstart', e => {
+  if (N === 0) return;
   e.preventDefault();
   const touch = e.touches[0];
   const { x, y } = touchToCanvas(touch);
@@ -93,6 +148,7 @@ canvas.addEventListener('touchstart', e => {
 }, { passive: false });
 
 canvas.addEventListener('touchmove', e => {
+  if (N === 0) return;
   e.preventDefault();
   if (_wheelLastAng === null) return;
   const touch = e.touches[0];
@@ -106,6 +162,8 @@ canvas.addEventListener('touchmove', e => {
   if (delta < -Math.PI) delta += Math.PI * 2;
   _wheelAccum   += delta;
   _wheelLastAng  = angle;
+  
+  const STEP_ANGLE  = (Math.PI * 2) / Math.max(1, N);
   while (_wheelAccum >= STEP_ANGLE) {
     _wheelAccum -= STEP_ANGLE;
     selectedIdx  = (selectedIdx + 1) % N;
@@ -123,14 +181,10 @@ canvas.addEventListener('touchmove', e => {
 }, { passive: false });
 
 canvas.addEventListener('touchend', e => {
+  if (N === 0) return;
   _wheelLastAng = null;
   if (_tapMoved) return;
-  if (!LobbyAuth.isConnected()) return;
-  const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
-  if (!song.unlocked || !song.gameUrl) { Haptic.error(); clickFlash = 12; return; }
-  Haptic.medium();
-  clickFlash = 8;
-  setTimeout(() => { window.location.href = song.gameUrl; }, 280);
+  handleEnter();
 }, { passive: true });
 
 canvas.addEventListener('mousemove', () => { hovered = true; });
@@ -188,18 +242,17 @@ function _hslToHex(h, s, l) {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-// Darkens hex to HSL lightness 0.38 if the color is too light to read on light backgrounds
 function ensureReadable(hex) {
   const { r, g, b } = hexToRgb(hex);
   const { h, s, l } = _rgbToHsl(r, g, b);
   return l > 0.70 ? _hslToHex(h, s, 0.38) : hex;
 }
 
-// ─── Theme: page background shifts to selected song color ──────────
+// ─── Theme ─────────────────────────────────────────────────────────
 
 function updateSongTheme(song) {
   const glow = document.getElementById('bg-glow');
-  if (!glow || !song.unlocked) return;
+  if (!glow || !song || !song.unlocked) return;
   const { r, g, b } = hexToRgb(song.color);
   glow.style.background =
     `radial-gradient(ellipse at 50% 78%, rgba(${r},${g},${b},0.17) 0%, transparent 62%)`;
@@ -208,7 +261,15 @@ function updateSongTheme(song) {
 // ─── Info panel ────────────────────────────────────────────────────
 
 function updateInfo() {
-  const s = SONGS[selectedIdx];
+  if (N === 0) {
+    infoTitle.textContent  = 'NO RESULTS';
+    infoTitle.style.color  = '#1e1b4b';
+    infoArtist.textContent = '';
+    infoGame.textContent   = '';
+    enterHint.textContent  = '';
+    return;
+  }
+  const s = filteredSongs[selectedIdx];
   if (!s.unlocked) {
     infoTitle.textContent  = '???';
     infoTitle.style.color  = '#1e1b4b';
@@ -217,7 +278,13 @@ function updateInfo() {
     enterHint.textContent  = '';
     return;
   }
-  if (!LobbyAuth.isConnected()) { infoTitle.textContent = '???'; infoArtist.textContent = ''; infoGame.textContent = ''; return; } infoTitle.textContent = s.title;
+  if (!LobbyAuth.isConnected()) { 
+    infoTitle.textContent = '???'; 
+    infoArtist.textContent = ''; 
+    infoGame.textContent = ''; 
+    return; 
+  } 
+  infoTitle.textContent = s.title;
   infoTitle.style.color  = ensureReadable(s.color);
   infoArtist.textContent = s.artist;
   infoGame.textContent   = s.gameName;
@@ -233,12 +300,12 @@ function drawFrame() {
   while (diff < -Math.PI) diff += Math.PI * 2;
   currentAngle += diff * 0.14;
 
-  // Light base + song-colored ambient canvas glow
   ctx.fillStyle = '#f4f1fb';
   ctx.fillRect(0, 0, W, H);
 
-  const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
-  if (isConnected && song.unlocked) {
+  const isConnected = LobbyAuth.isConnected(); 
+  const song = (isConnected && N > 0) ? filteredSongs[selectedIdx] : null;
+  if (isConnected && song && song.unlocked) {
     const { r, g, b } = hexToRgb(song.color);
     const songGlow = ctx.createRadialGradient(CX, CY, 0, CX, CY, 300);
     songGlow.addColorStop(0, `rgba(${r},${g},${b},0.09)`);
@@ -248,10 +315,10 @@ function drawFrame() {
   }
 
   drawWheelFace();
-  if (LobbyAuth.isConnected()) drawSongs();
+  if (LobbyAuth.isConnected() && N > 0) drawSongs();
   drawClickWheelLabels();
   drawDisk();
-  if (LobbyAuth.isConnected()) drawActiveIndicator();
+  if (LobbyAuth.isConnected() && N > 0) drawActiveIndicator();
 
   if (clickFlash > 0) {
     ctx.globalAlpha = (clickFlash / 12) * 0.35;
@@ -265,7 +332,6 @@ function drawFrame() {
 }
 
 function drawWheelFace() {
-  // Drop shadow beneath the entire wheel
   ctx.save();
   ctx.shadowBlur    = 50;
   ctx.shadowColor   = 'rgba(120, 90, 200, 0.15)';
@@ -281,7 +347,6 @@ function drawWheelFace() {
   ctx.fill();
   ctx.restore();
 
-  // Pearl rim — silver gradient with diagonal sheen
   const rimGrad = ctx.createLinearGradient(CX - R_RIM, CY - R_RIM, CX + R_RIM, CY + R_RIM);
   rimGrad.addColorStop(0,    '#e0daf0');
   rimGrad.addColorStop(0.25, '#eee8f8');
@@ -294,7 +359,6 @@ function drawWheelFace() {
   ctx.lineWidth   = 14;
   ctx.stroke();
 
-  // Subtle separator between scroll ring and inner area
   ctx.beginPath();
   ctx.arc(CX, CY, R_RING + R_DOT + 10, 0, Math.PI * 2);
   ctx.strokeStyle = 'rgba(200, 190, 230, 0.2)';
@@ -304,13 +368,12 @@ function drawWheelFace() {
 
 function drawSongs() {
   for (let i = 0; i < N; i++) {
-    const song     = SONGS[i];
+    const song     = filteredSongs[i];
     const angle    = currentAngle + (i / N) * Math.PI * 2 - Math.PI / 2;
     const x        = CX + Math.cos(angle) * R_RING;
     const y        = CY + Math.sin(angle) * R_RING;
     const isSelected = (i === selectedIdx);
 
-    // Halo glow for selected gem
     if (isSelected && song.unlocked) {
       const { r, g, b } = hexToRgb(song.color);
       const grd = ctx.createRadialGradient(x, y, 0, x, y, R_DOT * 4.5);
@@ -324,9 +387,9 @@ function drawSongs() {
     }
 
     const dotR = isSelected ? R_DOT + 5 : R_DOT;
+    const isConnected = LobbyAuth.isConnected();
 
     if (isConnected && song.unlocked) {
-      // Gem-style: bright highlight at top-left, deep color at bottom-right
       const { r, g, b } = hexToRgb(song.color);
       const dotGrad = ctx.createRadialGradient(x - 3, y - 4, 1, x, y, dotR);
       dotGrad.addColorStop(0,    'rgba(255,255,255,0.95)');
@@ -337,7 +400,6 @@ function drawSongs() {
       ctx.fillStyle = dotGrad;
       ctx.fill();
 
-      // Selection ring
       if (isSelected) {
         ctx.beginPath();
         ctx.arc(x, y, dotR + 4, 0, Math.PI * 2);
@@ -351,12 +413,10 @@ function drawSongs() {
       ctx.fillStyle = '#dcd8ec';
       ctx.fill();
     }
-
   }
 }
 
 function drawClickWheelLabels() {
-  // Classic iPod click wheel labels at compass points
   const LABEL_R = 150;
   const labels = [
     { text: 'MENU', angle: -Math.PI / 2 },
@@ -380,7 +440,6 @@ function drawClickWheelLabels() {
 }
 
 function drawDisk() {
-  // ── Background: white pearl button ────────────────────────────────
   ctx.save();
   ctx.shadowBlur    = 20;
   ctx.shadowColor   = 'rgba(130, 100, 210, 0.14)';
@@ -402,7 +461,6 @@ function drawDisk() {
   ctx.lineWidth   = 1.5;
   ctx.stroke();
 
-  // ── Clip to disk for list rendering ──────────────────────────────
   ctx.save();
   ctx.beginPath();
   ctx.arc(CX, CY, R_DISK - 3, 0, Math.PI * 2);
@@ -424,10 +482,19 @@ function drawDisk() {
     return;
   }
 
-  // ── iPod selection highlight: glowing purple ─────────────────────
-  const isConnected = LobbyAuth.isConnected(); const song = isConnected ? SONGS[selectedIdx] : null;
+  if (N === 0) {
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = '500 10px Quicksand, sans-serif';
+    ctx.fillStyle    = '#c4b5d8';
+    ctx.fillText('No songs found', CX, CY);
+    ctx.restore();
+    return;
+  }
+
+  const isConnected = LobbyAuth.isConnected(); 
+  const song = isConnected ? filteredSongs[selectedIdx] : null;
   {
-    // Outer glow (wider, very soft)
     const glow = ctx.createLinearGradient(CX - R_DISK, 0, CX + R_DISK, 0);
     glow.addColorStop(0,    'rgba(168, 85, 247, 0)');
     glow.addColorStop(0.1,  'rgba(168, 85, 247, 0.12)');
@@ -436,11 +503,9 @@ function drawDisk() {
     ctx.fillStyle = glow;
     ctx.fillRect(CX - R_DISK, CY - ROW_H, R_DISK * 2, ROW_H * 2);
 
-    // Solid highlight band
     ctx.fillStyle = 'rgba(168, 85, 247, 0.22)';
     ctx.fillRect(CX - R_DISK + 10, CY - ROW_H / 2, (R_DISK - 10) * 2, ROW_H);
 
-    // Hairline borders
     ctx.strokeStyle = 'rgba(192, 132, 252, 0.55)';
     ctx.lineWidth   = 1;
     ctx.beginPath();
@@ -453,10 +518,9 @@ function drawDisk() {
     ctx.stroke();
   }
 
-  // ── Vertical song list — offsets -3 … +3 ─────────────────────────
   for (let offset = -3; offset <= 3; offset++) {
     const i  = ((selectedIdx + offset) % N + N) % N;
-    const s  = SONGS[i];
+    const s  = filteredSongs[i];
     const y  = CY + offset * ROW_H;
     const d  = Math.abs(offset);
 
@@ -464,14 +528,12 @@ function drawDisk() {
     ctx.textBaseline = 'middle';
 
     if (offset === 0) {
-      // Selected row: full title, left-aligned with ▶
       const title = s.unlocked ? s.title.toUpperCase() : '???';
       ctx.font      = '700 12px Quicksand, sans-serif';
       ctx.fillStyle = s.unlocked ? '#1e1450' : '#c8c0d8';
       ctx.textAlign = 'left';
       ctx.fillText('▶  ' + title, CX - 72, y);
     } else {
-      // Non-selected: dark text, fade by distance — no truncation for ±1
       const alpha = d === 1 ? 0.85 : d === 2 ? 0.62 : 0.40;
       const fs    = d === 1 ? 11 : d === 2 ? 10 : 9;
       const weight = d === 1 ? '600' : '500';
@@ -484,7 +546,6 @@ function drawDisk() {
     }
   }
 
-  // ── Edge fade so list fades into disk ────────────────────────────
   const FADE = 30;
   const topFade = ctx.createLinearGradient(0, CY - R_DISK + 3, 0, CY - R_DISK + 3 + FADE);
   topFade.addColorStop(0, '#f8f5ff');
@@ -502,12 +563,11 @@ function drawDisk() {
 }
 
 function drawActiveIndicator() {
-  // Soft glowing dot at 12 o'clock — shows which slot is active
-  const song        = SONGS[selectedIdx];
+  const song        = filteredSongs[selectedIdx];
   const accentColor = song.unlocked ? song.color : '#a855f7';
   const solidColor  = ensureReadable(accentColor);
-  const { r: gr, g: gg, b: gb } = hexToRgb(accentColor); // original for glow
-  const { r, g, b }              = hexToRgb(solidColor);  // darkened for solid elements
+  const { r: gr, g: gg, b: gb } = hexToRgb(accentColor);
+  const { r, g, b }              = hexToRgb(solidColor);
 
   const ix = CX;
   const iy = CY - R_RING;
@@ -526,7 +586,6 @@ function drawActiveIndicator() {
   ctx.fillStyle = solidColor;
   ctx.fill();
 
-  // Short color arc on the outer rim at top
   ctx.beginPath();
   ctx.arc(CX, CY, R_RIM - 7, -Math.PI / 2 - 0.22, -Math.PI / 2 + 0.22);
   ctx.strokeStyle = `rgba(${r},${g},${b},0.65)`;
@@ -569,12 +628,11 @@ btnSkip.addEventListener('click', () => {
   requestAnimationFrame(drawFrame);
 })();
 
-requestAnimationFrame(drawFrame);
-
 // ─── Tilt navigation ───────────────────────────────────────────────
 
 let _tiltCooldown = false;
 Motion.onTilt((gamma) => {
+  if (N === 0) return;
   if (_tiltCooldown) return;
   const THRESHOLD = 22;
   if (gamma > THRESHOLD) {
