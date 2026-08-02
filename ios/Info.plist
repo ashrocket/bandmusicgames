@@ -35,6 +35,8 @@
 	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.games</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Band Music Games plays each game&#8217;s soundtrack through your Apple Music subscription.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>spotify</string>

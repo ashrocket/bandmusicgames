@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BandMusicGames — Engineering Architecture Dossier</title>
+<style>
+  :root{
+    --bg:#0a0d14; --surface:#10151f; --surface-2:#141b28; --raised:#182034;
+    --border:#232c3d; --border-soft:#1a2230;
+    --text:#e7ecf3; --text-dim:#8c97ab; --text-faint:#5b6472;
+    --mono:'SF Mono','JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --amber:#f0a944; --amber-soft:#3a2a14;
+    --court:#ff7a45; --court-soft:#3a2216;
+    --net:#33d6a6; --net-soft:#123328;
+    --live:#33d6a6; --dead:#5b6472; --orphan:#f0a944; --fixed:#4da6ff; --mismatch:#ff5c7a; --tuning:#a78bfa;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--text); font-family:var(--sans);
+    font-size:15px; line-height:1.6;
+    background-image:
+      linear-gradient(var(--border-soft) 1px,transparent 1px),
+      linear-gradient(90deg,var(--border-soft) 1px,transparent 1px);
+    background-size:40px 40px; background-position:-1px -1px;
+    background-attachment:fixed;
+  }
+  a{color:inherit;}
+  code, .mono{font-family:var(--mono);}
+  ::selection{background:var(--amber); color:#1a1200;}
+
+  /* ---------- layout shell ---------- */
+  .shell{display:grid; grid-template-columns:280px 1fr; min-height:100vh;}
+  nav.toc{
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+    background:rgba(10,13,20,0.92); backdrop-filter:blur(6px);
+    border-right:1px solid var(--border); padding:28px 0 60px;
+  }
+  nav.toc .brand{padding:0 22px 20px; border-bottom:1px solid var(--border); margin-bottom:14px;}
+  nav.toc .brand .mark{font-family:var(--mono); font-size:11px; letter-spacing:.18em; color:var(--amber); text-transform:uppercase;}
+  nav.toc .brand h1{font-size:16px; margin:6px 0 4px; line-height:1.3;}
+  nav.toc .brand .sub{font-size:11px; color:var(--text-faint); font-family:var(--mono);}
+  nav.toc ul{list-style:none; margin:0; padding:0;}
+  nav.toc .group-label{
+    font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--text-faint); padding:16px 22px 6px;
+  }
+  nav.toc li a{
+    display:block; padding:6px 22px 6px 30px; font-size:12.5px; color:var(--text-dim);
+    text-decoration:none; border-left:2px solid transparent; transition:all .15s;
+  }
+  nav.toc li a.lvl1{font-weight:600; color:var(--text); padding-left:22px;}
+  nav.toc li a:hover{color:var(--text); background:var(--surface);}
+  nav.toc li a.active{color:var(--amber); border-left-color:var(--amber); background:var(--amber-soft);}
+  nav.toc li a.active.game-active{color:var(--court); border-left-color:var(--court); background:var(--court-soft);}
+
+  main{padding:0; max-width:980px; margin:0 auto; width:100%;}
+  section{padding:64px 48px; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+
+  /* ---------- hero ---------- */
+  .hero{padding:80px 48px 56px;}
+  .hero .kicker{font-family:var(--mono); font-size:12px; letter-spacing:.2em; color:var(--amber); text-transform:uppercase;}
+  .hero h1{font-size:40px; line-height:1.15; margin:14px 0 18px; max-width:760px;}
+  .hero p.lede{color:var(--text-dim); max-width:640px; font-size:16px;}
+  .stat-strip{display:flex; flex-wrap:wrap; gap:0; margin-top:38px; border:1px solid var(--border); border-radius:10px; overflow:hidden;}
+  .stat{flex:1 1 140px; padding:16px 18px; border-right:1px solid var(--border); background:var(--surface);}
+  .stat:last-child{border-right:none;}
+  .stat .n{font-family:var(--mono); font-size:22px; color:var(--text);}
+  .stat .l{font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.08em; margin-top:4px;}
+  .merge-note{
+    margin-top:22px; font-family:var(--mono); font-size:12px; color:var(--net);
+    background:var(--net-soft); border:1px solid #1d4d3d; border-radius:8px; padding:12px 16px;
+    display:flex; gap:10px; align-items:baseline; flex-wrap:wrap;
+  }
+
+  /* ---------- section headers ---------- */
+  .sec-head{margin-bottom:8px;}
+  .sec-num{font-family:var(--mono); font-size:12px; color:var(--text-faint); letter-spacing:.1em;}
+  h2{font-size:28px; margin:6px 0 10px;}
+  h3{font-size:19px; margin:40px 0 6px; padding-top:6px;}
+  h3 .file-badge{font-family:var(--mono); font-size:11px; color:var(--text-faint); font-weight:400; display:block; margin-top:4px;}
+  .sec-intro{color:var(--text-dim); max-width:720px; margin-bottom:8px;}
+  section.game-theme h3{color:#ffd9c4;}
+
+  /* ---------- badges/tags ---------- */
+  .tag{
+    display:inline-block; font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+    padding:2px 8px; border-radius:20px; border:1px solid; margin:0 4px 4px 0; white-space:nowrap;
+  }
+  .tag-live{color:var(--live); border-color:#1d4d3d; background:var(--net-soft);}
+  .tag-dead{color:var(--dead); border-color:#2a3240; background:#131722; text-decoration:line-through;}
+  .tag-orphan{color:var(--orphan); border-color:#4a3a1a; background:var(--amber-soft);}
+  .tag-fixed{color:var(--fixed); border-color:#1d3a5c; background:#0e1c2e;}
+  .tag-mismatch{color:var(--mismatch); border-color:#5c1d2e; background:#2a0f18;}
+  .tag-tuning{color:var(--tuning); border-color:#3a2f5c; background:#1a1530;}
+
+  /* ---------- callouts ---------- */
+  .callout{border-radius:10px; padding:16px 18px; margin:18px 0; border:1px solid; font-size:13.5px;}
+  .callout .head{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:8px;}
+  .callout.mismatch{border-color:#5c1d2e; background:#1a0d12;}
+  .callout.mismatch .head{color:var(--mismatch);}
+  .callout.fixed{border-color:#1d3a5c; background:#0d1520;}
+  .callout.fixed .head{color:var(--fixed);}
+  .callout.note{border-color:var(--border); background:var(--surface);}
+  .callout.note .head{color:var(--text-dim);}
+  .callout p{margin:6px 0;}
+  .callout code{background:rgba(255,255,255,.06); padding:1px 5px; border-radius:4px;}
+
+  /* ---------- component cards ---------- */
+  details.card{
+    background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--border);
+    border-radius:8px; margin:12px 0; overflow:hidden;
+  }
+  section.lobby-theme details.card{border-left-color:#5c451f;}
+  section.game-theme details.card{border-left-color:#7a3c22;}
+  details.card[open]{border-left-color:var(--amber);}
+  section.game-theme details.card[open]{border-left-color:var(--court);}
+  details.card summary{
+    list-style:none; cursor:pointer; padding:13px 18px; display:flex; justify-content:space-between;
+    align-items:center; gap:12px; font-weight:600; font-size:14px;
+  }
+  details.card summary::-webkit-details-marker{display:none;}
+  details.card summary::before{content:'▸'; color:var(--text-faint); margin-right:8px; font-size:11px; transition:transform .15s;}
+  details.card[open] summary::before{transform:rotate(90deg);}
+  details.card summary .loc{font-family:var(--mono); font-weight:400; font-size:11px; color:var(--text-faint); margin-left:auto; text-align:right;}
+  .card-body{padding:0 18px 18px; border-top:1px solid var(--border-soft);}
+  .card-body p.role{color:var(--text-dim); margin:14px 0;}
+  .card-body h4{font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-faint); margin:16px 0 8px;}
+  .symtable{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .symtable td{padding:4px 8px 4px 0; vertical-align:top; border-bottom:1px solid var(--border-soft);}
+  .symtable td.sym{font-family:var(--mono); color:var(--text); white-space:nowrap;}
+  .symtable td.ln{font-family:var(--mono); color:var(--text-faint); width:1%; white-space:nowrap;}
+  .symtable td.note{color:var(--text-dim);}
+  ul.logic{margin:6px 0; padding-left:18px;}
+  ul.logic li{margin-bottom:10px; color:var(--text-dim);}
+  .cite{font-family:var(--mono); font-size:11px; color:var(--amber); white-space:nowrap;}
+  section.game-theme .cite{color:var(--court);}
+
+  /* ---------- generic tables ---------- */
+  table.data{width:100%; border-collapse:collapse; margin:16px 0 28px; font-size:13px;}
+  table.data th{text-align:left; font-family:var(--mono); font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-faint); padding:8px 12px; border-bottom:1px solid var(--border);}
+  table.data td{padding:9px 12px; border-bottom:1px solid var(--border-soft); color:var(--text-dim);}
+  table.data td.k{color:var(--text); font-family:var(--mono); font-size:12.5px;}
+  table.data tr:hover td{background:var(--surface);}
+
+  /* ---------- ledger ---------- */
+  .ledger-item{display:flex; gap:14px; padding:10px 0; border-bottom:1px solid var(--border-soft); align-items:flex-start;}
+  .ledger-item .cite{flex:0 0 260px;}
+  .ledger-item .desc{color:var(--text-dim); font-size:13px;}
+
+  footer{padding:40px 48px 80px; color:var(--text-faint); font-size:12px; font-family:var(--mono);}
+
+  @media (max-width:860px){
+    .shell{grid-template-columns:1fr;}
+    nav.toc{position:relative; height:auto;}
+    section, .hero{padding:40px 22px;}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<nav class="toc" id="toc">
+  <div class="brand">
+    <div class="mark">Signal Dossier · v1</div>
+    <h1>BandMusicGames</h1>
+    <div class="sub">Engineering Architecture</div>
+  </div>
+  <ul>
+    <li><a href="#overview" class="lvl1">0 — Overview</a></li>
+    <li class="group-label">1 · Game Lobby</li>
+    <li><a href="#lobby-shell">Boot &amp; App Shell</a></li>
+    <li><a href="#lobby-content">ContentView Router</a></li>
+    <li><a href="#lobby-song">Song Catalog</a></li>
+    <li><a href="#lobby-web">Web Game Host</a></li>
+    <li><a href="#lobby-jukebox">JukeboxView Engine</a></li>
+    <li><a href="#lobby-visuals">Visual Components</a></li>
+    <li><a href="#lobby-services">Services Layer</a></li>
+    <li><a href="#lobby-webapp">Web Lobby (parallel)</a></li>
+    <li class="group-label">2 · Lizzy McGuire / Nara's Room</li>
+    <li><a href="#game-menu">Character Select Menu</a></li>
+    <li><a href="#game-scene">Scene Composition Root</a></li>
+    <li><a href="#game-controls">Control System</a></li>
+    <li><a href="#game-shot">Shot Mechanics &amp; Physics</a></li>
+    <li><a href="#game-actions">Pass / Steal / Block / Foul</a></li>
+    <li><a href="#game-ai">CPU AI &amp; Difficulty</a></li>
+    <li><a href="#game-scoring">Scoring &amp; Series</a></li>
+    <li><a href="#game-types">Types &amp; Roster</a></li>
+    <li><a href="#game-nodes">Presentation Nodes</a></li>
+    <li><a href="#game-dead">Dead Code Ledger</a></li>
+    <li class="group-label">3 · Other Games (TBD)</li>
+    <li><a href="#tbd-games">Francis · Grass · Storm</a></li>
+    <li class="group-label">4 · Appendix</li>
+    <li><a href="#appendix">Methodology &amp; Corrections</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<div class="hero">
+  <div class="kicker">Field Manual · Reverse-Engineered From Source</div>
+  <h1>BandMusicGames Engineering Architecture Dossier</h1>
+  <p class="lede">A grounded, file:line-cited map of the app's native iOS lobby and the Lizzy&nbsp;McGuire game (in-app branded <em>Nara's&nbsp;Room</em>, engine name <code>HalfCourtHero</code>). Every claim below was verified against the actual Swift source on <code>main</code> — including several places where this document corrects assumptions from the project's own design spec.</p>
+  <div class="stat-strip">
+    <div class="stat"><div class="n">18</div><div class="l">Lobby files mapped</div></div>
+    <div class="stat"><div class="n">8</div><div class="l">HalfCourtHero files mapped</div></div>
+    <div class="stat"><div class="n">~7,970</div><div class="l">Lines of Swift documented</div></div>
+    <div class="stat"><div class="n">9/9</div><div class="l">XCTest pass on merge</div></div>
+    <div class="stat"><div class="n">11</div><div class="l">Dead/orphaned paths found</div></div>
+  </div>
+  <div class="merge-note">
+    <strong>✓ MERGED</strong>
+    <span><code>feature/nara-control-modes-landscape</code> → <code>main</code> (fast-forward, commit <code>06e8057</code>) — HoopLand/JumpBall control modes, landscape lock, iOS Game Mode. Build + full test suite verified before and after merge.</span>
+  </div>
+</div>
+
+<section id="overview">
+  <div class="sec-head"><span class="sec-num">§0</span><h2>System Overview</h2></div>
+  <p class="sec-intro">BandMusicGames is a native SwiftUI/SpriteKit iOS app (<code>ios/BandMusicGames</code>) with a parallel, structurally-similar web build (<code>index.html</code> + <code>js/</code>, deployed to Cloudflare Pages) that is <strong>not</strong> the same code path as the native lobby. The native app's single <code>@main</code> entry point currently hard-boots straight into the Lizzy McGuire game for playtesting rather than the jukebox lobby — a reversible flag, not a redesign. Song selection in the lobby routes to either a native SwiftUI/SpriteKit game view or, for anything not explicitly recognized, a generic <code>WKWebView</code>-hosted web game.</p>
+  <table class="data">
+    <tr><th>Layer</th><th>Technology</th><th>Entry point</th></tr>
+    <tr><td class="k">App shell</td><td>SwiftUI <code>App</code> + UIKit <code>AppDelegate</code></td><td class="k">BandMusicGamesApp.swift</td></tr>
+    <tr><td class="k">Lobby</td><td>SwiftUI (Canvas-based custom animation)</td><td class="k">ContentView.swift → JukeboxView.swift</td></tr>
+    <tr><td class="k">Lizzy McGuire game</td><td>SwiftUI wrapper hosting a SpriteKit <code>SKScene</code></td><td class="k">LizzyMcGuireGameView.swift → HalfCourtHeroScene.swift</td></tr>
+    <tr><td class="k">Other native games</td><td>SwiftUI + SpriteKit (Francis, For Cutting Grass)</td><td class="k">FrancisGameView.swift, ForCuttingGrassGameView.swift</td></tr>
+    <tr><td class="k">Web-hosted games</td><td><code>WKWebView</code> wrapper, cookie-authenticated</td><td class="k">GameWebView.swift</td></tr>
+    <tr><td class="k">Web build (parallel)</td><td>Vanilla JS + Canvas, Cloudflare Pages</td><td class="k">index.html, js/lobby.js</td></tr>
+  </table>
+  <div class="callout note">
+    <div class="head">Naming note</div>
+    <p>The file is called <code>LizzyMcGuireGameView.swift</code>, the in-app UI brands it <strong>"Nara's Room"</strong>, and its engine class is <code>HalfCourtHeroScene</code> — a half-court 1-on-1 basketball minigame. All three names refer to the same feature. This dossier treats them as one system in §2.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1 — GAME LOBBY -->
+<!-- ============================================================ -->
+<section id="lobby-shell" class="lobby-theme">
+  <div class="sec-head"><span class="sec-num">§1.1</span><h2>Game Lobby — Boot &amp; App Shell</h2></div>
+  <p class="sec-intro">The lobby is the native jukebox-style song/game picker. Before reaching it, three boot-priority flags in the <code>App</code> struct decide what the user actually sees first.</p>
+
+  <details class="card">
+    <summary>BandMusicGamesApp <span class="loc mono">BandMusicGamesApp.swift:1-35</span></summary>
+    <div class="card-body">
+      <p class="role">The <code>@main</code> entry point and only <code>Scene</code>. Owns the two app-lifetime environment objects (<code>SpotifyAuthManager</code>, <code>AppleMusicManager</code>) and picks the root view from a fixed if/else-if priority chain over three private flags — there is no runtime navigation state involved.</p>
+      <h4>Key symbols</h4>
+      <table class="symtable">
+        <tr><td class="ln">5-7</td><td class="sym">appDelegate / auth / appleMusic</td><td class="note">@UIApplicationDelegateAdaptor + two @StateObject services</td></tr>
+        <tr><td class="ln">8</td><td class="sym">showsTurntablePreview</td><td class="note">true only with <code>--turntable-preview</code> launch arg</td></tr>
+        <tr><td class="ln">9</td><td class="sym">showsMechanicsProto</td><td class="note">hardcoded false</td></tr>
+        <tr><td class="ln">10</td><td class="sym">showsNaraRoom <span class="tag tag-orphan">hardcoded true</span></td><td class="note">current playtest boot target — bypasses the lobby entirely</td></tr>
+      </table>
+      <h4>Notable logic</h4>
+      <ul class="logic">
+        <li>Boot priority is turntable preview → Nara's Room → mechanics prototype → default <code>ContentView</code> lobby; with <code>showsNaraRoom</code> hardcoded true, the shipped playtest build currently opens directly into <code>LizzyMcGuireGameView</code>, not the lobby. <span class="cite">BandMusicGamesApp.swift:15-23</span></li>
+        <li><code>statusBarHidden</code> is an OR of all three flags, so every non-lobby boot target hides the status bar while the jukebox lobby keeps it visible. <span class="cite">BandMusicGamesApp.swift:27</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>AppDelegate <span class="loc mono">App/AppDelegate.swift:8-18</span></summary>
+    <div class="card-body">
+      <p class="role">Exposes a static, mutable <code>UIInterfaceOrientationMask</code> that UIKit consults on every rotation via <code>application(_:supportedInterfaceOrientationsFor:)</code>, so an individual screen can request landscape without changing the app-wide Info.plist orientation default.</p>
+      <ul class="logic">
+        <li><code>orientationLock</code> defaults to <code>.portrait</code> and is intersected by iOS with the Info.plist <code>UISupportedInterfaceOrientations</code> list (portrait + both landscapes, per <code>project.yml</code>) before it takes effect. <span class="cite">App/AppDelegate.swift:6-16</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>ForceLandscape / OrientationController <span class="loc mono">App/ForceLandscape.swift:7-39</span></summary>
+    <div class="card-body">
+      <p class="role">A <code>ViewModifier</code> (<code>.forceLandscape()</code>) plus a stateless controller enum that writes <code>AppDelegate.orientationLock</code> and forces every connected window scene to re-layout immediately — the per-screen mechanism that lets <em>only</em> the Lizzy McGuire screen rotate while the rest of the app stays portrait.</p>
+      <h4>Notable logic</h4>
+      <ul class="logic">
+        <li>The only call site is <code>LizzyMcGuireGameView.swift:149</code>. <code>lock(_:)</code> iterates <em>every</em> connected scene rather than filtering to the foreground one, deliberately — SwiftUI's <code>onAppear</code> can fire before a scene is active, and filtering would silently drop the rotation request. <span class="cite">App/ForceLandscape.swift:20-31</span></li>
+        <li>A <code>requestGeometryUpdate</code> failure is only printed in DEBUG builds — a plist orientation misconfiguration would fail silently in release. <span class="cite">App/ForceLandscape.swift:32-36</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="lobby-content" class="lobby-theme">
+  <div class="sec-head"><span class="sec-num">§1.2</span><h2>ContentView — Lobby Container &amp; Router</h2></div>
+  <details class="card" open>
+    <summary>ContentView <span class="loc mono">Views/ContentView.swift:3-231</span></summary>
+    <div class="card-body">
+      <p class="role">Renders <code>JukeboxView</code> over a themed background, owns song-selection/playback timing, and routes the chosen <code>Song</code> into a native game or a web-hosted fallback via two stacked <code>fullScreenCover</code> modifiers.</p>
+      <h4>Routing table — <code>nativeGame(for:)</code> <span class="cite">ContentView.swift:135-152</span></h4>
+      <table class="data">
+        <tr><th>Match rule</th><th>Destination</th></tr>
+        <tr><td class="k">id == "francis"</td><td>FrancisGameView (native)</td></tr>
+        <tr><td class="k">id == "narasroom" OR gameUrl/title contains "lizzy"</td><td>LizzyMcGuireGameView (native)</td></tr>
+        <tr><td class="k">title == "FOR CUTTING GRASS" OR id == "goon"</td><td>ForCuttingGrassGameView (native)</td></tr>
+        <tr><td class="k">anything else</td><td>GameSheetView → GameWebView (WKWebView)</td></tr>
+      </table>
+      <h4>Notable logic</h4>
+      <ul class="logic">
+        <li><code>handlePlay()</code> only forces the Spotify connect sheet when the target is a <em>web</em> game and Spotify isn't connected — native games launch with no Spotify connection required. <span class="cite">ContentView.swift:99-111</span></li>
+        <li>Play fires <code>auth.playTrack(...)</code> immediately but delays presenting the game by a hardcoded 1.54s (<code>Task.sleep(nanoseconds: 1_540_000_000)</code>) so the jukebox's needle-drop animation has time to play; the task is cancelled on re-entry and on disappear. <span class="cite">ContentView.swift:113-127, 68-69</span></li>
+        <li><code>onAppear</code> runs a one-shot auto-launch (guarded by <code>didAutoLaunch</code> + a static <code>autoLaunchLizzyLobby</code> flag) that finds the first catalog song resolving to <code>.lizzyMcGuire</code> and immediately sets <code>launchingSong</code> — bypassing the normal select-then-play flow. <span class="cite">ContentView.swift:72-80</span></li>
+        <li><code>spotifyErrorOverlay</code> renders different recovery actions per <code>PlaybackError</code> case: <strong>WAKE SPOTIFY</strong> (<code>.noDevice</code>) retries after a 4s delay; <strong>OPEN IN SPOTIFY</strong> (<code>.notPremium</code>) deep-links via <code>auth.lastAttemptedUri</code>. <span class="cite">ContentView.swift:171-206</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="lobby-song" class="lobby-theme">
+  <div class="sec-head"><span class="sec-num">§1.3</span><h2>Song — Catalog Data Model</h2></div>
+  <details class="card">
+    <summary>Song <span class="loc mono">Models/Song.swift:3-70</span></summary>
+    <div class="card-body">
+      <p class="role">Identifiable/Hashable value type for one lobby entry. A hardcoded static <code>catalog</code> of 3 entries (<em>goon / FOR CUTTING GRASS</em>, <em>francis / FRANCIS</em>, <em>narasroom / LIZZY MCGUIRE</em>) is the app's entire content database — no persistence or network fetch layer exists here.</p>
+      <ul class="logic">
+        <li><code>Hashable</code>/<code>Equatable</code> are id-only, which matters because <code>Song</code> is the identity type for <code>fullScreenCover(item:)</code> on <code>launchingSong</code>. <span class="cite">Models/Song.swift:16-17</span></li>
+        <li><code>Color(hex:)</code> strips non-alphanumerics, parses via <code>Scanner.scanHexInt64</code>, and bit-shifts out R/G/B — no alpha channel or 3-digit shorthand support. <span class="cite">Models/Song.swift:61-69</span></li>
+        <li>Each entry independently feeds three different subsystems: <code>id</code>/<code>gameUrl</code>/<code>title</code> → routing, <code>trackUri</code> → Spotify playback, <code>appleMusicId</code> → the MusicKit path. <span class="cite">Models/Song.swift:4-12, 22-54</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="lobby-web" class="lobby-theme">
+  <div class="sec-head"><span class="sec-num">§1.4</span><h2>GameSheetView / GameWebView — Web Game Host</h2></div>
+  <details class="card">
+    <summary>GameSheetView / GameWebView <span class="loc mono">Views/GameWebView.swift:7-113</span></summary>
+    <div class="card-body">
+      <p class="role">Fallback presentation path for any <code>Song</code> the native router doesn't recognize: wraps a <code>WKWebView</code> loading the song's remote <code>gameUrl</code>, authenticated via a Spotify-token cookie, with a manual close button since the view is full-screen with no native chrome.</p>
+      <ul class="logic">
+        <li>Writes an <code>sp_token</code> cookie (token present) or a fallback <code>sp_skip=1</code> cookie, scoped to domain <code>.bandmusicgames.party</code> — the page load only fires inside the cookie-set completion handler, guaranteeing the cookie is present on first request. <span class="cite">GameWebView.swift:68-98</span></li>
+        <li><code>Coordinator.webView(_:decidePolicyFor:decisionHandler:)</code> unconditionally allows every navigation — there is no domain allowlist once the game page loads. <span class="cite">GameWebView.swift:104-111</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="lobby-jukebox" class="lobby-theme">
+  <div class="sec-head"><span class="sec-num">§1.5</span><h2>JukeboxView — Selector Engine</h2></div>
+  <p class="sec-intro">The visual and interaction core of the lobby, 1,294 lines. It composes a header, a "dial" card (a decorative Canvas illustration, not a rotary control), a vertical selection list, transport controls, and Spotify status.</p>
+
+  <div class="callout mismatch">
+    <div class="head">⚠ Correction to initial framing</div>
+    <p>A full-file grep for <code>Gesture|.gesture(|onTapGesture|DragGesture|RotationGesture|MagnificationGesture</code> returns <strong>zero matches</strong>. There is no drag/rotate/swipe recognizer anywhere in this file and no inertia/momentum system driving a spinning dial from touch. Every selection change is a discrete SwiftUI Button tap routed through <code>select(_:)</code> / <code>navigate(backward:)</code>. The only "physics" in the file is decorative, clock-driven wobble/jitter math inside the Canvas illustration — it reacts to time, not touch.</p>
+  </div>
+
+  <details class="card">
+    <summary>JukeboxView — root struct &amp; state <span class="loc mono">JukeboxView.swift:3-70</span></summary>
+    <div class="card-body">
+      <p class="role">Owns the "needle drop" transition state and assembles the whole screen inside a responsive <code>GeometryReader</code> layout.</p>
+      <table class="symtable">
+        <tr><td class="ln">4</td><td class="sym">selectedIndex</td><td class="note">@Binding&lt;Int&gt; — two-way bound to ContentView</td></tr>
+        <tr><td class="ln">5</td><td class="sym">selectionTrigger</td><td class="note">counter bumped by parent to replay the needle-drop</td></tr>
+        <tr><td class="ln">6-8</td><td class="sym">onPlay / onShowSpotify / onSkip</td><td class="note">outward closures — this view performs zero playback logic itself</td></tr>
+        <tr><td class="ln">12-13</td><td class="sym">showingKnot / knotResetTask</td><td class="note">drives the ~1.76s needle-drop overlay</td></tr>
+        <tr><td class="ln">21</td><td class="sym">deckStatus</td><td class="note">"NEEDLE" → "SPINNING" → "READY" priority readout</td></tr>
+      </table>
+      <ul class="logic">
+        <li><code>GeometryReader</code> computes a <code>compact</code> breakpoint (height &lt; 720) and clamps padding/content dimensions for a responsive layout across device sizes. <span class="cite">JukeboxView.swift:32-38</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Layout subviews — topBar, animatedSelector, songReadout, transportControls, selectionList, musicControls <span class="loc mono">JukeboxView.swift:72-391</span></summary>
+    <div class="card-body">
+      <p class="role">Six composed sub-regions forming the screen body. <code>selectionList</code> — not the dial card — is where song selection actually happens: a vertical, non-scrolling list of every catalog entry with per-row code/title/lock state.</p>
+      <table class="symtable">
+        <tr><td class="ln">72-138</td><td class="sym">topBar</td><td class="note">branding + deck status + Spotify connect button</td></tr>
+        <tr><td class="ln">140-183</td><td class="sym">animatedSelector</td><td class="note">hosts the InkJukeboxDrawing canvas + songReadout + transportControls</td></tr>
+        <tr><td class="ln">185-217</td><td class="sym">songReadout</td><td class="note">jukebox code, title, game name — text.minimumScaleFactor(0.54)</td></tr>
+        <tr><td class="ln">219-249</td><td class="sym">transportControls</td><td class="note">chevron nav + "DROP NEEDLE" play button</td></tr>
+        <tr><td class="ln">251-335</td><td class="sym">selectionList</td><td class="note">the real picker — tappable rows, locked rows disabled but still visible</td></tr>
+        <tr><td class="ln">337-391</td><td class="sym">musicControls / iconButton</td><td class="note">CONNECT / NO MUSIC / SPOTIFY pills, branches on auth.isConnected</td></tr>
+      </table>
+      <ul class="logic">
+        <li>Locked songs remain visible in <code>selectionList</code> but inert via <code>.disabled(!songs[index].unlocked)</code> rather than being hidden. <span class="cite">JukeboxView.swift:322-323</span></li>
+        <li>Disconnected state exposes an explicit opt-out (<strong>NO MUSIC</strong> → <code>onSkip</code>) beside <strong>CONNECT</strong>, letting the user proceed without linking Spotify. <span class="cite">JukeboxView.swift:352-375</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Selection &amp; event state machine — select / navigate / playKnotAnimation <span class="loc mono">JukeboxView.swift:425-457</span></summary>
+    <div class="card-body">
+      <p class="role">The pure interaction logic underneath the layout: selection commit with haptics, circular chevron navigation, and the self-clearing needle-drop timer.</p>
+      <ul class="logic">
+        <li><code>select(_:)</code> no-ops on reselecting the same index; otherwise fires a haptic and animates the change with <code>.spring(duration: 0.36, bounce: 0.2)</code>. <span class="cite">JukeboxView.swift:425-431</span></li>
+        <li><code>navigate(backward:)</code> wraps the index modularly — <code>(i - 1 + n) % n</code> / <code>(i + 1) % n</code> — so chevrons cycle circularly with no dead ends. <span class="cite">JukeboxView.swift:433-436</span></li>
+        <li><code>playKnotAnimation()</code> cancels any in-flight reset task, snaps <code>showingKnot</code> true, then spawns a task that sleeps exactly 1.76s before reverting — a self-clearing, restartable one-shot timer keyed off nanosecond sleep, not a Timer/Combine publisher. <span class="cite">JukeboxView.swift:438-452</span></li>
+        <li><code>jukeboxCode(for:)</code> derives a letter from ASCII <code>65 + index</code> — this degrades past index 25 (<code>UnicodeScalar</code> 91 = <code>[</code>), though the current 3-song catalog never approaches that. <span class="cite">JukeboxView.swift:454-457</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>InkJukeboxDrawing — Canvas illustration engine <span class="loc mono">JukeboxView.swift:569-1294</span></summary>
+    <div class="card-body">
+      <p class="role">A private, purely decorative <code>Canvas</code>-based view procedurally drawing a hand-illustrated turntable: film-plate scratches, wavy ink lines, a record player with tonearm, and "unravel" threads that pull the illustration apart to reveal a game window. Driven entirely by a <code>TimelineView(.animation)</code> clock plus two external booleans/ints — it never reads touch or gesture state.</p>
+      <table class="symtable">
+        <tr><td class="ln">574</td><td class="sym">unravelProgress</td><td class="note">@State CGFloat 0...1 — the single choreography value</td></tr>
+        <tr><td class="ln">610</td><td class="sym">animateUnravel(_:restart:)</td><td class="note">Bezier .timingCurve(0.62,0,0.1,1) over 1.28s in, .easeOut 0.18s out</td></tr>
+        <tr><td class="ln">625-1053</td><td class="sym">drawFilmPlate / drawInkLines / drawSinglePlayer / drawSingleRecord / drawUnravelThreads / drawGameWindow</td><td class="note">sequential draw passes, each gated to its own sub-range of unravelProgress</td></tr>
+        <tr><td class="ln">1102-1217</td><td class="sym">jitteredInkPoint / wobblyEllipsePath / layeredStringWave</td><td class="note">sums of 2-3 sine terms seeded per-line — decorative jitter, not physics</td></tr>
+      </table>
+      <ul class="logic">
+        <li>A single 0...1 progress value is choreographed into a sequence via clamped/eased sub-ranges: record drop → tonearm swing → playback pulse rings, before the unravel/reveal phases begin in the final third. <span class="cite">JukeboxView.swift:717-719, 783-806, 973, 1011</span></li>
+        <li>The 1.76s knot duration in the parent view is deliberately timed to roughly bracket the 1.54s game-launch delay in <code>ContentView.handlePlay()</code>. <span class="cite">JukeboxView.swift:444-451, cross-ref ContentView.swift:122-126</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="lobby-visuals" class="lobby-theme">
+  <div class="sec-head"><span class="sec-num">§1.6</span><h2>Supporting Visual Components</h2></div>
+  <p class="sec-intro">Seven small SwiftUI views implement decorative/utility chrome around the lobby. Only two are actually wired into a live view tree — the other five were superseded when JukeboxView was rewritten around the hand-drawn Canvas animation (commit <code>01b19e1</code>, "string-wave jukebox animation") but were never deleted; they still compile because their own <code>#Preview</code> blocks reference them.</p>
+  <table class="data">
+    <tr><th>Component</th><th>Status</th><th>Role</th></tr>
+    <tr><td class="k">SpotifySheetView</td><td><span class="tag tag-live">LIVE</span></td><td>The "INSERT COIN" connect sheet — presented from ContentView's fullScreenCover, self-dismisses on <code>auth.isConnected</code>.</td></tr>
+    <tr><td class="k">SpotifyErrorBanner</td><td><span class="tag tag-live">LIVE</span></td><td>Applied via <code>.spotifyErrorBanner()</code> to the three native game views (not the lobby, which has its own separate inline error card in ContentView).</td></tr>
+    <tr><td class="k">ArchHeaderView</td><td><span class="tag tag-orphan">ORPHANED</span></td><td>Custom arched "tombstone" jukebox-cabinet header. Zero references outside its own file.</td></tr>
+    <tr><td class="k">BubbleTubeView</td><td><span class="tag tag-orphan">ORPHANED</span></td><td>Animated Wurlitzer bubble-tube column (procedural rising bubbles via Canvas).</td></tr>
+    <tr><td class="k">ChromePlayButton</td><td><span class="tag tag-orphan">ORPHANED</span></td><td>Large circular chrome PLAY/PAUSE button — superseded by JukeboxView's inline "DROP NEEDLE" capsule.</td></tr>
+    <tr><td class="k">SongDisplayView</td><td><span class="tag tag-orphan">ORPHANED</span></td><td>Most functionally complete of the orphans — full swipe-nav display window with its own gesture handling, unused.</td></tr>
+    <tr><td class="k">LottieAnimationPlayer</td><td><span class="tag tag-orphan">ORPHANED</span></td><td>Lottie JSON wrapper — the only file in the repo importing Lottie; nothing instantiates it.</td></tr>
+  </table>
+  <div class="callout note">
+    <div class="head">Cleanup candidate</div>
+    <p>These five orphaned views (plus their Lottie dependency) are safe deletion candidates if a future pass wants to reduce surface area — none are reachable from any shipped screen.</p>
+  </div>
+</section>
+
+<section id="lobby-services" class="lobby-theme">
+  <div class="sec-head"><span class="sec-num">§1.7</span><h2>Services Layer (Managers)</h2></div>
+  <details class="card" open>
+    <summary>SpotifyAuthManager <span class="loc mono">Managers/SpotifyAuthManager.swift:7-364</span></summary>
+    <div class="card-body">
+      <p class="role">MainActor <code>ObservableObject</code> owning the full Spotify OAuth (PKCE) flow via <code>ASWebAuthenticationSession</code>, token persistence/refresh, and Spotify Connect playback control. Created once app-wide; the single source of truth for whether the app can control Spotify playback.</p>
+      <ul class="logic">
+        <li>PKCE flow: a random 32-byte verifier is base64url-encoded, SHA256-hashed as the S256 challenge, sent to <code>/authorize</code>, then the raw verifier is POSTed back on code exchange. <span class="cite">SpotifyAuthManager.swift:63-75, 335-350, 298-333</span></li>
+        <li><code>init()</code> reconstructs connection state from UserDefaults without a network call — an expired token with a refresh token present optimistically marks connected and defers the actual refresh to the first <code>playTrack()</code> call, avoiding a race with SwiftUI's <code>onAppear</code>. <span class="cite">SpotifyAuthManager.swift:48-59</span></li>
+        <li>HTTP status mapping: 204 success · 401 refresh-and-retry-once · 403 → <code>.notPremium</code> · 404 → <code>.noDevice</code> (explicitly does <em>not</em> auto-open Spotify mid-game) · default → <code>.unknown</code>. <span class="cite">SpotifyAuthManager.swift:145-170</span></li>
+        <li><code>refreshToken()</code> uses a single-flight <code>Task</code> guard so concurrent callers await the same in-flight request rather than issuing two POSTs against a refresh token Spotify may rotate. <span class="cite">SpotifyAuthManager.swift:249-296</span></li>
+      </ul>
+    </div>
+  </details>
+  <details class="card">
+    <summary>AppleMusicManager <span class="loc mono">Managers/AppleMusicManager.swift:8-108</span></summary>
+    <div class="card-body">
+      <p class="role">MainActor wrapper around MusicKit's <code>ApplicationMusicPlayer</code> — an alternate playback backend to Spotify Connect, activated as <code>isPreferred</code> from the Spotify error banner's "switch to Apple Music" recovery path.</p>
+      <ul class="logic">
+        <li><code>activateAsPreferred()</code> sleeps 300ms after authorization because <code>canPlayCatalog</code> updates asynchronously via a subscription stream, not synchronously with the auth call. <span class="cite">AppleMusicManager.swift:34-44</span></li>
+        <li><code>startSubscriptionMonitor()</code> auto-flips <code>isPreferred</code> back to false if a lapsed subscription is detected mid-session, falling back to Spotify. <span class="cite">AppleMusicManager.swift:97-106</span></li>
+      </ul>
+    </div>
+  </details>
+  <details class="card">
+    <summary>HapticManager <span class="loc mono">Managers/HapticManager.swift:3-21</span></summary>
+    <div class="card-body">
+      <p class="role">Stateless enum namespace over three UIKit feedback generators (selection/impact/notification). Called by name directly — no dependency injection.</p>
+      <ul class="logic"><li>Every call constructs and fires a fresh generator rather than pre-warming one — a deliberate latency-for-simplicity tradeoff. <span class="cite">HapticManager.swift:4-20</span></li></ul>
+    </div>
+  </details>
+  <details class="card">
+    <summary>LobbyPreviewPlayer <span class="loc mono">Managers/LobbyPreviewPlayer.swift:8-108</span></summary>
+    <div class="card-body">
+      <p class="role">Per-ContentView <code>@StateObject</code> that plays 30s iTunes preview clips on an endless cycle while disconnected from Spotify, so the lobby isn't silent.</p>
+      <ul class="logic">
+        <li><code>runCycle()</code> is an infinite loop: play a resolved preview for a fixed 20s, or on a resolution miss, advance after only 3s to keep the cycle moving. <span class="cite">LobbyPreviewPlayer.swift:39-63</span></li>
+        <li><code>fetchPreview(for:)</code> queries the public iTunes Search API with two-pass soft artist matching, falling back to the first result with any preview URL rather than returning nothing. <span class="cite">LobbyPreviewPlayer.swift:78-106</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="lobby-webapp" class="lobby-theme">
+  <div class="sec-head"><span class="sec-num">§1.8</span><h2>Web Lobby — Parallel Implementation</h2></div>
+  <div class="callout note">
+    <div class="head">Out of scope, noted for completeness</div>
+    <p><code>index.html</code> + <code>js/lobby.js</code> (663 lines) implement a <em>second</em>, structurally similar jukebox dial in vanilla JS/Canvas, deployed independently to Cloudflare Pages (<code>npm run deploy</code> → <code>wrangler pages deploy</code>). It shares the song-catalog-and-dial concept with the native lobby but is a fully separate codebase with its own <code>SONGS</code> array and its own <code>LobbyAuth</code>/haptics shims — not the code path documented in §1.1–§1.7. It is the origin of the <code>.bandmusicgames.party</code> cookie domain referenced by <code>GameWebView</code> (§1.4).</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2 — LIZZY MCGUIRE GAME -->
+<!-- ============================================================ -->
+<section id="game-menu" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.1</span><h2>Lizzy McGuire Game — Character Select Menu</h2></div>
+  <p class="sec-intro">712 lines. The SwiftUI entry screen for the basketball minigame, hosting the SpriteKit scene and layering all pre-game/in-game chrome on top of it.</p>
+
+  <details class="card" open>
+    <summary>LizzyMcGuireGameView <span class="loc mono">LizzyMcGuireGameView.swift:4-547</span></summary>
+    <div class="card-body">
+      <p class="role">Top-level view hosting <code>HalfCourtHeroScene</code> via <code>@StateObject scene = HalfCourtHeroScene.make()</code> in a <code>ZStack</code> with title screen, character-select grid, hero-scouting overlay, freeze/zoom overlay, and close button. Bridges Spotify/Apple Music playback to scene phase changes and force-locks to landscape.</p>
+      <table class="symtable">
+        <tr><td class="ln">11-13</td><td class="sym">selectedPlayer / selectedTeammate / selectStep</td><td class="note">two-step hero draft: 1 = ball handler, 2 = teammate</td></tr>
+        <tr><td class="ln">14</td><td class="sym">scoutedHero</td><td class="note">drives the long-press scouting overlay</td></tr>
+        <tr><td class="ln">15</td><td class="sym">difficulty</td><td class="note">HalfCourtDifficulty, defaults .normal</td></tr>
+        <tr><td class="ln">28-55</td><td class="sym">SpriteView + zoom/pan</td><td class="note">MagnificationGesture-driven SwiftUI transform layered <em>over</em> SpriteKit — not a SpriteKit camera</td></tr>
+      </table>
+      <h4>Notable logic</h4>
+      <ul class="logic">
+        <li>Pinch-to-zoom during <code>.playing</code> freezes gameplay: the first tick sets <code>isFrozen = true</code>, pauses <code>scene.isPaused</code> and whichever music backend is active. <span class="cite">LizzyMcGuireGameView.swift:36-49</span></li>
+        <li><code>.onChange(of: scene.phase)</code> is the sole state machine driving playback bring-up: entering <code>.playing</code> starts the track, calls <code>scene.realignBeatAnchor()</code>, fades the HUD in over 0.5s then back to 0.18 opacity after a 6s delay. <span class="cite">LizzyMcGuireGameView.swift:94-125</span></li>
+        <li>A <code>.background(GeometryReader{...})</code> — not <code>.ignoresSafeArea()</code> — is used purely to read safe-area insets and forward them into <code>scene.safeInsets</code>, since the SpriteView itself runs under <code>.ignoresSafeArea()</code> and can't read insets directly. <span class="cite">LizzyMcGuireGameView.swift:140-156</span></li>
+      </ul>
+      <div class="callout mismatch">
+        <div class="head">⚠ Spec vs. implementation</div>
+        <p>The title screen's control-scheme selector reads/writes <code>scene.controlStyle</code> directly and <strong>is</strong> the "settings dropdown" called for by the design spec — but it is an inline segmented two-button row, not a dropdown, and does not follow the spec-referenced <code>ControlsDropdownPanel</code> pattern from ForCuttingGrass. It also uses the type <code>HalfCourtControlStyle</code> / UserDefaults key <code>half_court_control_style</code>, not the spec's proposed <code>HalfCourtControlMode</code> / <code>hch_control_mode</code>. <span class="cite">LizzyMcGuireGameView.swift:201-226</span></p>
+      </div>
+      <ul class="logic">
+        <li><span class="tag tag-dead">DEAD</span> <code>controlsHUD</code>/<code>rightAction</code> (lines 487-546) implement a bottom control legend that is never referenced from <code>body</code> — superseded per an inline comment by the self-labeling on-screen SpriteKit buttons. <span class="cite">LizzyMcGuireGameView.swift:85-86, 487-546</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>HalfCourtHeroBadge / HeroScoutingOverlay / StatBar <span class="loc mono">LizzyMcGuireGameView.swift:549-712</span></summary>
+    <div class="card-body">
+      <p class="role">Three private subviews: a reusable hero portrait tile (glow + underline for selection state), a full-screen 3D-flip "scouting report" card shown on long-press, and a small labeled progress-bar row used three times inside the scouting card.</p>
+      <ul class="logic">
+        <li>Entrance animation is a 3D card-flip: <code>.rotation3DEffect(.degrees(appeared ? 0 : -82), axis:(x:0,y:1,z:0))</code> combined with scale + opacity on a spring. <span class="cite">LizzyMcGuireGameView.swift:583-599</span></li>
+        <li>Stat bars are display-only derived heuristics, not authored data — SHOOTING = <code>min(1, 0.5 + threeBonus*4 + closeBonus*1.5)</code>, DEFENSE = <code>min(1, 0.42 + stealBonus*2.6)</code>, SPEED = <code>min(1, speed*0.78)</code>. <span class="cite">LizzyMcGuireGameView.swift:636-638</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="game-scene" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.2</span><h2>HalfCourtHeroScene — Composition Root</h2></div>
+  <p class="sec-intro">A single 2,406-line <code>@MainActor SKScene</code> + <code>SKPhysicsContactDelegate</code> — the largest and most important file in the codebase. It owns layout, the match state machine, human input, CPU AI, shot physics, and every UI-chrome SpriteKit node inline in one file.</p>
+
+  <details class="card">
+    <summary>Declaration, tuning constants, node hierarchy <span class="loc mono">HalfCourtHeroScene.swift:1-184</span></summary>
+    <div class="card-body">
+      <p class="role">Game-balance tuning constants, layout metrics recomputed every <code>layoutScene()</code>, a five-layer SKNode hierarchy (<code>courtLayer</code>/<code>playersLayer</code>/<code>ballLayer</code>/<code>fxLayer</code>/<code>uiLayer</code>), and <code>@Published</code> match state consumed by SwiftUI.</p>
+      <table class="symtable">
+        <tr><td class="ln">17</td><td class="sym">seriesWinTarget, winScore, beatBPM, onBeatWindow, powerUpDuration, shotClockSeconds <span class="tag tag-tuning">TUNING</span></td><td class="note">game-balance constants</td></tr>
+        <tr><td class="ln">45</td><td class="sym">safeInsets</td><td class="note">didSet re-runs layoutScene() when SwiftUI pushes safe-area insets</td></tr>
+        <tr><td class="ln">77</td><td class="sym">controlStyle</td><td class="note">@Published HalfCourtControlStyle, seeded from .loadPersisted()</td></tr>
+        <tr><td class="ln">149</td><td class="sym">buttonA / buttonB</td><td class="note">the two on-screen ControlButtonNode instances</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>layoutScene() / buildCourt() <span class="loc mono">HalfCourtHeroScene.swift:259-459</span></summary>
+    <div class="card-body">
+      <p class="role">Recomputes every court/UI coordinate from <code>size</code> and safe-area insets on rotation or size change, so the game fills the real device screen in either orientation. <code>buildCourt()</code> rebuilds static court decoration + physics geometry.</p>
+      <ul class="logic">
+        <li>Rim physics is deliberately <em>not</em> the visual rim bar — only two small circular lip bodies at rimX±rimR are physical, so the ball can visually pass through the rim graphic while still bouncing off the lips like a real hoop. <span class="cite">HalfCourtHeroScene.swift:365-383</span></li>
+        <li>Background texture scales by <code>max(w/textureWidth, h/textureHeight)</code> for an aspect-fill crop regardless of orientation. <span class="cite">HalfCourtHeroScene.swift:307-315</span></li>
+        <li>Buttons pin to the safe-area-adjusted bottom-right corner, matching the "declutter" layout from the most recent commit on this branch. <span class="cite">HalfCourtHeroScene.swift:291-295</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Match management — startSeries / startGame / resetMatch / spawnPlayer / givePossession <span class="loc mono">HalfCourtHeroScene.swift:463-596</span></summary>
+    <div class="card-body">
+      <p class="role">Owns the series/game/possession lifecycle: seeds difficulty-derived tuning, resets per-game entities, and flips possession between home/away.</p>
+      <ul class="logic">
+        <li><code>beatAnchor</code> is explicitly <em>not</em> reset in <code>startGame</code> — audio plays continuously through a best-of-N series, so the beat clock must carry over between games; <code>startSeries()</code> <em>does</em> reset it to realign with a restarted track. <span class="cite">HalfCourtHeroScene.swift:499-500, 466</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Per-frame update loop <span class="loc mono">HalfCourtHeroScene.swift:598-1017</span></summary>
+    <div class="card-body">
+      <p class="role">Beat clock, power-up timing, deferred transitions, tap-meter fill, human movement, CPU offense AI, off-ball defender/steal AI, ball-carry positioning, shot clock, expired-flight resolution, and z-depth sorting — all driven from one <code>update(_:)</code>.</p>
+      <ul class="logic">
+        <li>Pause-compensation: if a frame's raw delta exceeds 0.5s (scene paused for a zoom gesture), <code>beatAnchor</code> shifts forward by that delta so the beat clock re-syncs to real-time audio instead of jumping. <span class="cite">HalfCourtHeroScene.swift:606-610</span></li>
+        <li>Human movement blends continuous drag delta (<code>×1.8</code>) with a decaying flick impulse (<code>1 - 3.5·dt</code>) — direct-drag plus momentum-based flick dashes. <span class="cite">HalfCourtHeroScene.swift:752-776</span></li>
+        <li><code>updateDepthSorting</code> implements pseudo-3D perspective: players lower on screen get higher <code>zPosition</code> and larger scale, simulating a half-court camera in a flat 2D scene. <span class="cite">HalfCourtHeroScene.swift:1009-1017</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="game-controls" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.3</span><h2>Control System — HoopLand vs. JumpBall</h2></div>
+
+  <div class="callout mismatch">
+    <div class="head">⚠ Correction to the design spec</div>
+    <p>The design spec (<code>docs/superpowers/specs/2026-06-30-nara-control-modes-landscape-design.md</code>) proposed a dedicated <code>HalfCourtControlsNode</code> class with <code>onPass</code>/<code>onShootDown</code>/<code>onShootUp</code>/<code>onJump</code>/<code>onSteal</code>/<code>onBlock</code> callback closures, and a retired gesture classifier named <code>classifyRightGesture</code>/<code>isActionZone</code>. <strong>Neither exists in the shipped code</strong> (grep-verified repo-wide). What actually shipped:</p>
+    <ul style="margin:8px 0 0; padding-left:18px;">
+      <li><code>ControlButtonNode</code> — a passive, reusable SKNode circle with a label + optional charge ring. It has <strong>no</strong> callback properties; it only exposes a geometric <code>hitTest(_:)</code>. <span class="cite">HalfCourtHeroScene.swift:2204-2306</span></li>
+      <li><code>ControlContext</code> enum + a computed <code>controlContext</code> property is the actual mode/state router. <span class="cite">HalfCourtHeroScene.swift:100-115</span></li>
+      <li>Routing lives directly in <code>handlePrimaryDown(_:)</code> / <code>handleSecondaryDown()</code> / <code>refreshControlButtons()</code>, switching on <code>controlContext</code>. <span class="cite">HalfCourtHeroScene.swift:1108-1172</span></li>
+    </ul>
+  </div>
+
+  <details class="card">
+    <summary>ControlContext state machine <span class="loc mono">HalfCourtHeroScene.swift:100-115</span></summary>
+    <div class="card-body">
+      <p class="role">The single computed property deciding what the two on-screen buttons currently mean, derived from <code>phase</code> + <code>playState</code> + <code>possession</code> + <code>controlStyle</code>.</p>
+      <table class="data">
+        <tr><th>ControlContext case</th><th>Meaning</th></tr>
+        <tr><td class="k">offenseBallHoopLand</td><td>Home has ball, HoopLand mode — A=hold-to-charge SHOOT, B=PASS</td></tr>
+        <tr><td class="k">offenseBallJumpBall</td><td>Home has ball, JumpBall mode — A=tap JUMP (auto-shoot), B=PASS</td></tr>
+        <tr><td class="k">freeThrow</td><td>A=SHOOT only (hold-to-charge)</td></tr>
+        <tr><td class="k">defenseLive</td><td>B=STEAL only</td></tr>
+        <tr><td class="k">defenseShot</td><td>A=BLOCK only (timing ring, no perfect tier)</td></tr>
+        <tr><td class="k">none</td><td>both buttons hidden</td></tr>
+      </table>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Touch handling &amp; button dispatch <span class="loc mono">HalfCourtHeroScene.swift:1019-1172</span></summary>
+    <div class="card-body">
+      <p class="role">Routes raw touches into three priority channels: Knicks-poster easter egg → control-button hit-test → left-thumb joystick.</p>
+      <ul class="logic">
+        <li>Hit-testing order is load-bearing and explicitly commented: "on-screen control buttons win hit-testing first," preventing a tap near the button region from also registering as joystick placement. <span class="cite">HalfCourtHeroScene.swift:1040-1042</span></li>
+        <li>On touch release, the charge value is captured into a local <em>before</em> <code>tapMeterFill</code> resets to 0 — explicitly flagged in-code as load-bearing ordering, since resetting first would always release a 0-charge shot. <span class="cite">HalfCourtHeroScene.swift:1081-1088</span></li>
+        <li>HoopLand's buttonA is hold-to-charge SHOOT with a green/perfect timing ring; JumpBall's buttonA is single-tap JUMP with the ring hidden entirely, since accuracy there comes from openness, not timing. <span class="cite">HalfCourtHeroScene.swift:1143-1151</span></li>
+        <li>If <code>controlContext</code> changes away from a charge-eligible state mid-press (possession flips while SHOOT is held), <code>refreshControlButtons</code> force-clears the touch and un-presses the button to prevent a stuck charging state. <span class="cite">HalfCourtHeroScene.swift:1167-1171</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>JoystickNode <span class="loc mono">HalfCourtHeroScene.swift:2308-2358</span></summary>
+    <div class="card-body">
+      <p class="role">Floating left-thumb movement stick, repositioning to wherever the thumb first touches down (not fixed-position).</p>
+      <ul class="logic">
+        <li><span class="tag tag-dead">DEAD SIGNAL</span> <code>vector</code> is computed and exposed but <code>updateHuman()</code> does not read it — movement is recomputed independently from raw touch-location deltas. The node's normalized vector output is visual-only in the current build. <span class="cite">HalfCourtHeroScene.swift:2341-2351, cross-ref 747-781</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="game-shot" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.4</span><h2>Shot Mechanics &amp; Physics</h2></div>
+
+  <details class="card">
+    <summary>Shot charge/power meter <span class="loc mono">HalfCourtHeroScene.swift:143-146, 708-745, 1110-1125</span></summary>
+    <div class="card-body">
+      <p class="role">Hold-to-charge meter driving HoopLand shot quality; the same routine also drives the CPU's block-timing fill during <code>.awayShot</code>.</p>
+      <ul class="logic">
+        <li>Charge caps at 1.2 (20% overcharge) so "too late" releases are distinguishable from perfect timing. <span class="cite">HalfCourtHeroScene.swift:720</span></li>
+        <li>Meter decays continuously on early release rather than snapping to 0, giving analog feedback. <span class="cite">HalfCourtHeroScene.swift:722</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>launchVelocity(from:to:flightTime:) / performLaunch <span class="loc mono">HalfCourtHeroScene.swift:1555-1591</span></summary>
+    <div class="card-body">
+      <p class="role">A closed-form projectile-motion solver — not trial-and-error — converting a target point + desired flight duration into an initial physics velocity.</p>
+      <ul class="logic">
+        <li>Kinematic solve: <code>vx = dx/t; vy = dy/t + 0.5·g·t</code> — every shot lands exactly at <code>(rimX + errorOffset, rimY)</code> after <code>flightTime</code> seconds regardless of distance. <span class="cite">HalfCourtHeroScene.swift:1586-1591</span></li>
+        <li>flightTime scales with distance (<code>0.82 + dist/700</code>s) so long threes arc longer than layups. <span class="cite">HalfCourtHeroScene.swift:1565</span></li>
+        <li><code>gravityPointsPerSec2</code> converts SpriteKit's gravity (m/s², 150pt/m) into points/s². <span class="cite">HalfCourtHeroScene.swift:1581-1584</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>shotAccuracy() / shotError() <span class="loc mono">HalfCourtHeroScene.swift:1472-1516</span></summary>
+    <div class="card-body">
+      <p class="role">Core deterministic scoring model shared identically by HoopLand and JumpBall, despite their different input UX.</p>
+      <ul class="logic">
+        <li>Three accuracy tiers by timing: perfect &gt; green &gt; late, plus distance penalty (<code>-0.00025/pt</code>), contest penalty (<code>-0.12</code>), hero bonuses, and a flat <code>+0.15</code> ON FIRE bonus. <span class="cite">HalfCourtHeroScene.swift:1481-1493</span></li>
+        <li>Miss direction is <em>timing-directed, not random</em>: a late release always biases the miss long, an early release always biases short; only an in-window-but-under-accuracy roll scatters either way. <span class="cite">HalfCourtHeroScene.swift:1508-1515</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>JumpBall auto-release — releaseJumpBallShot() <span class="loc mono">HalfCourtHeroScene.swift:1425-1470</span></summary>
+    <div class="card-body">
+      <p class="role">A single JUMP tap immediately computes shot quality from openness (nearest-defender distance) and fires — no hold-to-charge meter, and no true apex-detection physics despite the spec's "auto-releases at the jump apex" language; the "apex" is really the fixed 0.29s wind-up delay shared with every other shot path.</p>
+      <ul class="logic">
+        <li><span class="tag tag-fixed">DETERMINISTIC</span> Miss offset uses a golden-ratio (0.61803398875) multiplicative jitter sequence with alternating sign by shot parity — explicitly commented "no RNG" — giving low-discrepancy spread across repeated taps instead of true randomness. <span class="cite">HalfCourtHeroScene.swift:1454-1458</span></li>
+        <li><code>autoCharge</code> is pinned strictly inside the green window but outside the perfect window on every difficulty, so JumpBall shots can never roll the top "perfect" accuracy tier that HoopLand can. <span class="cite">HalfCourtHeroScene.swift:1448</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Ball-physics contact resolution — handleScore / handleFloorContact <span class="loc mono">HalfCourtHeroScene.swift:1595-1724</span></summary>
+    <div class="card-body">
+      <p class="role"><code>SKPhysicsContactDelegate.didBegin</code> is the single source of truth for make/miss — the ball's real physics trajectory decides the outcome; <code>errorOffset</code> only steers where it's aimed.</p>
+      <ul class="logic">
+        <li>Score only counts on downward velocity through the net sensor, preventing an upward bounce-through from double-counting. <span class="cite">HalfCourtHeroScene.swift:1606</span></li>
+        <li>ON FIRE adds +1 point on every home make on top of the base 2/3. <span class="cite">HalfCourtHeroScene.swift:1631</span></li>
+        <li>"GAME POINT!"/"MATCH POINT!" callouts fire exactly once via a re-check-after-delay guard, avoiding duplicates if score changes again before the delayed callout fires. <span class="cite">HalfCourtHeroScene.swift:1650-1665</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="game-actions" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.5</span><h2>Pass / Steal / Block / Foul</h2></div>
+
+  <details class="card">
+    <summary>Pass — tryHumanPass <span class="loc mono">HalfCourtHeroScene.swift:1176-1213</span></summary>
+    <div class="card-body">
+      <p class="role">Swaps the active human-controlled player to the teammate and cancels any in-flight charge — an instant control handoff, not a simulated ball-flight animation.</p>
+      <ul class="logic">
+        <li>The ball's on-screen position still tracks whichever player holds possession via <code>updateBallCarry</code>, so a "pass" is a control retarget dressed with a callout + haptic + screen shake. <span class="cite">HalfCourtHeroScene.swift:1182-1196</span></li>
+        <li><span class="tag tag-dead">DEAD</span> <code>tryHumanBouncePass()</code> is functionally identical but unreferenced from any button handler — a leftover from the retired drag/flick gesture scheme. <span class="cite">HalfCourtHeroScene.swift:1198</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Steal — tryGestureSteal (human) + updateOffBall CPU roll <span class="loc mono">HalfCourtHeroScene.swift:863-877, 1217-1239</span></summary>
+    <div class="card-body">
+      <ul class="logic">
+        <li>Human steal chance divides a base+bonus term by <code>(1 + cpuStealRate*0.5)</code> — higher CPU difficulty actually makes the <em>human's own</em> steal harder, coupling offense and defense difficulty through one knob. <span class="cite">HalfCourtHeroScene.swift:1229</span></li>
+        <li>CPU steal-of-human is a per-frame Bernoulli trial (<code>cpuStealRate × dt</code>), so effective chance scales with dwell time inside the 44pt distance gate. <span class="cite">HalfCourtHeroScene.swift:864-877</span></li>
+        <li>Human and CPU steal attempts use different cooldown windows (3.0s vs 3.5s) so they never share a cooldown. <span class="cite">HalfCourtHeroScene.swift:871, 1227</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Block / Foul — attemptBlockOrFoul, triggerShootingFoul, giveFreethrows <span class="loc mono">HalfCourtHeroScene.swift:1259-1350</span></summary>
+    <div class="card-body">
+      <p class="role">The single live defensive-contest mechanic during a CPU shot. A timed block succeeds at a flat 0.72 probability inside the timing window; mistimed while contesting, it auto-awards a 2-shot shooting foul.</p>
+      <div class="callout fixed">
+        <div class="head">✓ Exploit fixed (recent commit)</div>
+        <p><code>attemptBlockOrFoul</code> is guarded by a <code>contestResolved</code> double-fire flag plus checks that no possession swap is pending and the ball hasn't already scored/missed — closing a documented exploit window where a late BLOCK tap during the 0.6–1.0s teardown gap after a shot resolves would wrongly award a foul. Matches the "adversarial review" fix in recent git history. <span class="cite">HalfCourtHeroScene.swift:1281-1296</span></p>
+      </div>
+      <ul class="logic">
+        <li>Mistimed BLOCK only becomes a foul if the human is within 56pt of the shooter (actually contesting) — otherwise it's a harmless miss, preventing foul-spam from across the court. <span class="cite">HalfCourtHeroScene.swift:1298-1314</span></li>
+        <li><span class="tag tag-dead">DEAD</span> <code>tryFoulNearDefender()</code> has zero call sites — another retired-gesture-scheme leftover. <span class="cite">HalfCourtHeroScene.swift:1241</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="game-ai" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.6</span><h2>CPU AI &amp; Difficulty Tuning</h2></div>
+
+  <details class="card" open>
+    <summary>CPUState machine — updateCPU <span class="loc mono">HalfCourtHeroScene.swift:93-98, 783-830</span></summary>
+    <div class="card-body">
+      <p class="role">Drives the ball-handling CPU through <code>bringUp(spot) → dribbling(until) → shooting</code>, reusing the same <code>launchVelocity</code>/<code>performLaunch</code> path as human shots.</p>
+      <ul class="logic">
+        <li>Base CPU shot error = <code>(17 + dist·0.05) × cpuShotMult</code> — farther shots are inherently less accurate before the difficulty multiplier applies. <span class="cite">HalfCourtHeroScene.swift:802</span></li>
+        <li>A human defender within 64pt inflates error further by <code>18·(1+lockdownBonus)</code>, where lockdown bonus comes from the active hero's <code>stealBonus</code> — a high-steal hero is also a better shot-contester. <span class="cite">HalfCourtHeroScene.swift:804-809</span></li>
+      </ul>
+      <div class="callout fixed">
+        <div class="head">✓ Difficulty inversion fixed (verified in this pass)</div>
+        <p><code>cpuShotMultiplier</code> is confirmed <strong>correct</strong> post-fix: easy = 1.35 (wider error, CPU misses more), normal = 1.0, hard = 0.58 (tighter error, CPU is accurate) — an explicit inline comment documents this after a prior difficulty-inversion bug. <span class="cite">HalfCourtHeroTypes.swift:95-101</span></p>
+      </div>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>HalfCourtDifficulty — tuning table <span class="loc mono">HalfCourtHeroTypes.swift:47-128</span></summary>
+    <div class="card-body">
+      <p class="role">Every gameplay knob exposed as a computed property, keyed by difficulty — the single source of truth the scene reads instead of branching per-difficulty logic inline.</p>
+      <table class="data">
+        <tr><th>Knob</th><th>Easy</th><th>Normal</th><th>Hard</th></tr>
+        <tr><td class="k">cpuShotMultiplier</td><td>1.35 (misses more)</td><td>1.0</td><td>0.58 (accurate)</td></tr>
+        <tr><td class="k">shotClockSeconds</td><td>13s</td><td>10s</td><td>7s</td></tr>
+        <tr><td class="k">chargeRate (≈ reaction window)</td><td>~320ms</td><td>~250ms</td><td>~220ms</td></tr>
+        <tr><td class="k">greenWindow / perfectAccuracy / cpuDriveSpeed / cpuStealRate</td><td colspan="3">per-difficulty computed properties — see HalfCourtHeroTypes.swift:55-109</td></tr>
+      </table>
+    </div>
+  </details>
+</section>
+
+<section id="game-scoring" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.7</span><h2>Scoring, Game &amp; Series State Machine</h2></div>
+
+  <details class="card">
+    <summary>checkForGameEnd / resolveGame <span class="loc mono">HalfCourtHeroScene.swift:1670-1774</span></summary>
+    <div class="card-body">
+      <p class="role">Compares scores against <code>winScore</code> (11); on a game win, increments series wins and schedules a deferred resolve into <code>HalfCourtResultCardNode</code> (best-of-<code>seriesWinTarget</code> = 3).</p>
+      <ul class="logic">
+        <li>Resolution is deliberately deferred 1.0s after the winning basket so celebration callouts can play before the result card appears. <span class="cite">HalfCourtHeroScene.swift:1688</span></li>
+        <li>On "continue series," <code>phase</code> is explicitly reset to <code>.playing</code> <em>before</em> <code>resetMatch()</code> — documented inline as a deliberate ordering fix, since <code>givePossession</code>'s guard checks <code>phase == .playing</code> and would silently no-op otherwise. <span class="cite">HalfCourtHeroScene.swift:1753-1756</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Shot clock — updateShotClock <span class="loc mono">HalfCourtHeroScene.swift:977-990</span></summary>
+    <div class="card-body">
+      <ul class="logic"><li>A haptic tick fires only when the ceiling'd integer seconds-remaining strictly decreases and falls in 1...3 — exactly one buzz per final second, not one per frame. <span class="cite">HalfCourtHeroScene.swift:980-984</span></li></ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Beat clock + ON FIRE power-up <span class="loc mono">HalfCourtHeroScene.swift:655-692, 1518-1553</span></summary>
+    <div class="card-body">
+      <p class="role">A music-synced timing bonus layered on the shot-quality system: 3 consecutive on-beat releases (make or miss) activate a 12s power-up boosting accuracy +0.15 and adding +1 point per make.</p>
+      <ul class="logic">
+        <li>If a frame's raw delta exceeds 0.5s (pause during a zoom gesture), <code>beatAnchor</code> shifts forward by the same delta to stay aligned with real-world audio rather than drift. <span class="cite">HalfCourtHeroScene.swift:608-610</span></li>
+        <li><code>onBeatStreak</code> resets to 0 on both power activation and any off-beat release — no partial credit persists across a miss. <span class="cite">HalfCourtHeroScene.swift:1519-1539</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="game-types" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.8</span><h2>Shared Types &amp; Character Roster</h2></div>
+
+  <details class="card">
+    <summary>HalfCourtPhase / HalfCourtTeam / HalfCourtAnimation <span class="loc mono">HalfCourtHeroTypes.swift:4-25</span></summary>
+    <div class="card-body">
+      <p class="role">Three dependency-free enums other files switch over: top-level game phase (<code>title</code>/<code>characterSelect</code>/<code>playing</code>/<code>ended</code>), home-vs-away team, and the shared animation-state vocabulary (<code>idle</code>/<code>run</code>/<code>dribble</code>/<code>jump</code>/<code>land</code>/<code>shoot</code>/<code>celebrate</code>/<code>sad</code>) whose raw strings double as atlas frame-name suffixes.</p>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>HalfCourtControlStyle <span class="loc mono">HalfCourtHeroTypes.swift:130-170</span></summary>
+    <div class="card-body">
+      <p class="role">The real persisted control-mode type — two cases, <code>.hoopLand</code> and <code>.jumpBall</code>, with a <code>usesChargeMeter</code> gate for visuals.</p>
+      <ul class="logic"><li><code>loadPersisted()</code> defaults to <code>.hoopLand</code> when nothing is stored or the raw value doesn't parse: <code>saved.flatMap(HalfCourtControlStyle.init(rawValue:)) ?? .hoopLand</code>. <span class="cite">HalfCourtHeroTypes.swift:166-169</span></li></ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>HalfCourtHeroID / HalfCourtHero — playable roster <span class="loc mono">HalfCourtHeroTypes.swift:172-296</span></summary>
+    <div class="card-body">
+      <p class="role">Four playable characters; each bakes gameplay bonuses directly into cosmetics via the <code>character</code> computed property.</p>
+      <table class="data">
+        <tr><th>Hero</th><th>Archetype</th><th>Bonus</th></tr>
+        <tr><td class="k">Nara</td><td>3PT shooter</td><td>threeBonus 0.10</td></tr>
+        <tr><td class="k">Will</td><td>3PT shooter</td><td>threeBonus 0.08</td></tr>
+        <tr><td class="k">Brendan</td><td>Paint beast</td><td>closeBonus 0.18</td></tr>
+        <tr><td class="k">Ethan</td><td>Lockdown defender</td><td>stealBonus 0.20</td></tr>
+      </table>
+      <p style="font-size:12.5px;color:var(--text-dim);">Bonuses feed <code>shotAccuracy</code>/<code>shotError</code> (§2.4) and the CPU lockdown-contest formula (§2.6) alongside <code>HalfCourtDifficulty</code>. <span class="cite">HalfCourtHeroTypes.swift:196-263</span></p>
+    </div>
+  </details>
+</section>
+
+<section id="game-nodes" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.9</span><h2>Presentation Nodes</h2></div>
+
+  <details class="card">
+    <summary>HalfCourtHUDNode <span class="loc mono">HalfCourtHUDNode.swift:8-153</span></summary>
+    <div class="card-body">
+      <p class="role">Top-of-screen HUD: scores, team tags, series pips, shot clock, and a pulsing ON FIRE banner, hugging the top-safe edge.</p>
+      <ul class="logic">
+        <li><code>layout(size:safeInsets:)</code> uses <code>safeInsets.top + 24</code> when a real inset exists, else a fixed 96pt fallback, and horizontally centers within the safe (non-notch) width — the landscape safe-area layout math. <span class="cite">HalfCourtHUDNode.swift:88-90</span></li>
+        <li><code>update()</code> only triggers text/animation changes when the score actually changed since the previous call, via diff guards. <span class="cite">HalfCourtHUDNode.swift:118-133</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>HalfCourtResultCardNode <span class="loc mono">HalfCourtResultCardNode.swift:4-186</span></summary>
+    <div class="card-body">
+      <p class="role">Post-game modal: GAME WON/LOST or SERIES CHAMPIONS/LOST title, final score, best-of-5 series-dot tracker, and continue/rematch buttons — touches routed manually via <code>scene.handleTouch(_:)</code> rather than SwiftUI or SpriteKit gesture recognizers.</p>
+      <ul class="logic"><li><code>handleTouch(_:)</code> hit-tests by <code>node.name</code> (<code>action_btn</code>/<code>rematch_btn</code>), shared between an SKShapeNode background and its label. <span class="cite">HalfCourtResultCardNode.swift:173-185</span></li></ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>PlayerNode <span class="loc mono">PlayerNode.swift:10-339</span></summary>
+    <div class="card-body">
+      <p class="role">One on-court character: a static/atlas-animated sprite body composited with procedural bob/squash-stretch/lean, a drop shadow, selection ring, and ball-attachment points the scene reads to place <code>BallNode</code>.</p>
+      <ul class="logic">
+        <li><code>setupAtlas()</code> gates whole-atlas usage on a single probe texture's presence; if absent it silently falls back to the static sprite with no atlas animation. <span class="cite">PlayerNode.swift:113-119</span></li>
+        <li>The procedural puppet transform is a per-anim sine/cosine formula driven by a fake frame counter, independent of whatever atlas frame is showing. <span class="cite">PlayerNode.swift:246-296</span></li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>BallNode + HalfCourtPhysicsCategory <span class="loc mono">BallNode.swift:4-142</span></summary>
+    <div class="card-body">
+      <p class="role">Toggles between two mutually exclusive states: <em>held</em> (no physics body, pinned to a carrier's hand externally) and <em>launched</em> (a tuned SKPhysicsBody for rim/backboard/net interaction).</p>
+      <ul class="logic">
+        <li><code>launch()</code> builds a fresh physics body every shot with restitution 0.62, friction 0.3, and sets spin direction from horizontal velocity purely for visual plausibility. <span class="cite">BallNode.swift:44-64</span></li>
+        <li>Three-tier fallback: atlas spin frames → hand-drawn fallback circle if the atlas yields no frames. <span class="cite">BallNode.swift:27-33, 91-100, 116-132</span></li>
+      </ul>
+    </div>
+  </details>
+</section>
+
+<section id="game-dead" class="game-theme">
+  <div class="sec-head"><span class="sec-num">§2.10</span><h2>Dead / Retired Code Ledger — HalfCourtHero</h2></div>
+  <p class="sec-intro">Cross-file grep confirmed the following have zero production call sites, but were kept rather than deleted (mostly because the data they compute still feeds a live successor UI).</p>
+  <div class="ledger-item"><span class="cite">HalfCourtHeroScene.swift:2058 ShootButtonNode</span><span class="desc">Legacy shoot button, explicitly commented "kept for reference, no longer active." Never instantiated.</span></div>
+  <div class="ledger-item"><span class="cite">HalfCourtHeroScene.swift:1878 TapShotMeterNode</span><span class="desc">Still fed data every frame (<code>setFill</code>) but permanently <code>isHidden</code> — replaced visually by ControlButtonNode's charge ring without removing its data plumbing.</span></div>
+  <div class="ledger-item"><span class="cite">StormSkyNode.swift (whole file)</span><span class="desc">Full weather-overlay SKNode from the earlier <code>feature/storm-flip-cards</code> branch — never instantiated in HalfCourtHeroScene. Its pure <code>StormStage.stage(...)</code> logic is still exercised by <code>BandMusicGamesTests/StormStageTests.swift</code> even though the node itself is orphaned.</span></div>
+  <div class="ledger-item"><span class="cite">HalfCourtHeroScene.swift:1198 tryHumanBouncePass()</span><span class="desc">Fully implemented, unreferenced — leftover from the retired gesture control scheme.</span></div>
+  <div class="ledger-item"><span class="cite">HalfCourtHeroScene.swift:1241 tryFoulNearDefender()</span><span class="desc">Same story — no call site anywhere in the file.</span></div>
+  <div class="ledger-item"><span class="cite">LizzyMcGuireGameView.swift:487-546 controlsHUD/rightAction</span><span class="desc">Bottom control-legend view, never called from <code>body</code>.</span></div>
+  <div class="ledger-item"><span class="cite">HalfCourtSpriteFactory.swift:11-17 playerTextures()</span><span class="desc">Zero callers — PlayerNode loads its own atlas independently, with a <em>disagreeing</em> frame-count table (idle:4 vs idle:8, etc).</span></div>
+  <div class="ledger-item"><span class="cite">HalfCourtHeroScene.swift:2316 JoystickNode.vector</span><span class="desc">Computed and exposed but never read — movement uses raw touch deltas instead.</span></div>
+  <div class="ledger-item"><span class="cite">BallNode.swift:141 HalfCourtPhysicsCategory.player</span><span class="desc">Defined bitmask slot, zero references anywhere.</span></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3 — TBD -->
+<!-- ============================================================ -->
+<section id="tbd-games">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Other Games — TBD</h2></div>
+  <p class="sec-intro">Scoped out of this pass. Placeholders below for future dossier sections, based on file inventory only (not deep-read).</p>
+  <table class="data">
+    <tr><th>Game</th><th>Entry file(s)</th><th>Size</th><th>Status</th></tr>
+    <tr><td class="k">Francis</td><td class="k">FrancisGameView.swift</td><td>297 lines</td><td><span class="tag tag-orphan">TBD</span></td></tr>
+    <tr><td class="k">For Cutting Grass</td><td class="k">ForCuttingGrass/ (6 files: GameScene, GameView, Hazards, InputController, Levels, Renderer)</td><td>2,251 lines</td><td><span class="tag tag-orphan">TBD</span></td></tr>
+    <tr><td class="k">Storm (flip cards)</td><td class="k">merged via feature/storm-flip-cards (a807d20); StormStageTests.swift is its surviving unit-tested logic</td><td>—</td><td><span class="tag tag-orphan">TBD</span> — its SKNode (StormSkyNode) is now orphaned inside HalfCourtHero, see §2.10</td></tr>
+    <tr><td class="k">Web-hosted games</td><td class="k">GameWebView.swift (§1.4) + index.html/js/ (§1.8)</td><td>—</td><td><span class="tag tag-orphan">TBD</span></td></tr>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<!-- APPENDIX -->
+<!-- ============================================================ -->
+<section id="appendix">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Methodology &amp; Correction Log</h2></div>
+
+  <h3>Methodology</h3>
+  <p class="sec-intro">This dossier was produced by a 9-agent grounded-read pipeline: each agent was assigned a specific file set and instructed to read every file in full and cite a real <code>file:line</code> for every claim. One agent (the JukeboxView pass) initially returned placeholder test output despite reading the file — it was detected, re-run split into two focused passes with explicit anti-placeholder instructions, and the real analysis above is the result of that re-run. The build was verified (9/9 XCTest, full compile) both before and after the branch merge.</p>
+
+  <h3>Correction log — spec vs. shipped code</h3>
+  <div class="ledger-item"><span class="cite">Design spec §Architecture</span><span class="desc">Proposed <code>HalfCourtControlsNode</code> class + 6 callback closures. Shipped: <code>ControlButtonNode</code> (no callbacks) + a <code>ControlContext</code> computed-property router. See §2.3.</span></div>
+  <div class="ledger-item"><span class="cite">Design spec §Architecture</span><span class="desc">Named the persisted type/key <code>HalfCourtControlMode</code>/<code>hch_control_mode</code>. Shipped: <code>HalfCourtControlStyle</code>/<code>half_court_control_style</code>. See §2.8.</span></div>
+  <div class="ledger-item"><span class="cite">Design spec §Settings UI</span><span class="desc">Called for a <code>ControlsDropdownPanel</code>-style dropdown. Shipped: an inline segmented two-button row on the title screen. See §2.1.</span></div>
+  <div class="ledger-item"><span class="cite">Design spec §Control maps</span><span class="desc">Described JumpBall as "auto-releases at the jump apex." Shipped mechanic has no apex-detection physics — it's a fixed 0.29s wind-up delay shared with every other shot path. See §2.4.</span></div>
+  <div class="ledger-item"><span class="cite">Initial task framing (this pass)</span><span class="desc">Assumed JukeboxView was a draggable rotary dial with inertia. Shipped: zero gesture recognizers — selection is discrete button taps; the dial imagery is a clock-driven decorative Canvas illustration. See §1.5.</span></div>
+
+  <h3>Build verification</h3>
+  <table class="data">
+    <tr><th>Check</th><th>Result</th></tr>
+    <tr><td class="k">XCTest suite (StormStageTests, 9 tests)</td><td>✓ pass, pre- and post-merge</td></tr>
+    <tr><td class="k">xcodebuild (iPhone 16 Simulator, iOS 18.6)</td><td>✓ build succeeded</td></tr>
+    <tr><td class="k">Merge</td><td>Fast-forward, <code>feature/nara-control-modes-landscape</code> → <code>main</code> @ <code>06e8057</code></td></tr>
+  </table>
+</section>
+
+</main>
+</div>
+
+<footer>
+  BandMusicGames — Signal Dossier v1 · Generated from source, not from documentation · file:line citations verified against <code>main</code>@06e8057
+</footer>
+
+<script>
+  // scrollspy
+  const links = Array.from(document.querySelectorAll('nav.toc a'));
+  const sections = links.map(a => document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+  const gameIds = new Set(['game-menu','game-scene','game-controls','game-shot','game-actions','game-ai','game-scoring','game-types','game-nodes','game-dead']);
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        links.forEach(l => l.classList.remove('active','game-active'));
+        const link = links.find(l => l.getAttribute('href') === '#' + e.target.id);
+        if(link){
+          link.classList.add('active');
+          if(gameIds.has(e.target.id)) link.classList.add('game-active');
+        }
+      }
+    });
+  }, {rootMargin:'-10% 0px -70% 0px'});
+  sections.forEach(s => io.observe(s));
+</script>
+</body>
+</html>

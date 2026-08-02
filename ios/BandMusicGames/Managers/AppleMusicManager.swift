@@ -29,18 +29,29 @@ final class AppleMusicManager: ObservableObject {
 
     // MARK: - Auth / activation
 
-    /// Called when the user taps "Switch to Apple Music" in the error banner.
+    /// Called from onboarding or the error banner's "Switch to Apple Music".
     /// Requests authorization, checks subscription, and sets isPreferred on success.
-    func activateAsPreferred() async {
+    /// Returns the outcome so callers can show a specific denied/no-subscription state.
+    @discardableResult
+    func activateAsPreferred() async -> ActivationResult {
         let status = await MusicAuthorization.request()
         authStatus = status
-        guard status == .authorized else { return }
-        // canPlayCatalog is updated by the subscription monitor; give it a moment
-        // to fire before committing the preference.
-        try? await Task.sleep(nanoseconds: 300_000_000)
-        if canPlayCatalog {
-            isPreferred = true
+        guard status == .authorized else { return .denied }
+        do {
+            let subscription = try await MusicSubscription.current
+            canPlayCatalog = subscription.canPlayCatalogContent
+        } catch {
+            // Fall back to whatever the subscription monitor last reported.
         }
+        guard canPlayCatalog else { return .noSubscription }
+        isPreferred = true
+        return .activated
+    }
+
+    enum ActivationResult {
+        case activated
+        case denied
+        case noSubscription
     }
 
     func deactivate() {
@@ -53,6 +64,9 @@ final class AppleMusicManager: ObservableObject {
     /// Play a track by its Apple Music catalog ID (numeric string from iTunes Lookup).
     func play(trackId: String) async {
         guard authStatus == .authorized, canPlayCatalog else { return }
+        // Idempotent per track: the jukebox starts playback on launch and the
+        // game view re-issues it on appear — don't restart the song.
+        if isCurrentlyPlaying(trackId: trackId) { return }
         do {
             var req = MusicCatalogResourceRequest<MusicKit.Song>(
                 matching: \.id, equalTo: MusicItemID(rawValue: trackId)

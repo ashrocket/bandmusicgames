@@ -1,0 +1,657 @@
+take the existing work we stopped working on mid last week and spend no more than 10% of my weekly session fable budget but make it so much better of an experience, especially work on the onboarding, consider focusing on the Apple side of things, apple music integration is smoother than Spotify for now anyway.
+--- session context consumed (memory index) ---
+# Memory Index
+
+- [Subgame versioning & repos](project_subgame_versioning.md) — each subgame needs its own version number and ideally its own repository (user directive)
+
+- [Gameplay-perfecting loop state](project_gameplay_perfecting_loop.md) — COMPLETE 2026-06-12: francis b6306fe, forcuttinggrass 9c177ea, lizzymcguire 8f03ae6 — all on local gameplay-polish branches awaiting playtest/merge; broken WIPs preserved in stashes
+- [Storm/flip-cards branch merged](project_storm_flip_branch.md) — feature/storm-flip-cards merged into main 2026-06-15 (merge a807d20); main is the single canonical branch
+- [HCH difficulty inversion fix](project_hch_difficulty_fix.md) — cpuShotMultiplier was inverted (easy=sniper, hard=brick); fixed 2026-06-15 commit a06060a; TF build 20260615094028
+- [Google Gemini API access](reference_gemini.md) — Gemini API funded on default GCP project, available for multimodal tasks
+- [TestFlight / App Store Connect](reference_testflight.md) — app IDs, public link, and which API key (4D4Z6TQSKA) can manage external distribution
+- [Apple Notes automation pitfalls](reference_apple_notes_automation.md) — cross-account move deletes notes; Gmail sync cascades deletions; verify by-id before bulk deletes
+- [HCH v2.4.0 fun polish](project_hch_v240_fun_polish.md) — branch feat/hch-fun-polish-v2.4 complete 2026-07-01, awaiting playtest/merge; beat-anchor rule: never phase-0 relatch on mid-track resume
+--- git state ---
+ M ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift
+?? .cheaploop/
+?? art-source/
+?? docs/architecture-dossier.html
+?? fable.md
+f144838 fix: address adversarial review — 10 confirmed findings
+e8a6be8 fix: joystick knob mirrors applied movement (F13, stretch)
+8098aea feat: CPU steal telegraph FSM with dash/pass counters (F12, stretch)
+45b743d chore: v2.4.0 build stamp
+ed32a8f feat: make/miss ceremony — net snap, gold burst, point pop, rattle vs SHORT/LONG (F9)
+ac631ce feat: graded block window, contest-degrade, visible steal cooldown (F8)
+b4381cc feat: game stats + persisted records + NEW RECORD banner on result card (F7)
+68707e4 feat: rewire StormSkyNode charge storm (dead since 6d41189) to the SHOOT meter (F14)
+stash@{0}: WIP on main: 53ac96a Add security headers
+--- uncommitted diff ---
+diff --git a/ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift b/ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift
+index d011173..7cf7534 100644
+--- a/ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift
++++ b/ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift
+@@ -182,7 +182,7 @@ struct LizzyMcGuireGameView: View {
+             let titleSize: CGFloat = compact ? 42 : 50
+ 
+             VStack(spacing: 0) {
+-                Spacer()
++                Spacer(minLength: compact ? 6 : 0)
+ 
+                 VStack(spacing: compact ? 5 : 8) {
+                     Text("NARA'S ROOM")
+@@ -201,8 +201,13 @@ struct LizzyMcGuireGameView: View {
+                     .shadow(color: Color(hex: "#FF1493").opacity(0.5), radius: 12)
+                 }
+ 
+-                Spacer()
++                Spacer(minLength: compact ? 6 : 0)
+ 
++                // Everything below scrolls independently on short (compact landscape)
++                // screens, so the play button and footer text are always reachable
++                // instead of being pushed past the bottom edge by the fixed title above.
++                ScrollView(.vertical, showsIndicators: false) {
++                VStack(spacing: 0) {
+                 // Control-scheme selector (HoopLand buttons vs JumpBall one-button)
+                 Text(scene.controlStyle.subtitle)
+                     .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
+@@ -323,7 +328,9 @@ struct LizzyMcGuireGameView: View {
+                     .lineLimit(1)
+                     .minimumScaleFactor(0.7)
+                     .padding(.top, 10)
+-                    .padding(.bottom, geo.safeAreaInsets.bottom + 20)
++                    .padding(.bottom, geo.safeAreaInsets.bottom + 28)
++                }
++                }
+             }
+             .frame(maxWidth: 430)
+             .frame(maxWidth: .infinity, maxHeight: .infinity)
+@@ -381,60 +388,63 @@ struct LizzyMcGuireGameView: View {
+                 .padding(.top, topInset + (compact ? 14 : 20))
+                 .padding(.bottom, compact ? 12 : 16)
+ 
+-                // Character grid
+-                LazyVGrid(
+-                    columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2),
+-                    spacing: compact ? 10 : 14
+-                ) {
+-                    ForEach(HalfCourtHeroID.allCases) { hero in
+-                        let disabled = selectStep == 2 && hero == selectedPlayer
+-                        let isSelected = hero == selectedPlayer || hero == selectedTeammate
+-                        VStack(spacing: compact ? 6 : 8) {
+-                            HalfCourtHeroBadge(hero: hero, selected: isSelected, dimmed: disabled)
+-                                .frame(height: compact ? 90 : 110)
+-                            Text(hero.character.name)
+-                                .font(.system(size: compact ? 12 : 14, weight: .black, design: .monospaced))
+-                                .foregroundColor(disabled ? .white.opacity(0.24) : hero.character.hue)
+-                                .lineLimit(1)
+-                                .minimumScaleFactor(0.7)
+-                            Text(hero.character.ability)
+-                                .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
+-                                .tracking(1.2)
+-                                .foregroundColor(disabled ? .white.opacity(0.2) : .white.opacity(0.58))
+-                                .lineLimit(1)
+-                                .minimumScaleFactor(0.65)
+-                        }
+-                        .padding(compact ? 10 : 14)
+-                        .frame(maxWidth: .infinity)
+-                        .background(
+-                            RoundedRectangle(cornerRadius: 12)
+-                                .fill(isSelected ? hero.character.hue.opacity(0.17) : Color.black.opacity(0.28))
+-                        )
+-                        .overlay(
+-                            RoundedRectangle(cornerRadius: 12)
+-                                .stroke(isSelected ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: isSelected ? 2.5 : 1)
+-                        )
+-                        .contentShape(RoundedRectangle(cornerRadius: 12))
+-                        .onTapGesture {
+-                            guard !disabled else { return }
+-                            HapticManager.selection()
+-                            if selectStep == 1 {
+-                                selectedPlayer = hero
+-                                selectedTeammate = HalfCourtHeroID.allCases.first { $0 != hero }
+-                                selectStep = 2
+-                            } else {
+-                                selectedTeammate = hero
++                // Character grid — scrolls independently so the header and PLAY
++                // button below stay pinned and fully visible on short (compact
++                // landscape) screens instead of being pushed past the bottom edge.
++                ScrollView(.vertical, showsIndicators: false) {
++                    LazyVGrid(
++                        columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 2),
++                        spacing: compact ? 10 : 14
++                    ) {
++                        ForEach(HalfCourtHeroID.allCases) { hero in
++                            let disabled = selectStep == 2 && hero == selectedPlayer
++                            let isSelected = hero == selectedPlayer || hero == selectedTeammate
++                            VStack(spacing: compact ? 6 : 8) {
++                                HalfCourtHeroBadge(hero: hero, selected: isSelected, dimmed: disabled)
++                                    .frame(height: compact ? 90 : 110)
++                                Text(hero.character.name)
++                                    .font(.system(size: compact ? 12 : 14, weight: .black, design: .monospaced))
++                                    .foregroundColor(disabled ? .white.opacity(0.24) : hero.character.hue)
++                                    .lineLimit(1)
++                                    .minimumScaleFactor(0.7)
++                                Text(hero.character.ability)
++                                    .font(.system(size: compact ? 8 : 9, weight: .bold, design: .monospaced))
++                                    .tracking(1.2)
++                                    .foregroundColor(disabled ? .white.opacity(0.2) : .white.opacity(0.58))
++                                    .lineLimit(1)
++                                    .minimumScaleFactor(0.65)
++                            }
++                            .padding(compact ? 10 : 14)
++                            .frame(maxWidth: .infinity)
++                            .background(
++                                RoundedRectangle(cornerRadius: 12)
++                                    .fill(isSelected ? hero.character.hue.opacity(0.17) : Color.black.opacity(0.28))
++                            )
++                            .overlay(
++                                RoundedRectangle(cornerRadius: 12)
++                                    .stroke(isSelected ? hero.character.hue : hero.character.hue.opacity(0.35), lineWidth: isSelected ? 2.5 : 1)
++                            )
++                            .contentShape(RoundedRectangle(cornerRadius: 12))
++                            .onTapGesture {
++                                guard !disabled else { return }
++                                HapticManager.selection()
++                                if selectStep == 1 {
++                                    selectedPlayer = hero
++                                    selectedTeammate = HalfCourtHeroID.allCases.first { $0 != hero }
++                                    selectStep = 2
++                                } else {
++                                    selectedTeammate = hero
++                                }
++                            }
++                            .onLongPressGesture(minimumDuration: 0.4) {
++                                HapticManager.impact(.medium)
++                                scoutedHero = hero
+                             }
+-                        }
+-                        .onLongPressGesture(minimumDuration: 0.4) {
+-                            HapticManager.impact(.medium)
+-                            scoutedHero = hero
+                         }
+                     }
++                    .padding(.horizontal, compact ? 16 : 22)
++                    .padding(.vertical, 4)
+                 }
+-                .padding(.horizontal, compact ? 16 : 22)
+-
+-                Spacer(minLength: 12)
+ 
+                 // Play button
+                 Button {
+@@ -457,7 +467,8 @@ struct LizzyMcGuireGameView: View {
+                 .opacity(selectedTeammate != nil ? 1 : 0.35)
+                 .disabled(selectedTeammate == nil)
+                 .padding(.horizontal, compact ? 28 : 34)
+-                .padding(.bottom, bottomInset + (compact ? 14 : 20))
++                .padding(.top, 10)
++                .padding(.bottom, bottomInset + (compact ? 18 : 24))
+             }
+             .frame(maxWidth: 430)
+             .frame(maxWidth: .infinity, maxHeight: .infinity)
+--- files surveyed ---
+import Foundation
+import MusicKit
+
+/// Manages Apple Music playback as an alternative to Spotify Connect.
+/// Inject as @EnvironmentObject alongside SpotifyAuthManager.
+/// When isPreferred == true, game views route playback here instead of Spotify.
+@MainActor
+final class AppleMusicManager: ObservableObject {
+
+    @Published private(set) var authStatus: MusicAuthorization.Status = .notDetermined
+    @Published private(set) var canPlayCatalog = false
+    @Published private(set) var isPlaying = false
+    @Published private(set) var currentTrackId: String? = nil
+    @Published var isPreferred: Bool {
+        didSet { UserDefaults.standard.set(isPreferred, forKey: "am_preferred") }
+    }
+
+    private var subscriptionTask: Task<Void, Never>?
+
+    init() {
+        isPreferred = UserDefaults.standard.bool(forKey: "am_preferred")
+        authStatus  = MusicAuthorization.currentStatus
+        startSubscriptionMonitor()
+    }
+
+    deinit {
+        subscriptionTask?.cancel()
+    }
+
+    // MARK: - Auth / activation
+
+    /// Called when the user taps "Switch to Apple Music" in the error banner.
+    /// Requests authorization, checks subscription, and sets isPreferred on success.
+    func activateAsPreferred() async {
+        let status = await MusicAuthorization.request()
+        authStatus = status
+        guard status == .authorized else { return }
+        // canPlayCatalog is updated by the subscription monitor; give it a moment
+        // to fire before committing the preference.
+        try? await Task.sleep(nanoseconds: 300_000_000)
+        if canPlayCatalog {
+            isPreferred = true
+        }
+    }
+
+    func deactivate() {
+        isPreferred = false
+        pause()
+    }
+
+    // MARK: - Playback
+
+    /// Play a track by its Apple Music catalog ID (numeric string from iTunes Lookup).
+    func play(trackId: String) async {
+        guard authStatus == .authorized, canPlayCatalog else { return }
+        do {
+            var req = MusicCatalogResourceRequest<MusicKit.Song>(
+                matching: \.id, equalTo: MusicItemID(rawValue: trackId)
+            )
+            req.limit = 1
+            let response = try await req.response()
+            guard let song = response.items.first else {
+                print("AppleMusic: track \(trackId) not found in catalog")
+                return
+            }
+            // ApplicationMusicPlayer.Queue(for:) takes any PlayableMusicItem sequence
+            ApplicationMusicPlayer.shared.queue = ApplicationMusicPlayer.Queue(for: [song])
+            try await ApplicationMusicPlayer.shared.play()
+            ApplicationMusicPlayer.shared.state.repeatMode = .one
+            currentTrackId = trackId
+            isPlaying = true
+        } catch {
+            print("AppleMusic: play failed: \(error)")
+        }
+    }
+
+    func pause() {
+        ApplicationMusicPlayer.shared.pause()
+        isPlaying = false
+    }
+
+    func resume() async {
+        do {
+            try await ApplicationMusicPlayer.shared.play()
+            isPlaying = true
+        } catch {
+            print("AppleMusic: resume failed: \(error)")
+        }
+    }
+
+    func isCurrentlyPlaying(trackId: String) -> Bool {
+        isPlaying && currentTrackId == trackId
+    }
+
+    // MARK: - Private
+
+    private func startSubscriptionMonitor() {
+        subscriptionTask = Task {
+            for await state in MusicSubscription.subscriptionUpdates {
+                self.canPlayCatalog = state.canPlayCatalogContent
+                // If preferred but subscription lapsed, fall back to Spotify
+                if self.isPreferred && !state.canPlayCatalogContent {
+                    self.isPreferred = false
+                }
+            }
+        }
+    }
+}
+import SwiftUI
+
+struct ContentView: View {
+    /// Test mode: boot straight into the Lizzie McGuire game lobby.
+    /// Flip to false to restore the normal jukebox-first flow.
+    private static let autoLaunchLizzyLobby = true
+
+    @EnvironmentObject private var auth: SpotifyAuthManager
+    @StateObject private var previewPlayer = LobbyPreviewPlayer()
+    @State private var selectedIndex    = 0
+    @State private var launchingSong: Song? = nil
+    @State private var selectionTrigger = 0
+    @State private var launchTask: Task<Void, Never>? = nil
+    @State private var showSpotifySheet = false
+    @State private var didAutoLaunch = false
+
+    private var songs: [Song] { Song.catalog }
+
+    var body: some View {
+        ZStack {
+            Color(hex: "#06070B")
+                .ignoresSafeArea()
+
+            RadialGradient(
+                colors: [
+                    Song.catalog[selectedIndex].color.opacity(0.16),
+                    Color.clear,
+                ],
+                center: .center,
+                startRadius: 0,
+                endRadius: 420
+            )
+            .ignoresSafeArea()
+
+            JukeboxView(
+                selectedIndex: $selectedIndex,
+                selectionTrigger: selectionTrigger,
+                onPlay: handlePlay,
+                onShowSpotify: { showSpotifySheet = true },
+                onSkip: { auth.skipSpotify() }
+            )
+        }
+        .ignoresSafeArea()
+        .fullScreenCover(item: $launchingSong) { song in
+            switch nativeGame(for: song) {
+            case .francis:
+                FrancisGameView()
+                    .environmentObject(auth)
+            case .lizzyMcGuire:
+                LizzyMcGuireGameView()
+                    .environmentObject(auth)
+            case .forCuttingGrass:
+                ForCuttingGrassGameView()
+                    .environmentObject(auth)
+            case nil:
+                GameSheetView(song: song, spotifyToken: auth.accessToken)
+            }
+        }
+        .fullScreenCover(isPresented: $showSpotifySheet) {
+            SpotifySheetView()
+                .environmentObject(auth)
+        }
+        .overlay {
+            if let error = auth.playbackError {
+                spotifyErrorOverlay(error)
+            }
+        }
+        .onDisappear {
+            launchTask?.cancel()
+            previewPlayer.stop()
+        }
+        .onAppear {
+            if !auth.isConnected { previewPlayer.start() }
+            guard Self.autoLaunchLizzyLobby, !didAutoLaunch else { return }
+            didAutoLaunch = true
+            if let song = songs.first(where: { nativeGame(for: $0) == .lizzyMcGuire }) {
+                selectedIndex = songs.firstIndex(of: song) ?? selectedIndex
+                launchingSong = song
+            }
+        }
+        .onChange(of: auth.isConnected) { connected in
+            if connected {
+                previewPlayer.stop()
+            } else if launchingSong == nil {
+                previewPlayer.start()
+            }
+        }
+        .onChange(of: launchingSong) { song in
+            if song == nil, !auth.isConnected {
+                previewPlayer.start()
+            } else if song != nil {
+                previewPlayer.stop()
+            }
+        }
+    }
+
+    // MARK: - Actions
+
+    private func handlePlay() {
+        let song = songs[selectedIndex]
+
+        guard song.unlocked else {
+            HapticManager.notification(.error)
+            return
+        }
+
+        let isNative = nativeGame(for: song) != nil
+        if !auth.isConnected && !isNative {
+            showSpotifySheet = true
+            return
+        }
+
+        HapticManager.impact(.heavy)
+        selectionTrigger &+= 1
+
+        // Kick off Spotify playback if available; the center action always cues the game launch.
+        if auth.canAttemptPlayback {
+            Task { await auth.playTrack(song.trackUri) }
+        }
+
+        launchTask?.cancel()
+        launchTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_540_000_000)
+            guard !Task.isCancelled else { return }
+            launchingSong = song
+        }
+    }
+
+    private enum NativeGame {
+        case francis
+        case lizzyMcGuire
+        case forCuttingGrass
+    }
+
+    private func nativeGame(for song: Song) -> NativeGame? {
+        if song.id == "francis" {
+            return .francis
+        }
+
+        if song.id == "narasroom"
+            || song.gameUrl.localizedCaseInsensitiveContains("lizzymcguire")
+            || song.title.localizedCaseInsensitiveContains("lizzy") {
+            return .lizzyMcGuire
+        }
+
+        if song.title.localizedCaseInsensitiveCompare("FOR CUTTING GRASS") == .orderedSame
+            || song.id == "goon" {
+            return .forCuttingGrass
+        }
+
+        return nil
+    }
+
+    private func spotifyErrorOverlay(_ error: SpotifyAuthManager.PlaybackError) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 40))
+                .foregroundColor(.orange)
+            
+            Text("SPOTIFY ERROR")
+                .font(.system(size: 14, weight: .black, design: .monospaced))
+                .tracking(2)
+                .foregroundColor(.white)
+            
+            Text(error.message)
+                .font(.system(size: 12, weight: .medium, design: .monospaced))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+                .foregroundColor(.white.opacity(0.8))
+
+            HStack(spacing: 12) {
+                if case .noDevice = error {
+                    Button {
+                        auth.wakeSpotify()
+                        auth.playbackError = nil
+                        Task {
+                            try? await Task.sleep(nanoseconds: 4_000_000_000)
+                            await auth.fetchPlaybackState()
+                            if !auth.isPlaying { await auth.retryLastPlayback() }
+                        }
+                    } label: {
+                        Text("WAKE SPOTIFY")
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color.green)
+                            .foregroundColor(.black)
+                            .clipShape(Capsule())
+                    }
+                }
+
+                if case .notPremium = error, let uri = auth.lastAttemptedUri,
+                   let spotifyUrl = URL(string: uri) {
+                    Button {
+                        UIApplication.shared.open(spotifyUrl)
+                    } label: {
+                        Text("OPEN IN SPOTIFY")
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(Color(red: 0.11, green: 0.73, blue: 0.33))
+                            .foregroundColor(.black)
+                            .clipShape(Capsule())
+                    }
+                }
+
+                Button {
+                    auth.playbackError = nil
+                } label: {
+                    Text("DISMISS")
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.1))
+                        .foregroundColor(.white)
+                        .clipShape(Capsule())
+                }
+            }
+        }
+        .padding(.vertical, 32)
+        .frame(maxWidth: 320)
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(Color(red: 0.1, green: 0.05, blue: 0.02))
+                .overlay(RoundedRectangle(cornerRadius: 24).stroke(Color.white.opacity(0.1), lineWidth: 1))
+        )
+        .shadow(color: .black.opacity(0.6), radius: 40)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .zIndex(999)
+    }
+}
+
+
+#Preview {
+    ContentView()
+        .environmentObject(SpotifyAuthManager())
+}
+import SwiftUI
+
+@main
+struct BandMusicGamesApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    @StateObject private var auth = SpotifyAuthManager()
+    @StateObject private var appleMusic = AppleMusicManager()
+    private let showsTurntablePreview  = ProcessInfo.processInfo.arguments.contains("--turntable-preview")
+    private let showsMechanicsProto    = false  // mechanics prototype (meter-only testbed)
+    private let showsNaraRoom          = true   // playtest: boot straight into Nara's Room (landscape button controls)
+
+    var body: some Scene {
+        WindowGroup {
+            Group {
+                if showsTurntablePreview {
+                    TurntableAnimationPreview()
+                } else if showsNaraRoom {
+                    LizzyMcGuireGameView()
+                } else if showsMechanicsProto {
+                    MechanicsPrototypeView()
+                } else {
+                    ContentView()
+                }
+            }
+                .environmentObject(auth)
+                .environmentObject(appleMusic)
+                .statusBarHidden(showsTurntablePreview || showsMechanicsProto || showsNaraRoom)
+                .onOpenURL { url in
+                    // ASWebAuthenticationSession handles its own callback;
+                    // this is here for any future deep-link needs.
+                    auth.handleCallback(url: url)
+                }
+        }
+    }
+}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.4.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.party.bandmusicgames.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>bandmusicgames</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>GCSupportsGameMode</key>
+	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.games</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>spotify</string>
+	</array>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>
+--- grep: AppleMusicManager usage sites ---
+ios/BandMusicGames/BandMusicGamesApp.swift:7:    @StateObject private var appleMusic = AppleMusicManager()
+ios/BandMusicGames/BandMusicGamesApp.swift:26:                .environmentObject(appleMusic)
+ios/BandMusicGames/Models/Song.swift:10:    let appleMusicId: String?  // iTunes catalog ID for MusicKit playback
+ios/BandMusicGames/Models/Song.swift:29:            appleMusicId: "1840263172",
+ios/BandMusicGames/Models/Song.swift:40:            appleMusicId: "1866955717",
+ios/BandMusicGames/Models/Song.swift:51:            appleMusicId: "1873123794",
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:7:    @EnvironmentObject private var appleMusic: AppleMusicManager
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:48:                            if appleMusic.isPreferred { appleMusic.pause() }
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:99:                    if appleMusic.isPreferred, let amId = song.appleMusicId {
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:101:                            await appleMusic.play(trackId: amId)
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:124:            if appleMusic.isPreferred, let amId = song.appleMusicId {
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:125:                Task { await appleMusic.play(trackId: amId) }
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:132:            if appleMusic.isPreferred { appleMusic.pause() }
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:492:        if appleMusic.isPreferred {
+ios/BandMusicGames/Views/Games/LizzyMcGuireGameView.swift:493:            Task { await appleMusic.resume() }
+ios/BandMusicGames/Views/SpotifyErrorBanner.swift:7:    @EnvironmentObject private var appleMusic: AppleMusicManager
+ios/BandMusicGames/Views/SpotifyErrorBanner.swift:28:                    if appleMusic.canPlayCatalog && !appleMusic.isPreferred {
+ios/BandMusicGames/Views/SpotifyErrorBanner.swift:30:                            appleMusic.isPreferred = true
+ios/BandMusicGames/Views/SpotifyErrorBanner.swift:41:                    } else if appleMusic.authStatus == .authorized && !appleMusic.canPlayCatalog {
+ios/BandMusicGames/Views/SpotifyErrorBanner.swift:44:                            Task { await appleMusic.activateAsPreferred() }
+ios/BandMusicGames/Views/SpotifyErrorBanner.swift:55:                    } else if appleMusic.authStatus != .authorized {
+ios/BandMusicGames/Views/SpotifyErrorBanner.swift:57:                            Task { await appleMusic.activateAsPreferred() }
+ios/BandMusicGames/Views/Games/FrancisGameView.swift:9:    @EnvironmentObject private var appleMusic: AppleMusicManager
+ios/BandMusicGames/Views/Games/FrancisGameView.swift:39:            if appleMusic.isPreferred, let amId = song.appleMusicId {
+ios/BandMusicGames/Views/Games/FrancisGameView.swift:40:                Task { await appleMusic.play(trackId: amId) }
+ios/BandMusicGames/Views/Games/FrancisGameView.swift:47:            if appleMusic.isPreferred { appleMusic.pause() }
+ios/BandMusicGames/Views/Games/ForCuttingGrass/ForCuttingGrassGameView.swift:7:    @EnvironmentObject private var appleMusic: AppleMusicManager
+ios/BandMusicGames/Views/Games/ForCuttingGrass/ForCuttingGrassGameView.swift:71:            if appleMusic.isPreferred, let amId = song.appleMusicId {
+ios/BandMusicGames/Views/Games/ForCuttingGrass/ForCuttingGrassGameView.swift:72:                Task { await appleMusic.play(trackId: amId) }
+ios/BandMusicGames/Views/Games/ForCuttingGrass/ForCuttingGrassGameView.swift:80:            if appleMusic.isPreferred { appleMusic.pause() }
+ios/BandMusicGames/Views/Games/ForCuttingGrass/ForCuttingGrassGameView.swift:85:                if appleMusic.isPreferred { appleMusic.pause() }
+ios/BandMusicGames/Views/Games/ForCuttingGrass/ForCuttingGrassGameView.swift:88:                if appleMusic.isPreferred { Task { await appleMusic.resume() } }

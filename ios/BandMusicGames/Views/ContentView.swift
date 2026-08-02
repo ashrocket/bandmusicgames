@@ -3,9 +3,11 @@ import SwiftUI
 struct ContentView: View {
     /// Test mode: boot straight into the Lizzie McGuire game lobby.
     /// Flip to false to restore the normal jukebox-first flow.
-    private static let autoLaunchLizzyLobby = true
+    private static let autoLaunchLizzyLobby = false
 
     @EnvironmentObject private var auth: SpotifyAuthManager
+    @EnvironmentObject private var appleMusic: AppleMusicManager
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @StateObject private var previewPlayer = LobbyPreviewPlayer()
     @State private var selectedIndex    = 0
     @State private var launchingSong: Song? = nil
@@ -32,13 +34,18 @@ struct ContentView: View {
             )
             .ignoresSafeArea()
 
-            JukeboxView(
-                selectedIndex: $selectedIndex,
-                selectionTrigger: selectionTrigger,
-                onPlay: handlePlay,
-                onShowSpotify: { showSpotifySheet = true },
-                onSkip: { auth.skipSpotify() }
-            )
+            if hasCompletedOnboarding {
+                JukeboxView(
+                    selectedIndex: $selectedIndex,
+                    selectionTrigger: selectionTrigger,
+                    onPlay: handlePlay,
+                    onShowSpotify: { showSpotifySheet = true },
+                    onSkip: { auth.skipSpotify() }
+                )
+            } else {
+                OnboardingView(onComplete: completeOnboarding)
+                    .transition(.opacity)
+            }
         }
         .ignoresSafeArea()
         .fullScreenCover(item: $launchingSong) { song in
@@ -70,7 +77,7 @@ struct ContentView: View {
             previewPlayer.stop()
         }
         .onAppear {
-            if !auth.isConnected { previewPlayer.start() }
+            if !auth.isConnected && hasCompletedOnboarding { previewPlayer.start() }
             guard Self.autoLaunchLizzyLobby, !didAutoLaunch else { return }
             didAutoLaunch = true
             if let song = songs.first(where: { nativeGame(for: $0) == .lizzyMcGuire }) {
@@ -96,6 +103,21 @@ struct ContentView: View {
 
     // MARK: - Actions
 
+    private func completeOnboarding(_ choice: OnboardingView.Choice) {
+        withAnimation(.easeOut(duration: 0.3)) {
+            hasCompletedOnboarding = true
+        }
+        switch choice {
+        case .appleMusic:
+            break // isPreferred was set by activateAsPreferred()
+        case .spotify:
+            showSpotifySheet = true
+        case .skip:
+            auth.skipSpotify()
+        }
+        if !auth.isConnected { previewPlayer.start() }
+    }
+
     private func handlePlay() {
         let song = songs[selectedIndex]
 
@@ -105,7 +127,8 @@ struct ContentView: View {
         }
 
         let isNative = nativeGame(for: song) != nil
-        if !auth.isConnected && !isNative {
+        let playsViaAppleMusic = appleMusic.isPreferred && song.appleMusicId != nil
+        if !auth.isConnected && !isNative && !playsViaAppleMusic {
             showSpotifySheet = true
             return
         }
@@ -113,8 +136,11 @@ struct ContentView: View {
         HapticManager.impact(.heavy)
         selectionTrigger &+= 1
 
-        // Kick off Spotify playback if available; the center action always cues the game launch.
-        if auth.canAttemptPlayback {
+        // Kick off playback on the preferred source; the center action always cues the game launch.
+        // (Native game views re-issue play on appear — AppleMusicManager.play is idempotent per track.)
+        if playsViaAppleMusic, let amId = song.appleMusicId {
+            Task { await appleMusic.play(trackId: amId) }
+        } else if auth.canAttemptPlayback {
             Task { await auth.playTrack(song.trackUri) }
         }
 
@@ -234,4 +260,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(SpotifyAuthManager())
+        .environmentObject(AppleMusicManager())
 }

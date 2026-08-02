@@ -23,6 +23,7 @@
 		322040669093637ABD0C5D8B /* ForCuttingGrassRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CAB0A5FEF74F7A89D13435 /* ForCuttingGrassRenderer.swift */; };
 		330DA7CAE2E3C5A4205F972F /* AppleMusicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949996882745F58520AD10DE /* AppleMusicManager.swift */; };
 		39B8F26AC0FC2452E545C825 /* SpotifySheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494493654D27227DBC1E24DB /* SpotifySheetView.swift */; };
+		0BA0BF11E0000000000C0DE2 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA0BF11E0000000000C0DE1 /* OnboardingView.swift */; };
 		44CD12EC1DF87386F9EE66E4 /* HalfCourtHUDNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F71CB28A4323E659BD953281 /* HalfCourtHUDNode.swift */; };
 		48F403C62312AC115BBF5FE4 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5338DD068B913E3A438771F /* SpotifyAuthManager.swift */; };
 		53E0AC04367B389742A6B773 /* SpotifyErrorBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1CF61FF4D6DA1D17FD7B57 /* SpotifyErrorBanner.swift */; };
@@ -94,6 +95,7 @@
 		3DD52D74FA70B03DA96B12E0 /* BlockGradeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockGradeTests.swift; sourceTree = "<group>"; };
 		4642DDBEEE3CF9B8DF17A205 /* BandMusicGamesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandMusicGamesApp.swift; sourceTree = "<group>"; };
 		494493654D27227DBC1E24DB /* SpotifySheetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySheetView.swift; sourceTree = "<group>"; };
+		0BA0BF11E0000000000C0DE1 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		4B0FEFEAE20F717F1B193FC2 /* mower-body-test.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mower-body-test.png"; sourceTree = "<group>"; };
 		4D0C48531D9DA41E250F59D8 /* JukeboxLineKnot.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = JukeboxLineKnot.json; sourceTree = "<group>"; };
 		4DE395626A2B595F1AB2FA55 /* BandMusicGames.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BandMusicGames.entitlements; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 				DC3E3404F9F5E186AB867DB4 /* BubbleTubeView.swift */,
 				EE5906A82919054EB963B4A3 /* ChromePlayButton.swift */,
 				82AB66BC63FF553633DE7F80 /* ContentView.swift */,
+				0BA0BF11E0000000000C0DE1 /* OnboardingView.swift */,
 				1AEED640487C99F9E09BEAE4 /* GameWebView.swift */,
 				FDC1FFB0E1981A3D4FC472DB /* JukeboxView.swift */,
 				179F02B60F81160662AA2202 /* LottieAnimationPlayer.swift */,
@@ -503,6 +506,7 @@
 				8CFCB046D3CD65D1EAEE204F /* BubbleTubeView.swift in Sources */,
 				8412248697D6D9D030278F57 /* ChromePlayButton.swift in Sources */,
 				78FD37CF53F2BA5880F527D6 /* ContentView.swift in Sources */,
+				0BA0BF11E0000000000C0DE2 /* OnboardingView.swift in Sources */,
 				FA1D789A8D056BD44CAC3CFF /* ForCuttingGrassControlOverlay.swift in Sources */,
 				92F7990237F050CDC55279CA /* ForCuttingGrassGameScene.swift in Sources */,
 				04FEA8FB3D18B769B1BEAA73 /* ForCuttingGrassGameView.swift in Sources */,

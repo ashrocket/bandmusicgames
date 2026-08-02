@@ -3,3 +3,5 @@
 node_modules/
 ios/build/
 ios/BandMusicGames/Resources/Sprites/Goon/raw/
+.venv/
+__pycache__/
