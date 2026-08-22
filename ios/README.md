@@ -91,8 +91,12 @@ The local uploader defaults to:
 - bundle ID: `party.bandmusicgames.app`
 
 It creates a timestamp build number, archives, uploads to App Store Connect, then
-polls TestFlight readiness and sets `usesNonExemptEncryption=false` if Apple
-asks for export compliance.
+uses the [asc](https://github.com/rorkai/App-Store-Connect-CLI) CLI
+(`scripts/asc-build-status.sh`) to poll TestFlight readiness and set
+`usesNonExemptEncryption=false` if Apple asks for export compliance. `asc`
+needs to be authenticated once locally (`asc auth login ...` or, if you
+already use it elsewhere, it'll pick up your existing keychain profile) —
+run `asc auth status --validate` to check.
 
 Override defaults with environment variables:
 
@@ -104,9 +108,11 @@ ASC_KEY_PATH=/path/to/AuthKey_XXXX.p8 ASC_KEY_ID=XXXX npm run testflight
 
 `.github/workflows/testflight.yml` archives and uploads the iOS app to App Store
 Connect on pushes to `main` that touch `ios/**`, and can also be run manually.
-It uses automatic signing plus an App Store Connect API key by running the same
-uploader script, then polls TestFlight readiness and applies the export
-compliance flag.
+It uses automatic signing plus an App Store Connect API key for the
+xcodebuild archive/export steps, installs `asc` and logs it in
+non-interactively (`asc auth login --bypass-keychain`) from the same
+secrets, then runs `scripts/asc-build-status.sh` to poll TestFlight
+readiness and apply the export compliance flag.
 
 Required repository secrets:
 

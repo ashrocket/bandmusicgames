@@ -58,9 +58,6 @@ xcodebuild \
   -authenticationKeyID "$ASC_KEY_ID" \
   -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
-ASC_KEY_ID="$ASC_KEY_ID" \
-ASC_ISSUER_ID="$ASC_ISSUER_ID" \
-ASC_KEY_PATH="$ASC_KEY_PATH" \
 ASC_BUNDLE_ID="$ASC_BUNDLE_ID" \
 ASC_BUILD_NUMBER="$BUILD_NUMBER" \
-node "$ROOT_DIR/scripts/app-store-connect-build-status.mjs"
+"$ROOT_DIR/scripts/asc-build-status.sh"

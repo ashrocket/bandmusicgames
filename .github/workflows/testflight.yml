@@ -46,6 +46,16 @@ jobs:
           chmod 600 "$KEY_PATH"
           echo "ASC_KEY_PATH=$KEY_PATH" >> "$GITHUB_ENV"
 
+      - name: Install and configure asc CLI
+        if: steps.asc_secrets.outputs.ready == 'true'
+        run: |
+          curl -fsSL https://asccli.sh/install | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/asc" auth login --bypass-keychain \
+            --name ci --key-id "$APP_STORE_CONNECT_API_KEY_ID" \
+            --issuer-id "$APP_STORE_CONNECT_API_ISSUER_ID" \
+            --private-key "$ASC_KEY_PATH"
+
       - name: Install distribution certificate
         if: steps.asc_secrets.outputs.ready == 'true' && env.APPLE_CERTIFICATE_BASE64 != ''
         env:
