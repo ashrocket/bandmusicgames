@@ -45,8 +45,18 @@ final class PlayerNode: SKNode {
 
     var facing: CGFloat = 1 {
         didSet {
-            guard facing != 0 else { facing = oldValue; return }
-            facing = facing > 0 ? 1 : -1
+            // Guard against re-entrant didSet: only reassign `facing` when it
+            // actually needs normalizing, otherwise this recurses forever
+            // (didSet fires on every assignment, even a same-value one).
+            if facing == 0 {
+                facing = oldValue
+                return
+            }
+            let normalized: CGFloat = facing > 0 ? 1 : -1
+            if facing != normalized {
+                facing = normalized
+                return
+            }
             bodyContainer.xScale = abs(bodyContainer.xScale) * facing
         }
     }

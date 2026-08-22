@@ -458,6 +458,10 @@ final class FrancisGameScene: SKScene, ObservableObject {
         hud?.isHidden = (phase == .pressPlay || phase == .intro)
     }
 
+    deinit {
+        motion.stopDeviceMotionUpdates()
+    }
+
     private func setupMotion() {
         guard motion.isDeviceMotionAvailable else { return }
         motion.deviceMotionUpdateInterval = 1.0 / 60

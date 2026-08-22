@@ -268,7 +268,7 @@ function updateInfo() {
     enterHint.textContent  = '';
     return;
   }
-  if (!LobbyAuth.isConnected()) { infoTitle.textContent = '???'; infoArtist.textContent = ''; infoGame.textContent = ''; return; } infoTitle.textContent = s.title;
+  infoTitle.textContent = s.title;
   infoTitle.style.color  = ensureReadable(s.color);
   infoArtist.textContent = s.artist;
   infoGame.textContent   = s.gameName;
