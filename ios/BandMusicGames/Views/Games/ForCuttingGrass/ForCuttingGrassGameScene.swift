@@ -444,6 +444,10 @@ final class ForCuttingGrassGameScene: SKScene, ObservableObject {
         // Pickups & Hazards
         let now = lastUpdate ?? 0
         checkPickupsAndHazards(now: now, delta: deltaSeconds)
+        // A skunk hit that exhausts the last try sets phase = .gameOver inside
+        // checkPickupsAndHazards; don't let the win check below clobber that in
+        // the same tick if the mower also crossed the win threshold.
+        guard phase == .playing else { return }
 
         // Win condition
         if grid.cutPercentage >= config.win {

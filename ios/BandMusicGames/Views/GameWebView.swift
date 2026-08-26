@@ -72,7 +72,7 @@ struct GameWebView: UIViewRepresentable {
 
         if let token = spotifyToken {
             let props: [HTTPCookiePropertyKey: Any] = [
-                .name:    "sp_token",
+                .name:    "sp_token_v2",
                 .value:   token,
                 .domain:  ".bandmusicgames.party",
                 .path:    "/",

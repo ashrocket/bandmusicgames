@@ -386,12 +386,10 @@ body::before {
 <script src="js/haptics.js"></script>
 <script src="js/lobby.js"></script>
 <script>
-  document.getElementById('btn-connect').addEventListener('click', () => LobbyAuth.login());
-  document.getElementById('btn-skip').addEventListener('click', () => {
-    window._saveSpotifySkip();
-    document.getElementById('spotify-overlay').classList.add('hidden');
-  });
-
+  // btn-connect / btn-skip click handlers are wired in js/lobby.js (which also
+  // guards against an unconfigured spotifyClientId) — do not duplicate them here,
+  // duplicate listeners raced two concurrent LobbyAuth.login() calls against a
+  // single PKCE verifier in sessionStorage and could break the OAuth exchange.
   const appleBtn = document.getElementById('btn-apple');
   // Disable Apple Music button if developer token not configured
   if (!LOBBY_CONFIG.appleMusicDeveloperToken ||
