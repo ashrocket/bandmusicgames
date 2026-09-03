@@ -26,18 +26,22 @@
       const code     = new URLSearchParams(window.location.search).get('code');
       const verifier = sessionStorage.getItem('lobby_verifier');
       if (code && verifier) {
-        const res = await fetch('https://accounts.spotify.com/api/token', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body:    new URLSearchParams({
-            client_id:     LOBBY_CONFIG.spotifyClientId,
-            grant_type:    'authorization_code',
-            code,
-            redirect_uri:  LOBBY_CONFIG.spotifyRedirectUri,
-            code_verifier: verifier,
-          }),
-        });
-        if (res.ok) window._saveSpotifyTokens(await res.json());
+        try {
+          const res = await fetch('https://accounts.spotify.com/api/token', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body:    new URLSearchParams({
+              client_id:     LOBBY_CONFIG.spotifyClientId,
+              grant_type:    'authorization_code',
+              code,
+              redirect_uri:  LOBBY_CONFIG.spotifyRedirectUri,
+              code_verifier: verifier,
+            }),
+          });
+          if (res.ok) window._saveSpotifyTokens(await res.json());
+        } catch (e) {
+          console.warn('[Spotify] token exchange failed:', e);
+        }
       }
       window.location.replace('/');
     })();

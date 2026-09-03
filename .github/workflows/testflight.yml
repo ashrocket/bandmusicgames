@@ -13,6 +13,9 @@ concurrency:
   group: testflight-main
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   upload:
     name: Upload iOS Build
